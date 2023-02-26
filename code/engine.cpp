@@ -70,6 +70,11 @@ using namespace rapidxml;
 using namespace std;
 
 int main(int argc, char **argv) {
+	// Parser XML
+	// Configurar câmara e etc
+	// Ler os ficheiros .3d (que devem estar com a ordem correta)
+	// Mostrar os triângulos
+	
 	file<> xmlFile("../../demo.xml");
     // Create & parse document
     xml_document<> doc;
