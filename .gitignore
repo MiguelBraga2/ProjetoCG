@@ -1,3 +1,4 @@
 .vscode/
 *.swp
-code/build/*
+code/engine/build/*
+code/generator/build/*
