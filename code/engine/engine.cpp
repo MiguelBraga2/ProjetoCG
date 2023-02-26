@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <math.h>
-#include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
+#include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
 
 
 void changeSize(int w, int h) {
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 	// Ler os ficheiros .3d (que devem estar com a ordem correta)
 	// Mostrar os triângulos
 	
-	file<> xmlFile("../../demo.xml");
+	file<> xmlFile("../demo.xml");
     // Create & parse document
     xml_document<> doc;
     doc.parse<0>(xmlFile.data());
