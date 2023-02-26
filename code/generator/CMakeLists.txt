@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Project Name
-PROJECT(engine)
+PROJECT(generator)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} engine.cpp)
+add_executable(${PROJECT_NAME} generator.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
