@@ -8,39 +8,30 @@
 using namespace std;
 
 Triangle* generatePlane(float length, int grid){
-    int numTriangles = grid*grid*2;
-    Triangle* figure = (Triangle*) malloc(numTriangles*sizeof(Triangle));
-    float x, z;
-    printf("Length: %dGrid: %d\n", length, grid);
-    x = -length/2;
-    z = -length/2;
+    int numSquares = grid*grid;
+    Triangle* figure = new Triangle[numSquares * 2];
+    float aux1 = length / 2, aux2 = length / grid;
+    float x = -aux1, z = -aux1;
 
-    // 18
-    for (int i=0; i<numTriangles/2; i++){
-        Point p1 {x, 0, z};
-        Point p2 {x+length/3, 0, z};
-        Point p3 {x, 0, z+length/3};
-        Point p4 {x+length/3, 0, z+length/3};
-
-        Triangle t1 {p1, p3, p4};
-        Triangle t2 {p1, p2, p4};
-
+    for (int i=0; i<numSquares; i++){
+        Point p1(x, 0, z);
+        Point p2(x + aux2, 0, z);
+        Point p3(x, 0, z + aux2);
+        Point p4(x + aux2, 0, z + aux2);
+    
+        Triangle t1(p1, p3, p4);
+        Triangle t2(p1, p4, p2);
+        
         figure[i*2] = t1;
         figure[i*2+1] = t2;
-
+        
         // Movimentar o ponto inicial do triângulo
-        if (x == 2*length/3){
-            x = -length/2;
-        }
-        else {
-            x += length/3;
-        }
-        if (z == 2*length/3){
-            z = -length/2;
-        }
-        else {
-            z += length/3;
-        }
+        x += aux2;
+
+        if (x == aux1){
+            x = -aux1;
+            z += aux2;
+        }   
     }
 
     return figure;
@@ -50,7 +41,7 @@ int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
     {
-        if (argc == 6){
+        /*if (argc == 6) {
             int radius = atoi(argv[2]);
             int slices = atoi(argv[3]);
             int stacks = atoi(argv[4]);
@@ -63,11 +54,11 @@ int main(int argc, char** argv)
         }
         else {
             cout << "Número de argumentos inválido";
-        }        
+        }*/        
     }
     else if (strcmp(argv[1], "cone") == 0) 
     {
-        if (argc == 7){
+        /*if (argc == 7){
             int radius = atoi(argv[2]);
             int height = atoi(argv[3]);
             int slices = atoi(argv[4]);
@@ -82,11 +73,11 @@ int main(int argc, char** argv)
         }
         else {
             cout << "Número de argumentos inválido";
-        }        
+        }*/
     }
     else if (strcmp(argv[1], "box") == 0)
     {
-        if (argc == 5){
+        /*if (argc == 5){
             int side = atoi(argv[2]);
             int grid = atoi(argv[3]); 
             char* file = argv[4];
@@ -105,7 +96,7 @@ int main(int argc, char** argv)
         // numero de vertices -> 6 lados -> d*d *2 vertices por lado
 
         cout << "Cubo";
-
+        */
     }
     else if (strcmp(argv[1], "plane") == 0)
     {
@@ -114,30 +105,26 @@ int main(int argc, char** argv)
         // file: 4
         // numero de vertices -> d*d quadraros *2 triangulos
 
-        if (argc == 5){
-            int side = atoi(argv[2]);
+        if (argc == 5)
+        {
+            float length = atof(argv[2]);
             int grid = atoi(argv[3]); 
-            char* file_path = argv[4];
+            string file_path = argv[4];
 
-            cout << "Lado: " << side << endl;
-            cout << "Grid: " << grid << endl;
-            cout << "File: " << file_path << endl;
-
-            FILE* file = fopen(file_path, "w");
+            //FILE* file = fopen(file_path, "w");
             
-            Triangle* list = generatePlane(side, grid);
-
-            for(int i=0; i<side*side*2; i++){
-                printTriangle(list[i]);
+            Triangle* list = generatePlane(length, grid);
+           
+            for(int i=0; i<grid*grid*2; i++)
+            {
+                cout << list[i].toString() << endl;
             }
 
         }
-        else {
+        else 
+        {
             cout << "Número de argumentos inválido";
         }        
-
-        cout << "Plano";
-
     }
     else {
         cout << "Figura desconhecida";

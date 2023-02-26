@@ -1,10 +1,21 @@
 #ifndef POINT
 #define POINT
 
-typedef struct Point{
-    float x, y, z;
-} Point;
+#include <iostream>
+using namespace std;
 
-void printPoint(Point p);
+class Point
+{
+private:
+    float x, y, z;
+
+public:
+    Point();
+    Point(float x, float y, float z);
+    float getX();
+    float getY();
+    float getZ();
+    string toString();
+};
 
 #endif
