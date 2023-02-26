@@ -1,4 +1,9 @@
 .vscode/
 *.swp
-code/engine/build/*
-code/generator/build/*
+demo.xml
+*.3d
+*.out
+.idea/
+cmake-build-debug/
+code/engine/build
+code/generator/build/

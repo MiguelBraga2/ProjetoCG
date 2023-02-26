@@ -6,7 +6,13 @@
 
 #include <iostream>
 #include <math.h>
-#include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
+#include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
+
+float cameraPositionX, cameraPositionY, cameraPositionZ;
+float cameraLookAtX, cameraLookAtY, cameraLookAtZ;
+float cameraUpX, cameraUpY, cameraUpZ;
+float pFov, pNear, pFar;
+float width, height;
 
 
 void changeSize(int w, int h) {
@@ -28,7 +34,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(45.0f ,ratio, 1.0f ,1000.0f);
+	gluPerspective(pFov ,ratio, pNear ,pFar);
 
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
@@ -42,12 +48,28 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(5.0,5.0,5.0, 
-		      0.0,0.0,0.0,
-			  0.0f,1.0f,0.0f);
+	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
+              cameraLookAtX,cameraLookAtY,cameraLookAtZ,
+			  cameraUpX,cameraUpY,cameraUpZ);
 
-// put axis drawing in here
-
+    // put axis drawing in here
+    glBegin(GL_LINES);
+    // X axis in red
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(
+            -100.0f, 0.0f, 0.0f);
+    glVertex3f( 100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f,
+               -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f,
+               -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
 
 // put the geometric transformations here
 	
@@ -75,25 +97,66 @@ int main(int argc, char **argv) {
 	// Ler os ficheiros .3d (que devem estar com a ordem correta)
 	// Mostrar os triângulos
 	
-	file<> xmlFile("../../demo.xml");
+	file<> xmlFile("../demo.xml");
     // Create & parse document
     xml_document<> doc;
     doc.parse<0>(xmlFile.data());
     // Get root node
-    xml_node<> *root = doc.first_node("root-element");
-    // Print content
-    if(root == nullptr) {
-        cerr << "Element not found!" << endl;
-    } else { // We found the root element
-        cout << root->value() << endl;
-    }
+    xml_node<> *world = doc.first_node("world");
+    xml_node<> *window = world->first_node();
+    cout << "Width: " << window->first_attribute()->value() << endl;
+    cout << "Height: " << window->last_attribute()->value() << endl;
+    width = atof(window->first_attribute()->value());
+    height = atof(window->last_attribute()->value());
+    xml_node<> *camera = window->next_sibling();
+    xml_node<> *position = camera->first_node();
+    xml_attribute<>* x = position->first_attribute();
+    xml_attribute<>* y = x->next_attribute();
+    xml_attribute<>* z = y->next_attribute();
+    cameraPositionX = atof(x->value());
+    cameraPositionY = atof(y->value());
+    cameraPositionZ = atof(z->value());
+    cout << "Pos X: " << x->value() << endl;
+    cout << "Pos Y: " << y->value() << endl;
+    cout << "Pos Z: " << z->value() << endl;
+    xml_node<> *lookAt = position->next_sibling();
+    x = lookAt->first_attribute();
+    y = x->next_attribute();
+    z = y->next_attribute();
+    cameraLookAtX = atof(x->value());
+    cameraLookAtY = atof(y->value());
+    cameraLookAtZ = atof(z->value());
+    cout << "Look at X: " << x->value() << endl;
+    cout << "Look at Y: " << y->value() << endl;
+    cout << "Look at Z: " << z->value() << endl;
+    xml_node<> *up = lookAt->next_sibling();
+    x = up->first_attribute();
+    y = x->next_attribute();
+    z = y->next_attribute();
+    cameraUpX = atof(x->value());
+    cameraUpY = atof(y->value());
+    cameraUpZ = atof(z->value());
+    cout << "Up X: " << x->value() << endl;
+    cout << "Up Y: " << y->value() << endl;
+    cout << "Up Z: " << z->value() << endl;
+    xml_node<> *projection = up->next_sibling();
+    xml_attribute<>* fov = projection->first_attribute();
+    xml_attribute<>* near = fov->next_attribute();
+    xml_attribute<>* far = near->next_attribute();
+    pFov = atof(fov->value());
+    pNear = atof(near->value());
+    pFar = atof(far->value());
+    cout << "FOV: " << fov->value() << endl;
+    cout << "Near: " << near->value() << endl;
+    cout << "Far: " << far->value() << endl;
+    xml_node<> *group = world->last_node();
 	
 // init GLUT and the window
-	/*glutInit(&argc, argv);
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(800,800);
-	glutCreateWindow("CG@DI-UM");
+	glutInitWindowSize(width,height);
+	glutCreateWindow("ProjetoCG");
 		
 // Required callback registry 
 	glutDisplayFunc(renderScene);
@@ -109,7 +172,7 @@ int main(int argc, char **argv) {
 	glEnable(GL_CULL_FACE);
 	
 // enter GLUT's main cycle
-	glutMainLoop();*/
+	glutMainLoop();
 	
 	return 1;
 }
