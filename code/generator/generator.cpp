@@ -7,10 +7,90 @@
 
 using namespace std;
 
+/**
+ * Generates a group of triangles that combine into a grid, making a square (plane) of given length
+ * @param length the length of the larger square
+ * @param grid number of smaller squares per side
+ * @param direction defines the direction of the plane (for each coordinate, 0 - no direction)
+ * For example, 0 in the y direction means the plane is parallel to the y=0 plane
+ * @param initial the plane to start generating the plane
+ * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
+ * @return a list of generated triangles
+ */
+Triangle* generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
+    int numSquares = grid*grid;
+    Triangle* figure = new Triangle[numSquares*2]; // each smaller square has 2 triangles
+    float smallerSide = length/grid; // side of each of the smaller squares
+    Point base (initial.getX(), initial.getY(), initial.getZ());
+
+    for(int i=0; i<numSquares; i++) {
+        // Generate the 4 points for the 2 triangles
+        Point p1(base.getX(), base.getY(), base.getZ());
+        Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
+        Point* p2, *p3;
+
+        // Generate the other points of the triangles, depending on the direction of the plane
+        if (direction.getX() == 0){
+            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
+            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
+        }
+        else if (direction.getY() == 0){
+            p2 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
+            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
+        }
+        else if (direction.getZ() == 0){
+            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
+            p3 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
+        }
+
+        // Generate the triangles
+        Triangle* t1, *t2;
+        if (clockWiseDir == false){
+            t1 = new Triangle(p1, p4, *p2);
+            t2 = new Triangle(p1, *p3, p4);
+        }
+        else {
+            t1 = new Triangle(p1, *p2, p4);
+            t2 = new Triangle(p1, p4, *p3);
+        }
+
+        // Add the triangles to the array
+        figure[i*2] = *t1;
+        figure[i*2+1] = *t2;
+
+        // Move the base point
+        if (direction.getX() == 0){
+            base.setY(base.getY()+smallerSide*direction.getY());
+            if (base.getY() == initial.getY() + length*direction.getY()){
+                base.setY(initial.getY()); // Back to the begin
+                base.setZ(base.getZ() + smallerSide*direction.getZ());
+            }
+        }
+        else if (direction.getY() == 0){
+            base.setX(base.getX()+smallerSide*direction.getX());
+            if (base.getX() == initial.getX() + length*direction.getX()){
+                base.setX(initial.getX()); // Back to the begin
+                base.setZ(base.getZ() + smallerSide*direction.getZ());
+            }
+        }
+        else if (direction.getZ() == 0){
+            base.setY(base.getY()+smallerSide*direction.getY());
+            if (base.getY() == initial.getY() + length*direction.getY()){
+                base.setY(initial.getY()); // Back to the begin
+                base.setX(base.getX() + smallerSide*direction.getX());
+            }
+        }
+    }
+
+    return figure;
+}
+
+/*
 Triangle* generatePlane(float length, int grid){
     int numSquares = grid*grid;
     Triangle* figure = new Triangle[numSquares * 2];
-    float aux1 = length / 2, aux2 = length / grid;
+    float aux1 = length / 2, aux2 = length / grid; // aux1 - half the side of the larger square
+                                                   // aux2 - side of each of the smaller squares
     float x = -aux1, z = -aux1;
 
     for (int i=0; i<numSquares; i++){
@@ -35,7 +115,7 @@ Triangle* generatePlane(float length, int grid){
     }
 
     return figure;
-}
+}*/
 
 int main(int argc, char** argv)
 {
@@ -113,7 +193,7 @@ int main(int argc, char** argv)
 
             //FILE* file = fopen(file_path, "w");
             
-            Triangle* list = generatePlane(length, grid);
+            Triangle* list = generatePlane(length, grid, Point(1,0,1), Point(0, 0, 0), false);
            
             for(int i=0; i<grid*grid*2; i++)
             {
