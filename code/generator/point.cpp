@@ -32,6 +32,18 @@ float Point::getZ()
     return this->z; 
 };
 
+void Point::setX(float x) {
+    this->x = x;
+}
+
+void Point::setY(float y) {
+    this->y = y;
+}
+
+void Point::setZ(float z) {
+    this->z = z;
+}
+
 string Point::toString()
 {
     return "(" + to_string(this->x) + ", " + to_string(this->y) + ", " + to_string(this->z) + ")";
