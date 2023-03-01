@@ -136,7 +136,12 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
-
+void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
+{
+    cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;
+    cross_P[1] = vectAZ * vectBX - vectAX * vectBZ;
+    cross_P[2] = vectAX * vectBY - vectAY * vectBX;
+}
 
 // write function to process keyboard events
 
@@ -150,6 +155,20 @@ void keyboard_events(unsigned char key, int x, int y) {
         cameraPositionX -= cameraLookAtX;
         cameraPositionY -= cameraLookAtY;
         cameraPositionZ -= cameraLookAtZ;
+    }
+    else if (key == 'a'){
+        float* crossP = (float*) malloc(3*sizeof(float));
+        crossProduct(0, 1, 0, cameraLookAtX, cameraLookAtY, cameraLookAtZ, crossP);
+        cameraPositionX += crossP[0];
+        cameraPositionY += crossP[1];
+        cameraPositionZ += crossP[2];
+    }
+    else if (key == 'd'){
+        float* crossP = (float*) malloc(3*sizeof(float));
+        crossProduct(0, 1, 0, cameraLookAtX, cameraLookAtY, cameraLookAtZ, crossP);
+        cameraPositionX -= crossP[0];
+        cameraPositionY -= crossP[1];
+        cameraPositionZ -= crossP[2];
     }
 
     glutPostRedisplay();
