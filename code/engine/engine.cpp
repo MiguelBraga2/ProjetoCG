@@ -13,7 +13,7 @@ float cameraLookAtX, cameraLookAtY, cameraLookAtZ;
 float cameraUpX, cameraUpY, cameraUpZ;
 float pFov, pNear, pFar;
 float width, height;
-
+float rotationAlpha=0, rotationBeta=0;
 
 void changeSize(int w, int h) {
 
@@ -35,14 +35,68 @@ void changeSize(int w, int h) {
 
 	// Set perspective
 	gluPerspective(pFov ,ratio, pNear ,pFar);
-
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void drawSphere(float radius, int numSlices, int numStacks){
+    float alpha = M_PI/numSlices; // Defines the position around the y axis
+    float initialBeta = M_PI/numStacks; // Defines the height
+    float beta = -M_PI/2 + (numStacks-1)* initialBeta;
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    for (int i=0; i<numSlices*2; i++){
+        float nextAlpha = (i+1)*alpha;
+
+        glBegin(GL_TRIANGLES);
+        glVertex3f(0.0f, radius, 0.0f);
+        glVertex3f(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        glVertex3f(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        glEnd();
+
+    }
+
+    for(int i=0; i<numStacks-2; i++){ // Draw each of the vertical divisions
+        float currentBeta = -M_PI/2+(i+1)*initialBeta; // height
+        float nextBeta = -M_PI/2+(i+2)*initialBeta; // height above
+
+
+        for (int j=0; j<numSlices*2; j++){
+            float currentAlpha = j*alpha;
+            float nextAlpha = (j+1)*alpha;
+
+            glBegin(GL_TRIANGLES);
+            glVertex3f(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            glVertex3f(radius*cos(currentBeta)*sin(currentAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
+            glVertex3f(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            glEnd();
+
+            glBegin(GL_TRIANGLES);
+            glVertex3f(radius*cos(nextBeta)*sin(nextAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
+            glVertex3f(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            glVertex3f(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            glEnd();
+
+        }
+    }
+
+    beta = -M_PI/2+initialBeta;
+
+    for (int i=0; i<numSlices*2; i++){
+        float nextAlpha = (i+1)*alpha;
+
+        glBegin(GL_TRIANGLES);
+        glVertex3f(0.0f, -radius, 0.0f);
+        glVertex3f(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        glVertex3f(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+
+        glEnd();
+
+    }
+}
 
 void renderScene(void) {
-
+    glPolygonMode(GL_FRONT, GL_LINE);
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -75,8 +129,8 @@ void renderScene(void) {
 	
 
 // put pyramid drawing instructions here
-	glutWireSphere(1, 10, 10);
-
+	//glutWireSphere(1, 10, 10);
+    drawSphere(2, 18,22);
 	// End of frame
 	glutSwapBuffers();
 }
@@ -85,7 +139,20 @@ void renderScene(void) {
 
 // write function to process keyboard events
 
+void special_keyboard(int key_code, int x, int y){
+    if (key_code == GLUT_KEY_LEFT){
+        rotationAlpha -= M_PI/180;
+    }
+    else if (key_code == GLUT_KEY_RIGHT){
+        rotationAlpha += M_PI/180;
+    }
 
+    cameraLookAtX = 4*cos(rotationBeta)*sin(rotationAlpha);
+    cameraLookAtY = 4*sin(rotationBeta);
+    cameraLookAtZ = 4*cos(rotationAlpha)*cos(rotationBeta);
+
+    glutPostRedisplay();
+}
 
 
 using namespace rapidxml;
@@ -164,7 +231,7 @@ int main(int argc, char **argv) {
 
 	
 // put here the registration of the keyboard callbacks
-
+    glutSpecialFunc(special_keyboard);
 
 
 //  OpenGL settings
