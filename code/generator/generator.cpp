@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <iostream>
+#include <fstream>
 #include "point.hpp"
 #include "triangle.hpp"
 
@@ -85,6 +86,25 @@ Triangle* generatePlane(float length, int grid, Point direction, Point initial, 
     return figure;
 }
 
+void write_triangles(string fileName, int numTriangle, Triangle* list) 
+{
+    ofstream file("../" + fileName, ios::out | ios::binary);
+    if (!file)
+    {
+        cout << "Não é possível abrir o ficheiro " << fileName << endl;
+    }
+    else
+    {
+        file.write((char*) &numTriangle, sizeof(int));
+
+        for (int i = 0; i < numTriangle; i++)
+        {
+            file.write((char*)&list[i], sizeof(Triangle));
+        }
+    }
+}
+
+
 /**
  * Generates a group of triangles that combined approximate a sphere with a given radius using slices and stacks
  * The sphere is centered in the origin (0,0,0)
@@ -105,6 +125,7 @@ Triangle* generateSphere(float radius, int numSlices, int numStacks){
 
     // Generate numStacks triangles in the North Pole
     // The vertice of all triangles is the top of the sphere
+    return new Triangle();
 }
 
 /*
@@ -204,35 +225,19 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "plane") == 0)
     {
-        // length: 2
-        // d = number of divisions along each axis: 3
-        // file: 4
-        // numero de vertices -> d*d quadraros *2 triangulos
-
         if (argc == 5)
         {
             float length = atof(argv[2]);
-            int grid = atoi(argv[3]); 
-            string file_path = argv[4];
+            int grid = atoi(argv[3]);             
 
-            //FILE* file = fopen(file_path, "w");
-            
-            Triangle* list = generatePlane(length, grid, Point(1,0,1), Point(0, 0, 0), false);
-           
-            for(int i=0; i<grid*grid*2; i++)
-            {
-                cout << list[i].toString() << endl;
-            }
+            Triangle* list = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false);
+            write_triangles(argv[4], grid * grid * 2, list);
 
         }
         else 
         {
-            cout << "Número de argumentos inválido";
-        }        
-    }
-    else {
-        cout << "Figura desconhecida";
-    }
+            cout << "Figura desconhecida";
+        }
 
 
 }
