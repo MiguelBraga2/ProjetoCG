@@ -128,38 +128,6 @@ Triangle* generateSphere(float radius, int numSlices, int numStacks){
     return new Triangle();
 }
 
-/*
-Triangle* generatePlane(float length, int grid){
-    int numSquares = grid*grid;
-    Triangle* figure = new Triangle[numSquares * 2];
-    float aux1 = length / 2, aux2 = length / grid; // aux1 - half the side of the larger square
-                                                   // aux2 - side of each of the smaller squares
-    float x = -aux1, z = -aux1;
-
-    for (int i=0; i<numSquares; i++){
-        Point p1(x, 0, z);
-        Point p2(x + aux2, 0, z);
-        Point p3(x, 0, z + aux2);
-        Point p4(x + aux2, 0, z + aux2);
-    
-        Triangle t1(p1, p3, p4);
-        Triangle t2(p1, p4, p2);
-        
-        figure[i*2] = t1;
-        figure[i*2+1] = t2;
-        
-        // Movimentar o ponto inicial do triângulo
-        x += aux2;
-
-        if (x == aux1){
-            x = -aux1;
-            z += aux2;
-        }   
-    }
-
-    return figure;
-}*/
-
 int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
