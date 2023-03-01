@@ -85,6 +85,28 @@ Triangle* generatePlane(float length, int grid, Point direction, Point initial, 
     return figure;
 }
 
+/**
+ * Generates a group of triangles that combined approximate a sphere with a given radius using slices and stacks
+ * The sphere is centered in the origin (0,0,0)
+ * @param radius the radius of the sphere
+ * @param numSlices vertical divisions of the sphere
+ * @param numStacks horizontal divisions of the sphere
+ * @return
+ */
+Triangle* generateSphere(float radius, int numSlices, int numStacks){
+    Point bottomPoint = Point (0, -radius, 0);
+    Point topPoint = Point(0, radius, 0);
+    // Generate triangles bottom-up
+
+    // Generate numStacks triangles in the South Pole
+    // The vertice of all triangles is the bottom of the sphere
+
+    // Generate (numSlices-2) triangles in the middle
+
+    // Generate numStacks triangles in the North Pole
+    // The vertice of all triangles is the top of the sphere
+}
+
 /*
 Triangle* generatePlane(float length, int grid){
     int numSquares = grid*grid;
@@ -121,20 +143,22 @@ int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
     {
-        /*if (argc == 6) {
+        if (argc == 6) {
             int radius = atoi(argv[2]);
             int slices = atoi(argv[3]);
             int stacks = atoi(argv[4]);
             char* file = argv[5];
 
-            std::cout << "Raio: " << radius << endl;
-            cout << "Slices: " << slices << endl;
-            cout << "Stacks: " << stacks << endl;
-            cout << "File: " << file << endl;
+            Triangle* list = generateSphere(radius, slices, stacks);
+
+            for(int i=0; i<sizeof(list)/sizeof(Triangle); i++)
+            {
+                cout << list[i].toString() << endl;
+            }
         }
         else {
             cout << "Número de argumentos inválido";
-        }*/        
+        }
     }
     else if (strcmp(argv[1], "cone") == 0) 
     {
