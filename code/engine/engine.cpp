@@ -174,6 +174,19 @@ void keyboard_events(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void updateCamera(){
+    cameraLookAtX = cos(rotationBeta)*sin(rotationAlpha);
+    cameraLookAtY = sin(rotationBeta);
+    cameraLookAtZ = cos(rotationAlpha)*cos(rotationBeta);
+
+    float lookAtLength = sqrt(pow(cameraLookAtX, 2) + pow(cameraLookAtY, 2) + pow(cameraLookAtZ, 2));
+    cameraLookAtX = cameraLookAtX / lookAtLength;
+    cameraLookAtY = cameraLookAtY / lookAtLength;
+    cameraLookAtZ = cameraLookAtZ / lookAtLength;
+
+    glutPostRedisplay();
+}
+
 void special_keyboard(int key_code, int x, int y){
     if (key_code == GLUT_KEY_LEFT){
         rotationAlpha -= M_PI/30;
@@ -185,15 +198,59 @@ void special_keyboard(int key_code, int x, int y){
         rotationBeta += M_PI/30;
     }
     else if (key_code == GLUT_KEY_DOWN){
-        rotationBeta -= M_PI/180;
+        rotationBeta -= M_PI/30;
     }
 
-    cameraLookAtX = cos(rotationBeta)*sin(rotationAlpha);
-    cameraLookAtY = sin(rotationBeta);
-    cameraLookAtZ = cos(rotationAlpha)*cos(rotationBeta);
+    updateCamera();
+}
+
+/*
+void mouse_function(int x, int y){
+    // width height
+    float midY = y/2;
+    float midX = x/2;
+
+    float addAlpha;
+    float addBeta;
+
+    if (x > midX){
+        float step = midX/30;
+        float steps = ((x-midX)/step);
+        addAlpha = steps * M_PI/30;
+        if (y > midY){
+            float step = midY/30;
+            float steps = ((y-midY)/step);
+            addBeta = steps * M_PI/30; // ângulo
+        }
+        else {
+            float step = midY/30;
+            float steps = (y/step);
+            addBeta = steps * M_PI/30; // ângulo
+        }
+    }
+    else {
+        float step = midX/30;
+        float steps = ((x-midX)/step);
+        addAlpha = -steps * M_PI/30;
+        if (y > midY){
+            float step = midY/30;
+            float steps = ((y-midY)/step);
+            addBeta = steps * M_PI/30; // ângulo
+        }
+        else {
+            float step = midY/30;
+            float steps = (y/step);
+            addBeta = steps * M_PI/30; // ângulo
+        }
+    }
+
+    rotationAlpha += addAlpha;
+    rotationBeta += addBeta;
+
+    updateCamera();
 
     glutPostRedisplay();
-}
+}*/
 
 
 using namespace rapidxml;
@@ -274,6 +331,7 @@ int main(int argc, char **argv) {
 // put here the registration of the keyboard callbacks
     glutSpecialFunc(special_keyboard);
     glutKeyboardFunc(keyboard_events);
+    //glutPassiveMotionFunc(mouse_function);
 
 
 //  OpenGL settings
