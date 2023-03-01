@@ -14,6 +14,7 @@ float cameraUpX, cameraUpY, cameraUpZ;
 float pFov, pNear, pFar;
 float width, height;
 float rotationAlpha=0, rotationBeta=0;
+float lookDirX, lookDirY, lookDirZ;
 
 void changeSize(int w, int h) {
 
@@ -103,7 +104,7 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
-              cameraLookAtX,cameraLookAtY,cameraLookAtZ,
+              cameraPositionX + cameraLookAtX,cameraPositionY + cameraLookAtY,cameraPositionZ + cameraLookAtZ,
 			  cameraUpX,cameraUpY,cameraUpZ);
 
     // put axis drawing in here
@@ -139,17 +140,38 @@ void renderScene(void) {
 
 // write function to process keyboard events
 
-void special_keyboard(int key_code, int x, int y){
-    if (key_code == GLUT_KEY_LEFT){
-        rotationAlpha -= M_PI/180;
+void keyboard_events(unsigned char key, int x, int y) {
+    if (key == 'w'){
+        cameraPositionX += cameraLookAtX;
+        cameraPositionY += cameraLookAtY;
+        cameraPositionZ += cameraLookAtZ;
     }
-    else if (key_code == GLUT_KEY_RIGHT){
-        rotationAlpha += M_PI/180;
+    else if (key == 's'){
+        cameraPositionX -= cameraLookAtX;
+        cameraPositionY -= cameraLookAtY;
+        cameraPositionZ -= cameraLookAtZ;
     }
 
-    cameraLookAtX = 4*cos(rotationBeta)*sin(rotationAlpha);
-    cameraLookAtY = 4*sin(rotationBeta);
-    cameraLookAtZ = 4*cos(rotationAlpha)*cos(rotationBeta);
+    glutPostRedisplay();
+}
+
+void special_keyboard(int key_code, int x, int y){
+    if (key_code == GLUT_KEY_LEFT){
+        rotationAlpha -= M_PI/30;
+    }
+    else if (key_code == GLUT_KEY_RIGHT){
+        rotationAlpha += M_PI/30;
+    }
+    else if (key_code == GLUT_KEY_UP){
+        rotationBeta += M_PI/30;
+    }
+    else if (key_code == GLUT_KEY_DOWN){
+        rotationBeta -= M_PI/180;
+    }
+
+    cameraLookAtX = cos(rotationBeta)*sin(rotationAlpha);
+    cameraLookAtY = sin(rotationBeta);
+    cameraLookAtZ = cos(rotationAlpha)*cos(rotationBeta);
 
     glutPostRedisplay();
 }
@@ -232,6 +254,7 @@ int main(int argc, char **argv) {
 	
 // put here the registration of the keyboard callbacks
     glutSpecialFunc(special_keyboard);
+    glutKeyboardFunc(keyboard_events);
 
 
 //  OpenGL settings
