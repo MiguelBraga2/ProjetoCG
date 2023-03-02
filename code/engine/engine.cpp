@@ -7,6 +7,8 @@
 #include <iostream>
 #include <math.h>
 #include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
+#include "../shared/triangle.hpp"
+#include <list>
 
 float cameraPositionX, cameraPositionY, cameraPositionZ;
 float cameraLookAtX, cameraLookAtY, cameraLookAtZ;
@@ -18,6 +20,37 @@ float lookDirX, lookDirY, lookDirZ;
 
 using namespace rapidxml;
 using namespace std;
+
+void drawTriangle(Triangle* t, float red, float green, float blue){
+    Point p1 = t->getP1();
+    Point p2 = t->getP2();
+    Point p3 = t->getP3();
+
+    glColor3f(red, green, blue);
+
+    glBegin(GL_TRIANGLES);
+    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+    glEnd();
+}
+
+void drawFigure(list<Triangle> figure, float red, float green, float blue){
+    int index = 0;
+    std::list<Triangle>::iterator it;
+    for (it = figure.begin(); it != figure.end(); ++it){
+        Point p1 = it->getP1();
+        Point p2 = it->getP2();
+        Point p3 = it->getP3();
+
+        glColor3f(red, green, blue);
+        glBegin(GL_TRIANGLES);
+        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+        glEnd();
+    }
+}
 
 void changeSize(int w, int h) {
 
@@ -43,21 +76,22 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void drawSphere(float radius, int numSlices, int numStacks){
+list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
     float alpha = M_PI/numSlices; // Defines the position around the y axis
     float initialBeta = M_PI/numStacks; // Defines the height
     float beta = -M_PI/2 + (numStacks-1)* initialBeta;
+    list<Triangle> figure {};
+    int index=0;
 
-    glColor3f(1.0f, 1.0f, 0.0f);
+    //glColor3f(1.0f, 1.0f, 0.0f);
     for (int i=0; i<numSlices*2; i++){
         float nextAlpha = (i+1)*alpha;
-
-        glBegin(GL_TRIANGLES);
-        glVertex3f(0.0f, radius, 0.0f);
-        glVertex3f(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
-        glVertex3f(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
-        glEnd();
-
+        Point p1(0,radius, 0);
+        Point p2(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        Point p3(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        Triangle t(p1,p2,p3);
+        figure.push_back(t);
+        index++;
     }
 
     for(int i=0; i<numStacks-2; i++){ // Draw each of the vertical divisions
@@ -69,18 +103,19 @@ void drawSphere(float radius, int numSlices, int numStacks){
             float currentAlpha = j*alpha;
             float nextAlpha = (j+1)*alpha;
 
-            glBegin(GL_TRIANGLES);
-            glVertex3f(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
-            glVertex3f(radius*cos(currentBeta)*sin(currentAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
-            glVertex3f(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
-            glEnd();
+            Point p1(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p2(radius*cos(currentBeta)*sin(currentAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
+            Point p3(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            Triangle t(p1,p2,p3);
 
-            glBegin(GL_TRIANGLES);
-            glVertex3f(radius*cos(nextBeta)*sin(nextAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
-            glVertex3f(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
-            glVertex3f(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
-            glEnd();
+            figure.push_back(t);
 
+            Point p4(radius*cos(nextBeta)*sin(nextAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
+            Point p5(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p6(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            Triangle t2(p4,p5,p6);
+
+            figure.push_back(t2);
         }
     }
 
@@ -89,14 +124,15 @@ void drawSphere(float radius, int numSlices, int numStacks){
     for (int i=0; i<numSlices*2; i++){
         float nextAlpha = (i+1)*alpha;
 
-        glBegin(GL_TRIANGLES);
-        glVertex3f(0.0f, -radius, 0.0f);
-        glVertex3f(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
-        glVertex3f(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        Point p1(0,-radius, 0);
+        Point p2(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        Point p3(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        Triangle t(p1,p2,p3);
 
-        glEnd();
-
+        figure.push_back(t);
     }
+
+    return figure;
 }
 
 void renderScene(void) {
@@ -133,8 +169,13 @@ void renderScene(void) {
 	
 
 // put pyramid drawing instructions here
+    glutWireTeapot(2);
 	//glutWireSphere(1, 10, 10);
-    drawSphere(2, 18,22);
+    //drawSphere(2, 18,22);
+
+    list<Triangle> sphere = drawSphere(3, 8,8);
+    drawFigure(sphere, 1,1,0);
+
 	// End of frame
 	glutSwapBuffers();
 }
@@ -205,6 +246,84 @@ void special_keyboard(int key_code, int x, int y){
     }
 
     updateCamera();
+}
+
+/**
+ * Generates a group of triangles that combine into a grid, making a square (plane) of given length
+ * @param length the length of the larger square
+ * @param grid number of smaller squares per side
+ * @param direction defines the direction of the plane (for each coordinate, 0 - no direction)
+ * For example, 0 in the y direction means the plane is parallel to the y=0 plane
+ * @param initial the plane to start generating the plane
+ * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
+ * @return a list of generated triangles
+ */
+Triangle* generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
+    int numSquares = grid*grid;
+    Triangle* figure = new Triangle[numSquares*2]; // each smaller square has 2 triangles
+    float smallerSide = length/grid; // side of each of the smaller squares
+    Point base (initial.getX(), initial.getY(), initial.getZ());
+
+    for(int i=0; i<numSquares; i++) {
+        // Generate the 4 points for the 2 triangles
+        Point p1(base.getX(), base.getY(), base.getZ());
+        Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
+        Point* p2, *p3;
+
+        // Generate the other points of the triangles, depending on the direction of the plane
+        if (direction.getX() == 0){
+            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
+            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
+        }
+        else if (direction.getY() == 0){
+            p2 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
+            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
+        }
+        else if (direction.getZ() == 0){
+            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
+            p3 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
+        }
+
+        // Generate the triangles
+        Triangle* t1, *t2;
+        if (clockWiseDir == false){
+            t1 = new Triangle(p1, p4, *p2);
+            t2 = new Triangle(p1, *p3, p4);
+        }
+        else {
+            t1 = new Triangle(p1, *p2, p4);
+            t2 = new Triangle(p1, p4, *p3);
+        }
+
+        // Add the triangles to the array
+        figure[i*2] = *t1;
+        figure[i*2+1] = *t2;
+
+        // Move the base point
+        if (direction.getX() == 0){
+            base.setY(base.getY()+smallerSide*direction.getY());
+            if (base.getY() == initial.getY() + length*direction.getY()){
+                base.setY(initial.getY()); // Back to the begin
+                base.setZ(base.getZ() + smallerSide*direction.getZ());
+            }
+        }
+        else if (direction.getY() == 0){
+            base.setX(base.getX()+smallerSide*direction.getX());
+            if (base.getX() == initial.getX() + length*direction.getX()){
+                base.setX(initial.getX()); // Back to the begin
+                base.setZ(base.getZ() + smallerSide*direction.getZ());
+            }
+        }
+        else if (direction.getZ() == 0){
+            base.setY(base.getY()+smallerSide*direction.getY());
+            if (base.getY() == initial.getY() + length*direction.getY()){
+                base.setY(initial.getY()); // Back to the begin
+                base.setX(base.getX() + smallerSide*direction.getX());
+            }
+        }
+    }
+
+    return figure;
 }
 
 /*
