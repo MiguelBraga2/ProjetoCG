@@ -16,6 +16,9 @@ float width, height;
 float rotationAlpha=0, rotationBeta=0;
 float lookDirX, lookDirY, lookDirZ;
 
+using namespace rapidxml;
+using namespace std;
+
 void changeSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -252,17 +255,8 @@ void mouse_function(int x, int y){
     glutPostRedisplay();
 }*/
 
-
-using namespace rapidxml;
-using namespace std;
-
-int main(int argc, char **argv) {
-	// Parser XML
-	// Configurar câmara e etc
-	// Ler os ficheiros .3d (que devem estar com a ordem correta)
-	// Mostrar os triângulos
-	
-	file<> xmlFile("../demo.xml");
+void readXML(char* filePath){
+    file<> xmlFile(filePath);
     // Create & parse document
     xml_document<> doc;
     doc.parse<0>(xmlFile.data());
@@ -315,6 +309,15 @@ int main(int argc, char **argv) {
     cout << "Near: " << near->value() << endl;
     cout << "Far: " << far->value() << endl;
     xml_node<> *group = world->last_node();
+}
+
+int main(int argc, char **argv) {
+    readXML("../demo.xml");
+	// Parser XML
+	// Configurar câmara e etc
+	// Ler os ficheiros .3d (que devem estar com a ordem correta)
+	// Mostrar os triângulos
+
 	
 // init GLUT and the window
 	glutInit(&argc, argv);
