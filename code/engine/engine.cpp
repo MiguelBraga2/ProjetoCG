@@ -1,13 +1,16 @@
+#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
 
-#include <iostream>
+#define _USE_MATH_DEFINES
 #include <math.h>
+#include <iostream>
 #include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
+#include "../shared/point.hpp"
 #include <list>
 
 float cameraPositionX, cameraPositionY, cameraPositionZ;
@@ -251,7 +254,6 @@ list<Triangle> generatePlane(float length, int grid, Point direction, Point init
 }
 
 void renderScene(void) {
-    glPolygonMode(GL_FRONT, GL_LINE);
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -293,6 +295,16 @@ void renderScene(void) {
     triangles = drawCone(1,2,20,3);
 
     drawFigure(triangles,1,1,0);
+    
+    float side = 3;
+    int grid = 3;
+
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true)); 
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
+    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
 
     triangles = drawSphere(2,10,10);
 
@@ -482,13 +494,13 @@ int main(int argc, char **argv) {
 	// Ler os ficheiros .3d (que devem estar com a ordem correta)
 	// Mostrar os triângulos
 
-	
 // init GLUT and the window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(width,height);
 	glutCreateWindow("ProjetoCG");
+    glPolygonMode(GL_FRONT, GL_LINE);
 		
 // Required callback registry 
 	glutDisplayFunc(renderScene);
