@@ -135,30 +135,40 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
     return figure;
 }
 
-Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
-    float alpha = (2*M_PI) / numSlices;
+list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
+    float alpha = M_PI / numSlices;
     list<Triangle> figure {};
 
-    for(int i = 0; i < numSlices; i++){
+    for(int i = 0; i < 2*numSlices; i++){
         
         //base do cone
         Point p1(0, 0, 0);
-        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t1 = new Triangle(p1, p2, p3);
+        Triangle t1(p1, p2, p3);
 
-        figure.push_back(t);
+        figure.push_back(t1);
 
         //resto do cone
         Point p4(0,height,0);
-        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p6(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p5(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t2 = new Triangle(p4, p5, p6);
+        Triangle t2(p4, p5, p6);
 
-        figure.push_back(t);
+        figure.push_back(t2);
     }
+    /*alpha = M_PI/4;
+
+    Point p1(0, 0, 0);
+    Point p3(sin(alpha*2)*radius,0,cos(alpha*2)*radius);
+    Point p2(sin(alpha)*radius,0,cos(alpha)*radius);
+
+    Triangle t(p1,p2,p3);
+    
+    figure.push_back(t);*/
+
     return figure;
 }
 
@@ -280,17 +290,13 @@ void renderScene(void) {
 
     list<Triangle> triangles{};
 
-    int side = 3;
-    int grid = 3;
+    triangles = drawCone(1,2,20,3);
 
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true));
+    drawFigure(triangles,1,1,0);
 
-    drawFigure(triangles, 1, 1, 0);
+    triangles = drawSphere(2,10,10);
+
+    drawFigure(triangles,1,1,0);
 
 	// End of frame
 	glutSwapBuffers();

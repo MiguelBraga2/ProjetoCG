@@ -132,7 +132,7 @@ Triangle* generateSphere(float radius, int numSlices, int numStacks){
     return new Triangle();
 }
 
-Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
+list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
     float alpha = (2*M_PI) / numSlices;
     list<Triangle> figure {};
 
@@ -140,21 +140,21 @@ Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
         
         //base do cone
         Point p1(0, 0, 0);
-        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t1 = new Triangle(p1, p2, p3);
+        Triangle t1(p1, p2, p3);
 
-        figure.push_back(t);
+        figure.push_back(t1);
 
         //resto do cone
         Point p4(0,height,0);
-        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t2 = new Triangle(p4, p5, p6);
+        Triangle t2(p4, p5, p6);
 
-        figure.push_back(t);
+        figure.push_back(t2);
     }
     return figure;
 }
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
 
             list<Triangle> triangles{};
 
-            triangles = drawCone(radius, height, numSlices, numStacks)
+            triangles = drawCone(radius, height, numSlices, numStacks);
 
             write_triangles(argv[6], triangles);
         }
