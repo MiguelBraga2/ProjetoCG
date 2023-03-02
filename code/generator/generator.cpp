@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <fstream>
-#include "point.hpp"
-#include "triangle.hpp"
 #include <list>
+#include "../shared/point.hpp"
+#include "../shared/triangle.hpp"
 
 using namespace std;
 
@@ -194,10 +194,8 @@ int main(int argc, char** argv)
         }       
 
     }
-    else if (strcmp(argv[1], "plane") == 0)
-    {
-        if (argc == 5)
-        {
+    else if (strcmp(argv[1], "plane") == 0) {
+        if (argc == 5) {
             float length = atof(argv[2]);
             int grid = atoi(argv[3]);
 
