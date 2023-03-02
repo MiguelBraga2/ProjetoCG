@@ -5,6 +5,7 @@
 #include <fstream>
 #include "point.hpp"
 #include "triangle.hpp"
+#include <list>
 
 using namespace std;
 
@@ -18,17 +19,17 @@ using namespace std;
  * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
  * @return a list of generated triangles
  */
-Triangle* generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
-    int numSquares = grid*grid;
-    Triangle* figure = new Triangle[numSquares*2]; // each smaller square has 2 triangles
-    float smallerSide = length/grid; // side of each of the smaller squares
+list<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
+    int numSquares = grid*grid; // each smaller square has 2 triangles
+    float smallerSide = length / grid; // side of each of the smaller squares
+    list<Triangle> triangles{}; 
     Point base (initial.getX(), initial.getY(), initial.getZ());
 
     for(int i=0; i<numSquares; i++) {
         // Generate the 4 points for the 2 triangles
         Point p1(base.getX(), base.getY(), base.getZ());
         Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
-        Point* p2, *p3;
+        Point *p2, *p3;
 
         // Generate the other points of the triangles, depending on the direction of the plane
         if (direction.getX() == 0){
@@ -56,8 +57,8 @@ Triangle* generatePlane(float length, int grid, Point direction, Point initial, 
         }
 
         // Add the triangles to the array
-        figure[i*2] = *t1;
-        figure[i*2+1] = *t2;
+        triangles.push_back(*t1);
+        triangles.push_back(*t2);
 
         // Move the base point
         if (direction.getX() == 0){
@@ -83,10 +84,10 @@ Triangle* generatePlane(float length, int grid, Point direction, Point initial, 
         }
     }
 
-    return figure;
+    return triangles;
 }
 
-void write_triangles(string fileName, int numTriangle, Triangle* list) 
+void write_triangles(string fileName, list<Triangle> triangles) 
 {
     ofstream file("../" + fileName, ios::out | ios::binary);
     if (!file)
@@ -94,12 +95,13 @@ void write_triangles(string fileName, int numTriangle, Triangle* list)
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
     else
-    {
-        file.write((char*) &numTriangle, sizeof(int));
+    {   
+        int size = triangles.size();
+        file.write((char*) &size, sizeof(int));
 
-        for (int i = 0; i < numTriangle; i++)
+        for (auto it = triangles.begin(); it != triangles.end(); ++it)
         {
-            file.write((char*)&list[i], sizeof(Triangle));
+            file.write((char*) &(*it), sizeof(Triangle));
         }
     }
 }
@@ -132,8 +134,9 @@ int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
     {
-        if (argc == 6) {
-            int radius = atoi(argv[2]);
+        if (argc == 6) 
+        {
+            /*int radius = atoi(argv[2]);
             int slices = atoi(argv[3]);
             int stacks = atoi(argv[4]);
             char* file = argv[5];
@@ -143,9 +146,10 @@ int main(int argc, char** argv)
             for(int i=0; i<sizeof(list)/sizeof(Triangle); i++)
             {
                 cout << list[i].toString() << endl;
-            }
+            }*/
         }
-        else {
+        else 
+        {
             cout << "Número de argumentos inválido";
         }
     }
@@ -170,42 +174,40 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "box") == 0)
     {
-        /*if (argc == 5){
-            int side = atoi(argv[2]);
+        if (argc == 5)
+        {
+            float side = atof(argv[2]);
             int grid = atoi(argv[3]); 
-            char* file = argv[4];
+            list<Triangle> triangles{};
 
-            cout << "Lado: " << side << endl;
-            cout << "Grid: " << grid << endl;
-            cout << "File: " << file << endl;
+            triangles.merge(generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
+            triangles.merge(generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
+            triangles.merge(generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false));
+            triangles.merge(generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true));
+            triangles.merge(generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false));
+            triangles.merge(generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true));
+            write_triangles(argv[4], triangles);
         }
-        else {
+        else 
+        {
             cout << "Número de argumentos inválido";
-        }        
+        }       
 
-        // length: 2
-        // d = grid (each side is divided in a grid): 3
-        // file: 4
-        // numero de vertices -> 6 lados -> d*d *2 vertices por lado
-
-        cout << "Cubo";
-        */
     }
     else if (strcmp(argv[1], "plane") == 0)
     {
         if (argc == 5)
         {
             float length = atof(argv[2]);
-            int grid = atoi(argv[3]);             
+            int grid = atoi(argv[3]);
 
-            Triangle* list = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false);
-            write_triangles(argv[4], grid * grid * 2, list);
+            list<Triangle> triangles = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false);
+            write_triangles(argv[4], triangles);
 
         }
-        else 
+        else
         {
             cout << "Figura desconhecida";
         }
-
-
+    }
 }
