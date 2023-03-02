@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <iostream>
 #include <fstream>
@@ -130,6 +132,33 @@ Triangle* generateSphere(float radius, int numSlices, int numStacks){
     return new Triangle();
 }
 
+Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
+    float alpha = (2*M_PI) / numSlices;
+    list<Triangle> figure {};
+
+    for(int i = 0; i < numSlices; i++){
+        
+        //base do cone
+        Point p1(0, 0, 0);
+        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
+        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+
+        Triangle t1 = new Triangle(p1, p2, p3);
+
+        figure.push_back(t);
+
+        //resto do cone
+        Point p4(0,height,0);
+        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
+        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+
+        Triangle t2 = new Triangle(p4, p5, p6);
+
+        figure.push_back(t);
+    }
+    return figure;
+}
+
 int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
@@ -155,22 +184,23 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "cone") == 0) 
     {
-        /*if (argc == 7){
-            int radius = atoi(argv[2]);
-            int height = atoi(argv[3]);
-            int slices = atoi(argv[4]);
-            int stacks = atoi(argv[5]);
-            char* file = argv[5];
+        if (argc == 7)
+        {
+            float radius = atof(argv[2]);
+            float height = atof(argv[3]);
+            int numSlices = atoi(argv[4]);
+            int numStacks = atoi(argv[5]);
 
-            cout << "Raio: " << radius << endl;
-            cout << "Altura: " << height << endl;
-            cout << "Slices: " << slices << endl;
-            cout << "Stacks: " << stacks << endl;
-            cout << "File: " << file << endl;
+            list<Triangle> triangles{};
+
+            triangles = drawCone(radius, height, numSlices, numStacks)
+
+            write_triangles(argv[6], triangles);
         }
-        else {
+        else 
+        {
             cout << "Número de argumentos inválido";
-        }*/
+        }   
     }
     else if (strcmp(argv[1], "box") == 0)
     {

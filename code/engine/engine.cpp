@@ -138,6 +138,33 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
     return figure;
 }
 
+Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
+    float alpha = (2*M_PI) / numSlices;
+    list<Triangle> figure {};
+
+    for(int i = 0; i < numSlices; i++){
+        
+        //base do cone
+        Point p1(0, 0, 0);
+        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
+        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+
+        Triangle t1 = new Triangle(p1, p2, p3);
+
+        figure.push_back(t);
+
+        //resto do cone
+        Point p4(0,height,0);
+        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
+        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+
+        Triangle t2 = new Triangle(p4, p5, p6);
+
+        figure.push_back(t);
+    }
+    return figure;
+}
+
 /**
  * Generates a group of triangles that combine into a grid, making a square (plane) of given length
  * @param length the length of the larger square
@@ -338,6 +365,7 @@ void special_keyboard(int key_code, int x, int y){
 
     updateCamera();
 }
+
 
 /*
 void mouse_function(int x, int y){
