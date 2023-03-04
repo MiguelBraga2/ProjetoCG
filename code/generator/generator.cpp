@@ -89,6 +89,57 @@ list<Triangle> generatePlane(float length, int grid, Point direction, Point init
     return triangles;
 }
 
+list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks) {
+    list<Triangle> figure{};
+    double alphaDelta = (2 * M_PI) / numSlices;
+    double stackHeight = height / numStacks;
+    double factor = height / radius;
+
+    for (int i = 0; i < numSlices; i++) {
+        double alpha = i * alphaDelta;
+        float x1 = radius * sin(alpha);
+        float x2 = radius * sin(alpha + alphaDelta);
+        float z1 = radius * cos(alpha);
+        float z2 = radius * cos(alpha + alphaDelta);
+
+        Point p1(0, 0, 0);
+        Point p2(x2, 0, z2);
+        Point p3(x1, 0, z1);
+        Triangle t1(p1, p2, p3);
+        figure.push_back(t1);
+
+        for (int j = 0; j < numStacks; j++) {
+            double current_radius = (height - j * stackHeight) / factor;
+            double next_radius = (height - (j + 1) * stackHeight) / factor;
+
+            float x3 = current_radius * sin(alpha);
+            float z3 = current_radius * cos(alpha);
+            float x4 = current_radius * sin(alpha + alphaDelta);
+            float z4 = current_radius * cos(alpha + alphaDelta);
+            float x5 = next_radius * sin(alpha);
+            float z5 = next_radius * cos(alpha);
+            float x6 = next_radius * sin(alpha + alphaDelta);
+            float z6 = next_radius * cos(alpha + alphaDelta);
+
+            Point p4(x3, stackHeight * j, z3);
+            Point p5(x4, stackHeight * j, z4);
+            Point p6(x5, stackHeight * (j + 1), z5);
+            Point p7(x6, stackHeight * (j + 1), z6);
+
+            Triangle t2(p4, p5, p6);
+            figure.push_back(t2);
+            if (next_radius != 0) {
+                Triangle t3(p5, p7, p6);
+                figure.push_back(t3);
+            }
+        }
+    }
+
+    return figure;
+}
+
+
+
 void write_triangles(string fileName, list<Triangle> triangles) 
 {
     ofstream file("../" + fileName, ios::out | ios::binary);
@@ -132,33 +183,6 @@ Triangle* generateSphere(float radius, int numSlices, int numStacks){
     return new Triangle();
 }
 
-list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
-    float alpha = (2*M_PI) / numSlices;
-    list<Triangle> figure {};
-
-    for(int i = 0; i < numSlices; i++){
-        
-        //base do cone
-        Point p1(0, 0, 0);
-        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
-        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
-
-        Triangle t1(p1, p2, p3);
-
-        figure.push_back(t1);
-
-        //resto do cone
-        Point p4(0,height,0);
-        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
-        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
-
-        Triangle t2(p4, p5, p6);
-
-        figure.push_back(t2);
-    }
-    return figure;
-}
-
 int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
@@ -192,9 +216,7 @@ int main(int argc, char** argv)
             int numStacks = atoi(argv[5]);
 
             list<Triangle> triangles{};
-
             triangles = drawCone(radius, height, numSlices, numStacks);
-
             write_triangles(argv[6], triangles);
         }
         else 
