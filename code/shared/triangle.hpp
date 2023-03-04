@@ -9,16 +9,15 @@ using namespace std;
 class Triangle
 {
 private:
-    Point p1;
-    Point p2;
-    Point p3;
+    int indP1;
+    int indP2;
+    int indP3;
 
 public:
-    Triangle();
-    Triangle(Point p1, Point p2, Point p3);
-    Point getP1();
-    Point getP2();
-    Point getP3();
+    Triangle(int indP1, int indP2, int indP3);
+    int getIndP1();
+    int getIndP2();
+    int getIndP3();
     string toString();
 };
 

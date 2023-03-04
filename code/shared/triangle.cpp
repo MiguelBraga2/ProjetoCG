@@ -1,40 +1,33 @@
 #include<iostream>
+#include <string>
 using namespace std;
 
 #include "triangle.hpp"
 #include "point.hpp"
 
-Triangle::Triangle()
+Triangle::Triangle(int indP1, int indP2, int indP3)
 {
-    this->p1 = Point();
-    this->p2 = Point();
-    this->p3 = Point();
-
+    this->indP1 = indP1;
+    this->indP2 = indP2;
+    this->indP3 = indP3;
 }
 
-Triangle::Triangle(Point p1, Point p2, Point p3)
-{
-    this->p1 = p1;
-    this->p2 = p2;
-    this->p3 = p3;
-}
-
-Point Triangle::getP1() 
+int Triangle::getIndP1() 
 { 
-    return p1; 
+    return this->indP1;
 };
 
-Point Triangle::getP2() 
+int Triangle::getIndP2() 
 { 
-    return p2;
+    return this->indP2;
 };
 
-Point Triangle::getP3() 
+int Triangle::getIndP3() 
 {
-    return p3; 
+    return this->indP3; 
 };
 
 
 string Triangle::toString() {
-    return "P1:" + this->p1.toString() + "\nP2: " + this->p2.toString() + "\nP3: " + this->p3.toString();
+    return to_string(this->indP1) + " " + to_string(this->indP2) + " " + to_string(this->indP3);
 }

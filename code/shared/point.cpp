@@ -3,13 +3,6 @@
 #include <string>
 using namespace std;
 
-Point::Point() 
-{
-    this->x = 0;
-    this->y = 0;
-    this->z = 0;
-}
-
 Point::Point(float x, float y, float z)
 {
     this->x = x;
@@ -46,5 +39,5 @@ void Point::setZ(float z) {
 
 string Point::toString()
 {
-    return "(" + to_string(this->x) + ", " + to_string(this->y) + ", " + to_string(this->z) + ")";
+    return to_string(this->x) + " " + to_string(this->y) + " " + to_string(this->z);
 }

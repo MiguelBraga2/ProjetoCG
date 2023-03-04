@@ -5,11 +5,15 @@
 
 #include <iostream>
 #include <fstream>
-#include <list>
+#include <vector>
+#include <map>
+#include <string>
+#include <algorithm>
 #include "../shared/point.hpp"
 #include "../shared/triangle.hpp"
 
 using namespace std;
+
 
 /**
  * Generates a group of triangles that combine into a grid, making a square (plane) of given length
@@ -21,17 +25,32 @@ using namespace std;
  * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
  * @return a list of generated triangles
  */
-list<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
+vector<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, map<string, int> *indexes, int *index){
     int numSquares = grid*grid; // each smaller square has 2 triangles
     float smallerSide = length / grid; // side of each of the smaller squares
-    list<Triangle> triangles{}; 
+    
+    vector<Triangle> triangles{}; 
+    
     Point base (initial.getX(), initial.getY(), initial.getZ());
+
+    (*indexes)[base.toString()] = (*index);
+    (*index)++;
 
     for(int i=0; i<numSquares; i++) {
         // Generate the 4 points for the 2 triangles
         Point p1(base.getX(), base.getY(), base.getZ());
         Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
         Point *p2, *p3;
+
+        if ((*indexes).count(p1.toString()) == 0) {
+            (*indexes)[p1.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p4.toString()) == 0) {
+            (*indexes)[p4.toString()] = (*index);
+            (*index)++;
+        }
+        
 
         // Generate the other points of the triangles, depending on the direction of the plane
         if (direction.getX() == 0){
@@ -47,15 +66,24 @@ list<Triangle> generatePlane(float length, int grid, Point direction, Point init
             p3 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
         }
 
+        if ((*indexes).count((*p2).toString()) == 0) {
+            (*indexes)[(*p2).toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count((*p3).toString()) == 0) {
+            (*indexes)[(*p3).toString()] = (*index);
+            (*index)++;
+        }
+
         // Generate the triangles
         Triangle* t1, *t2;
         if (clockWiseDir == false){
-            t1 = new Triangle(p1, p4, *p2);
-            t2 = new Triangle(p1, *p3, p4);
+            t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p2).toString()]);
+            t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p3).toString()], (*indexes)[p4.toString()]);
         }
         else {
-            t1 = new Triangle(p1, *p2, p4);
-            t2 = new Triangle(p1, p4, *p3);
+            t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p2).toString()], (*indexes)[p4.toString()]);
+            t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p3).toString()]);
         }
 
         // Add the triangles to the array
@@ -89,8 +117,8 @@ list<Triangle> generatePlane(float length, int grid, Point direction, Point init
     return triangles;
 }
 
-list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks) {
-    list<Triangle> figure{};
+vector<Triangle> drawCone(float radius, float height, int numSlices, int numStacks, map<string, int> *indexes, int *index) {
+    vector<Triangle> figure{};
     double alphaDelta = (2 * M_PI) / numSlices;
     double stackHeight = height / numStacks;
     double factor = height / radius;
@@ -105,7 +133,20 @@ list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks
         Point p1(0, 0, 0);
         Point p2(x2, 0, z2);
         Point p3(x1, 0, z1);
-        Triangle t1(p1, p2, p3);
+        if ((*indexes).count(p1.toString()) == 0) {
+            (*indexes)[p1.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p2.toString()) == 0) {
+            (*indexes)[p2.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p3.toString()) == 0) {
+            (*indexes)[p3.toString()] = (*index);
+            (*index)++;
+        }
+
+        Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
         figure.push_back(t1);
 
         for (int j = 0; j < numStacks; j++) {
@@ -126,10 +167,28 @@ list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks
             Point p6(x5, stackHeight * (j + 1), z5);
             Point p7(x6, stackHeight * (j + 1), z6);
 
-            Triangle t2(p4, p5, p6);
+            if ((*indexes).count(p4.toString()) == 0) {
+                (*indexes)[p4.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p5.toString()) == 0) {
+                (*indexes)[p5.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p6.toString()) == 0) {
+                (*indexes)[p6.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p7.toString()) == 0) {
+                (*indexes)[p7.toString()] = (*index);
+                (*index)++;
+            }
+
+
+            Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
             figure.push_back(t2);
             if (next_radius != 0) {
-                Triangle t3(p5, p7, p6);
+                Triangle t3((*indexes)[p5.toString()], (*indexes)[p7.toString()], (*indexes)[p6.toString()]);
                 figure.push_back(t3);
             }
         }
@@ -139,22 +198,35 @@ list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks
 }
 
 
-
-void write_triangles(string fileName, list<Triangle> triangles) 
+bool cmp(pair<string, int> a, pair<string, int> b)
 {
-    ofstream file("../" + fileName, ios::out | ios::binary);
+    return a.second < b.second;
+}
+
+
+void write_triangles(string fileName, map<string, int> indexes, vector<Triangle> triangles) // recebe lista de pontos e os triangulos 
+{
+
+    vector<pair<string, int> > items;
+    for (auto it : indexes) {
+        items.push_back(it);
+    }
+    sort(items.begin(), items.end(), cmp);
+
+    ofstream file("../" + fileName);
     if (!file)
     {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
     else
     {   
-        int size = triangles.size();
-        file.write((char*) &size, sizeof(int));
+        for (auto it : items) {
+            file << "v " << it.first << endl;
+        }
 
         for (auto it = triangles.begin(); it != triangles.end(); ++it)
         {
-            file.write((char*) &(*it), sizeof(Triangle));
+            file << "f " << (*it).getIndP1() << " " << (*it).getIndP2() << " " << (*it).getIndP3() << endl;
         }
     }
 }
@@ -168,22 +240,35 @@ void write_triangles(string fileName, list<Triangle> triangles)
  * @param numStacks horizontal divisions of the sphere
  * @return
  */
-list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
+vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<string, int>* indexes, int* index){
     float alpha = M_PI/numSlices; // Defines the position around the y axis
     float initialBeta = M_PI/numStacks; // Defines the height
     float beta = -M_PI/2 + (numStacks-1)* initialBeta;
-    list<Triangle> figure {};
-    int index=0;
+    vector<Triangle> figure {};
+    int ind=0;
 
-    //glColor3f(1.0f, 1.0f, 0.0f);
     for (int i=0; i<numSlices*2; i++){
         float nextAlpha = (i+1)*alpha;
         Point p1(0,radius, 0);
         Point p2(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
         Point p3(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
-        Triangle t(p1,p2,p3);
+
+        if ((*indexes).count(p1.toString()) == 0) {
+            (*indexes)[p1.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p2.toString()) == 0) {
+            (*indexes)[p2.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p3.toString()) == 0) {
+            (*indexes)[p3.toString()] = (*index);
+            (*index)++;
+        }
+
+        Triangle t((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
         figure.push_back(t);
-        index++;
+        ind++;
     }
 
     for(int i=0; i<numStacks-2; i++){ // Draw each of the vertical divisions
@@ -198,14 +283,42 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
             Point p1(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
             Point p2(radius*cos(currentBeta)*sin(currentAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
             Point p3(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
-            Triangle t(p1,p2,p3);
 
+            if ((*indexes).count(p1.toString()) == 0) {
+                (*indexes)[p1.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p2.toString()) == 0) {
+                (*indexes)[p2.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p3.toString()) == 0) {
+                (*indexes)[p3.toString()] = (*index);
+                (*index)++;
+            }
+
+            Triangle t((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
             figure.push_back(t);
 
             Point p4(radius*cos(nextBeta)*sin(nextAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
             Point p5(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
             Point p6(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
-            Triangle t2(p4,p5,p6);
+
+
+            if ((*indexes).count(p4.toString()) == 0) {
+                (*indexes)[p4.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p5.toString()) == 0) {
+                (*indexes)[p5.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p6.toString()) == 0) {
+                (*indexes)[p6.toString()] = (*index);
+                (*index)++;
+            }
+
+            Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
 
             figure.push_back(t2);
         }
@@ -219,7 +332,20 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
         Point p1(0,-radius, 0);
         Point p2(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
         Point p3(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
-        Triangle t(p1,p2,p3);
+
+        if ((*indexes).count(p1.toString()) == 0) {
+            (*indexes)[p1.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p2.toString()) == 0) {
+            (*indexes)[p2.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p3.toString()) == 0) {
+            (*indexes)[p3.toString()] = (*index);
+            (*index)++;
+        }
+        Triangle t((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
 
         figure.push_back(t);
     }
@@ -259,9 +385,10 @@ int main(int argc, char** argv)
             int numSlices = atoi(argv[4]);
             int numStacks = atoi(argv[5]);
 
-            list<Triangle> triangles{};
-            triangles = drawCone(radius, height, numSlices, numStacks);
-            write_triangles(argv[6], triangles);
+            map<string, int> indexes;
+            int index = 0;
+            vector<Triangle> triangles = drawCone(radius, height, numSlices, numStacks, &indexes, &index);
+            write_triangles(argv[6], indexes, triangles);
         }
         else 
         {
@@ -273,16 +400,24 @@ int main(int argc, char** argv)
         if (argc == 5)
         {
             float side = atof(argv[2]);
-            int grid = atoi(argv[3]); 
-            list<Triangle> triangles{};
+            int grid = atoi(argv[3]);
 
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true));
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true));
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
-            triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
-            write_triangles(argv[4], triangles);
+            map<string, int> indexes;
+            int index = 0;
+
+            vector<Triangle> triangles = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
+            vector<Triangle> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+
+            write_triangles(argv[4], indexes, triangles);
         }
         else 
         {
@@ -295,8 +430,11 @@ int main(int argc, char** argv)
             float length = atof(argv[2]);
             int grid = atoi(argv[3]);
 
-            list<Triangle> triangles = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false);
-            write_triangles(argv[4], triangles);
+            map<string, int> indexes;
+            int index = 0;
+
+            vector<Triangle> triangles = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
+            write_triangles(argv[4], indexes, triangles);
 
         }
         else
