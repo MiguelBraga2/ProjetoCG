@@ -182,41 +182,70 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
 }
 
 list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
-    float alpha = M_PI / numSlices;
-    list<Triangle> figure {};
+    list<Triangle> figure{};
+    double alphaDelta = (2 * M_PI) / numSlices;
+    double stackHeight = height / numStacks;
+    double factor = height / radius;
+    glColor3f(1.0, 1.0, 1.0);
 
-    for(int i = 0; i < 2*numSlices; i++){
-        
-        //base do cone
+    for (int i = 0; i < numSlices; i++) {
+        double alpha = i * alphaDelta;
+        float x1 = radius * sin(alpha);
+        float x2 = radius * sin(alpha + alphaDelta);
+        float z1 = radius * cos(alpha);
+        float z2 = radius * cos(alpha + alphaDelta);
+
+        glBegin(GL_TRIANGLES);
+        glVertex3f(0, 0, 0);
+        glVertex3f(x2, 0, z2);
+        glVertex3f(x1, 0, z1);
+        glEnd();
+
         Point p1(0, 0, 0);
-        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
-        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
+        Point p2(x2, 0, z2);
+        Point p3(x1, 0, z1);
+        Triangle t1(p1, p2, p3);
+        figure.push_back(t1);
+        
+        for (int j = 0; j < numStacks; j++) { 
+            double current_radius = (height - j * stackHeight) / factor;
+            double next_radius = (height - (j + 1) * stackHeight) / factor;
 
-        Triangle* t1 = new Triangle(p1, p2, p3);
+            float x3 = current_radius * sin(alpha);
+            float z3 = current_radius * cos(alpha);
+            float x4 = current_radius * sin(alpha + alphaDelta);
+            float z4 = current_radius * cos(alpha + alphaDelta);
+            float x5 = next_radius * sin(alpha);
+            float z5 = next_radius * cos(alpha);
+            float x6 = next_radius * sin(alpha + alphaDelta);
+            float z6 = next_radius * cos(alpha + alphaDelta);
+ 
+            Point p4(x3, stackHeight * j, z3);
+            Point p5(x4, stackHeight * j, z4);
+            Point p6(x5, stackHeight * (j + 1), z5);
+            Point p7(x6, stackHeight * (j + 1), z6);
 
-        figure.push_back(*t1);
+            glBegin(GL_TRIANGLES);
+            glVertex3f(x3, stackHeight * j, z3);
+            glVertex3f(x4, stackHeight * j, z4);
+            glVertex3f(x5, stackHeight * (j + 1), z5);
+            glEnd();
 
-        //resto do cone
-        Point p4(0,height,0);
-        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
-        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle* t2 = new Triangle(p4, p5, p6);
+            Triangle t2(p4, p5, p6);
+            figure.push_back(t2);
+            if (next_radius!=0) {
+                glBegin(GL_TRIANGLES);
+                glVertex3f(x4, stackHeight * j, z4);
+                glVertex3f(x6, stackHeight * (j + 1), z6);
+                glVertex3f(x5, stackHeight * (j + 1), z5);
+                glEnd();
 
-        figure.push_back(*t2);
-
-        //resto do cone
-
+                Triangle t3(p5, p6, p7);
+                figure.push_back(t3);
+            }
+        }
     }
-    /*alpha = M_PI/4;
-
-    Point p1(0, 0, 0);
-    Point p3(sin(alpha*2)*radius,0,cos(alpha*2)*radius);
-    Point p2(sin(alpha)*radius,0,cos(alpha)*radius);
-
-    Triangle t(p1,p2,p3);
-    
-    figure.push_back(t);*/
 
     return figure;
 }
@@ -331,38 +360,9 @@ void renderScene(void) {
 // put the geometric transformations here
 	
 
-// put pyramid drawing instructions here
-    //glutWireTeapot(2);
-	//glutWireSphere(1, 10, 10);
-    //drawSphere(2, 18,22);
-
-    list<Triangle> triangles{};
-
-    triangles = drawCone(1,2,20,3);
-
-    //drawFigure(triangles,1,1,0);
-    
-    float side = 3;
-    int grid = 3;
-
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true)); 
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
-
-    //drawFigure(triangles, 1, 1, 0);
-
-    list<Point> points {};
-
-    //list<Triangle> figure = drawSphere(2, 4,5);
-    list<Point> triang {};
-    points = reader("teste.txt", &triang);
-    drawFigure(triang, points, 1, 1, 0);
-    triangles = drawSphere(2,10,10);
-
-    //drawFigure(triangles,1,1,0);
+// put the drawing instructions here
+  
+    drawCone(1, 2, 64, 48);
 
 	// End of frame
 	glutSwapBuffers();
