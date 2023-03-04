@@ -45,7 +45,7 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
 
     Point v3 (cross_P[0], cross_P[1], cross_P[2]);
 
-    if (v3.getX() == abs(normal_vector.getX()+0.1) || v3.getX() == abs(normal_vector.getX()-0.1)) && (v3.getY() == abs(normal_vector.getY()+0.1) || (v3.getY() == abs(normal_vector.getY()-0.1))) && (v3.getZ() == abs(normal_vector.getZ()+0.1) || (v3.getZ() == abs(normal_vector.getZ()-0.1))){
+    /*if (v3.getX() == abs(normal_vector.getX()+0.1) || v3.getX() == abs(normal_vector.getX()-0.1)) && (v3.getY() == abs(normal_vector.getY()+0.1) || (v3.getY() == abs(normal_vector.getY()-0.1))) && (v3.getZ() == abs(normal_vector.getZ()+0.1) || (v3.getZ() == abs(normal_vector.getZ()-0.1))){
         glColor3f(red, green, blue);
 
         glBegin(GL_TRIANGLES);
@@ -53,14 +53,14 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
         glVertex3f(p3.getX(), p3.getY(), p3.getZ());
         glEnd();
-    }
-    else if (v3.getX() == -abs(normal_vector.getX()+0.1) || v3.getX() == -abs(normal_vector.getX()-0.1)) && (v3.getY() == -abs(normal_vector.getY()+0.1) || (v3.getY() == -abs(normal_vector.getY()-0.1))) && (v3.getZ() == -abs(normal_vector.getZ()+0.1) || (v3.getZ() == -abs(normal_vector.getZ()-0.1))){
+    }*/
+    /*else if (v3.getX() == -abs(normal_vector.getX()+0.1) || v3.getX() == -abs(normal_vector.getX()-0.1)) && (v3.getY() == -abs(normal_vector.getY()+0.1) || (v3.getY() == -abs(normal_vector.getY()-0.1))) && (v3.getZ() == -abs(normal_vector.getZ()+0.1) || (v3.getZ() == -abs(normal_vector.getZ()-0.1))){
         glBegin(GL_TRIANGLES);
         glVertex3f(p1.getX(), p1.getY(), p1.getZ());
         glVertex3f(p3.getX(), p3.getY(), p3.getZ());
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
         glEnd();
-    }
+    }*/
 
 }
 
@@ -182,10 +182,10 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
 }
 
 list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
-    float alpha = (2*M_PI) / numSlices;
+    float alpha = M_PI / numSlices;
     list<Triangle> figure {};
 
-    for(int i = 0; i < numSlices; i++){
+    for(int i = 0; i < 2*numSlices; i++){
         
         //base do cone
         Point p1(0, 0, 0);
@@ -204,7 +204,20 @@ list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks
         Triangle* t2 = new Triangle(p4, p5, p6);
 
         figure.push_back(*t2);
+
+        //resto do cone
+
     }
+    /*alpha = M_PI/4;
+
+    Point p1(0, 0, 0);
+    Point p3(sin(alpha*2)*radius,0,cos(alpha*2)*radius);
+    Point p2(sin(alpha)*radius,0,cos(alpha)*radius);
+
+    Triangle t(p1,p2,p3);
+    
+    figure.push_back(t);*/
+
     return figure;
 }
 
@@ -325,6 +338,10 @@ void renderScene(void) {
 
     list<Triangle> triangles{};
 
+    triangles = drawCone(1,2,20,3);
+
+    //drawFigure(triangles,1,1,0);
+    
     float side = 3;
     int grid = 3;
 
@@ -343,6 +360,9 @@ void renderScene(void) {
     list<Point> triang {};
     points = reader("teste.txt", &triang);
     drawFigure(triang, points, 1, 1, 0);
+    triangles = drawSphere(2,10,10);
+
+    //drawFigure(triangles,1,1,0);
 
 	// End of frame
 	glutSwapBuffers();
