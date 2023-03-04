@@ -9,6 +9,6 @@
 #include "triangle.hpp"
 
 void writer(list<Point> points, list<Point> triangles, string fileName);
-list<Point> reader(string fileName, list<Point>* triangles);
+list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals);
 
 #endif //ENGINE_PARSER_HPP
