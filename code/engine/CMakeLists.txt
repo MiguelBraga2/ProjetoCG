@@ -5,7 +5,7 @@ PROJECT(engine)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} engine.cpp reader.cpp ../shared/point.cpp ../shared/triangle.cpp)
+add_executable(${PROJECT_NAME} engine.cpp ../shared/point.cpp ../shared/triangle.cpp ../shared/Parser.hpp ../shared/Parser.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})

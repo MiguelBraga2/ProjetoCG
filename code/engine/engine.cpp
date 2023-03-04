@@ -11,6 +11,7 @@
 #include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
+#include "../shared/Parser.hpp"
 #include <list>
 
 float cameraPositionX, cameraPositionY, cameraPositionZ;
@@ -24,27 +25,69 @@ float lookDirX, lookDirY, lookDirZ;
 using namespace rapidxml;
 using namespace std;
 
-void drawTriangle(Triangle* t, float red, float green, float blue){
-    Point p1 = t->getP1();
-    Point p2 = t->getP2();
-    Point p3 = t->getP3();
-
-    glColor3f(red, green, blue);
-
-    glBegin(GL_TRIANGLES);
-    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-    glEnd();
+void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
+{
+    cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;
+    cross_P[1] = vectAZ * vectBX - vectAX * vectBZ;
+    cross_P[2] = vectAX * vectBY - vectAY * vectBX;
 }
 
-void drawFigure(list<Triangle> figure, float red, float green, float blue){
+void drawTriangle(Point normal_vector, Triangle t,  float red, float green, float blue){
+    Point p1 = t.getP1();
+    Point p2 = t.getP2();
+    Point p3 = t.getP3();
+
+    Point v1 = Point (p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ() - p1.getZ());
+    Point v2 = Point (p3.getX()-p2.getX(), p3.getY()-p2.getY(), p3.getZ() - p2.getZ());
+
+    float cross_P[3];
+    crossProduct(v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ(), cross_P);
+
+    Point v3 (cross_P[0], cross_P[1], cross_P[2]);
+
+    if (v3.getX() == abs(normal_vector.getX()+0.1) || v3.getX() == abs(normal_vector.getX()-0.1)) && (v3.getY() == abs(normal_vector.getY()+0.1) || (v3.getY() == abs(normal_vector.getY()-0.1))) && (v3.getZ() == abs(normal_vector.getZ()+0.1) || (v3.getZ() == abs(normal_vector.getZ()-0.1))){
+        glColor3f(red, green, blue);
+
+        glBegin(GL_TRIANGLES);
+        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+        glEnd();
+    }
+    else if (v3.getX() == -abs(normal_vector.getX()+0.1) || v3.getX() == -abs(normal_vector.getX()-0.1)) && (v3.getY() == -abs(normal_vector.getY()+0.1) || (v3.getY() == -abs(normal_vector.getY()-0.1))) && (v3.getZ() == -abs(normal_vector.getZ()+0.1) || (v3.getZ() == -abs(normal_vector.getZ()-0.1))){
+        glBegin(GL_TRIANGLES);
+        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+        glEnd();
+    }
+
+}
+
+
+void drawFigure(list<Point> triangles, list<Point> points, float red, float green, float blue){
     int index = 0;
-    std::list<Triangle>::iterator it;
-    for (it = figure.begin(); it != figure.end(); ++it){
-        Point p1 = it->getP1();
-        Point p2 = it->getP2();
-        Point p3 = it->getP3();
+    std::list<Point>::iterator it;
+    for (it = triangles.begin(); it != triangles.end(); ++it){
+        // Indices
+        float i1 = it->getX();
+        float i2 = it->getY();
+        float i3 = it->getZ();
+
+        auto it = points.begin();
+        advance(it, i1-1);
+
+        Point p1 = *it;
+
+        it = points.begin();
+        advance(it, i2-1);
+
+        Point p2 = *it;
+
+        it = points.begin();
+        advance(it, i3-1);
+
+        Point p3 = *it;
 
         glColor3f(red, green, blue);
         glBegin(GL_TRIANGLES);
@@ -138,7 +181,7 @@ list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
     return figure;
 }
 
-Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
+list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
     float alpha = (2*M_PI) / numSlices;
     list<Triangle> figure {};
 
@@ -146,21 +189,21 @@ Triangle* drawCone(float radius, float height, int numSlices, int numStacks){
         
         //base do cone
         Point p1(0, 0, 0);
-        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p2(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p3(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t1 = new Triangle(p1, p2, p3);
+        Triangle* t1 = new Triangle(p1, p2, p3);
 
-        figure.push_back(t);
+        figure.push_back(*t1);
 
         //resto do cone
         Point p4(0,height,0);
-        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius))
-        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius)
+        Point p5(sin(alpha*(i+1))*radius,0,cos(alpha*(i+1)*radius));
+        Point p6(sin(alpha*i)*radius,0,cos(alpha*i)*radius);
 
-        Triangle t2 = new Triangle(p4, p5, p6);
+        Triangle* t2 = new Triangle(p4, p5, p6);
 
-        figure.push_back(t);
+        figure.push_back(*t2);
     }
     return figure;
 }
@@ -285,24 +328,24 @@ void renderScene(void) {
     float side = 3;
     int grid = 3;
 
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
     triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
     triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true)); 
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
 
-    drawFigure(triangles, 1, 1, 0);
+    //drawFigure(triangles, 1, 1, 0);
+
+    list<Point> points {};
+
+    //list<Triangle> figure = drawSphere(2, 4,5);
+    list<Point> triang {};
+    points = reader("teste.txt", &triang);
+    drawFigure(triang, points, 1, 1, 0);
 
 	// End of frame
 	glutSwapBuffers();
-}
-
-void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
-{
-    cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;
-    cross_P[1] = vectAZ * vectBX - vectAX * vectBZ;
-    cross_P[2] = vectAX * vectBY - vectAY * vectBX;
 }
 
 // write function to process keyboard events
@@ -495,7 +538,6 @@ int main(int argc, char **argv) {
     glutSpecialFunc(special_keyboard);
     glutKeyboardFunc(keyboard_events);
     //glutPassiveMotionFunc(mouse_function);
-
 
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
