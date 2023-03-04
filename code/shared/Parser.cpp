@@ -68,7 +68,9 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
                 else if (match[1].str() == "f"){
                     Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
                     triangles->push_back(p);
-                    normal_indexes->push_back(stoi(match[3]));
+                    if (match[3].matched == true){
+                        normal_indexes->push_back(stoi(match[3]));
+                    }
                 }
                 else if (match[1].str() == "vn"){
                     Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));

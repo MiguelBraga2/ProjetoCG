@@ -36,6 +36,15 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
     Point p1 = t.getP1();
     Point p2 = t.getP2();
     Point p3 = t.getP3();
+    if (normal_vector.getX() == 0 && normal_vector.getY() == 0 && normal_vector.getZ() == 0){
+        glColor3f(red, green, blue);
+        glBegin(GL_TRIANGLES);
+        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+        glEnd();
+        return;
+    }
 
     Point v1 = Point (p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ() - p1.getZ());
     Point v2 = Point (p3.getX()-p2.getX(), p3.getY()-p2.getY(), p3.getZ() - p2.getZ());
@@ -101,14 +110,20 @@ void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, 
 
         Triangle t(p1,p2,p3);
 
-        auto itN = normal_indexes.begin();
-        advance(itN, index);
+        if (normal_indexes.size() > 0){
+            auto itN = normal_indexes.begin();
+            advance(itN, index);
 
-        auto itN2 = normals.begin();
-        advance(itN2, *itN-1);
+            auto itN2 = normals.begin();
+            advance(itN2, *itN-1);
 
-        Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
-        drawTriangle(normal, t, 1,1,0);
+            Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
+            drawTriangle(normal, t, 1,1,0);
+        }
+        else {
+            Point normal(0,0,0);
+            drawTriangle(normal, t, 1,1,0);
+        }
 
         index++;
     }
@@ -343,7 +358,7 @@ void renderScene(void) {
     list<Point> triang {};
     list<Point> normals {};
     list<int> normal_indexes {};
-    points = reader("teste.txt", &triang, &normals, &normal_indexes);
+    points = reader("classic-mug.obj", &triang, &normals, &normal_indexes);
     drawFigure(normals,triang, points, normal_indexes, 1, 1, 0);
 
     //drawFigure(triangles,1,1,0);
