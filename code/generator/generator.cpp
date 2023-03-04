@@ -121,7 +121,7 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
     vector<Triangle> figure{};
     double alphaDelta = (2 * M_PI) / numSlices;
     double stackHeight = height / numStacks;
-    double factor = height / radius;
+    double radiusDec = radius / numStacks;
 
     for (int i = 0; i < numSlices; i++) {
         double alpha = i * alphaDelta;
@@ -150,8 +150,8 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
         figure.push_back(t1);
 
         for (int j = 0; j < numStacks; j++) {
-            double current_radius = (height - j * stackHeight) / factor;
-            double next_radius = (height - (j + 1) * stackHeight) / factor;
+            double current_radius = radius - j * radiusDec;
+            double next_radius = radius - (j + 1) *radiusDec;
 
             float x3 = current_radius * sin(alpha);
             float z3 = current_radius * cos(alpha);
@@ -187,7 +187,7 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
 
             Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
             figure.push_back(t2);
-            if (next_radius != 0) {
+            if (j != numStacks - 1) {
                 Triangle t3((*indexes)[p5.toString()], (*indexes)[p7.toString()], (*indexes)[p6.toString()]);
                 figure.push_back(t3);
             }
