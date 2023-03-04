@@ -168,19 +168,63 @@ void write_triangles(string fileName, list<Triangle> triangles)
  * @param numStacks horizontal divisions of the sphere
  * @return
  */
-Triangle* generateSphere(float radius, int numSlices, int numStacks){
-    Point bottomPoint = Point (0, -radius, 0);
-    Point topPoint = Point(0, radius, 0);
-    // Generate triangles bottom-up
+list<Triangle> drawSphere(float radius, int numSlices, int numStacks){
+    float alpha = M_PI/numSlices; // Defines the position around the y axis
+    float initialBeta = M_PI/numStacks; // Defines the height
+    float beta = -M_PI/2 + (numStacks-1)* initialBeta;
+    list<Triangle> figure {};
+    int index=0;
 
-    // Generate numStacks triangles in the South Pole
-    // The vertice of all triangles is the bottom of the sphere
+    //glColor3f(1.0f, 1.0f, 0.0f);
+    for (int i=0; i<numSlices*2; i++){
+        float nextAlpha = (i+1)*alpha;
+        Point p1(0,radius, 0);
+        Point p2(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        Point p3(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        Triangle t(p1,p2,p3);
+        figure.push_back(t);
+        index++;
+    }
 
-    // Generate (numSlices-2) triangles in the middle
+    for(int i=0; i<numStacks-2; i++){ // Draw each of the vertical divisions
+        float currentBeta = -M_PI/2+(i+1)*initialBeta; // height
+        float nextBeta = -M_PI/2+(i+2)*initialBeta; // height above
 
-    // Generate numStacks triangles in the North Pole
-    // The vertice of all triangles is the top of the sphere
-    return new Triangle();
+
+        for (int j=0; j<numSlices*2; j++){
+            float currentAlpha = j*alpha;
+            float nextAlpha = (j+1)*alpha;
+
+            Point p1(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p2(radius*cos(currentBeta)*sin(currentAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
+            Point p3(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            Triangle t(p1,p2,p3);
+
+            figure.push_back(t);
+
+            Point p4(radius*cos(nextBeta)*sin(nextAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
+            Point p5(radius*cos(nextBeta)*sin(currentAlpha), radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p6(radius*cos(currentBeta)*sin(nextAlpha), radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+            Triangle t2(p4,p5,p6);
+
+            figure.push_back(t2);
+        }
+    }
+
+    beta = -M_PI/2+initialBeta;
+
+    for (int i=0; i<numSlices*2; i++){
+        float nextAlpha = (i+1)*alpha;
+
+        Point p1(0,-radius, 0);
+        Point p2(radius*cos(beta)*sin(nextAlpha), radius*sin(beta), radius*cos(nextAlpha)*cos(beta));
+        Point p3(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
+        Triangle t(p1,p2,p3);
+
+        figure.push_back(t);
+    }
+
+    return figure;
 }
 
 int main(int argc, char** argv)

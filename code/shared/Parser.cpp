@@ -22,7 +22,7 @@ bool comparator (const Point& first, const Point& second){
     return false;
 }
 
-void writer(string fileName, list<Triangle> triangles, list<Point> points){
+void writer(string fileName, list<Point> triangles, list<Point> points){
     ofstream file("../" + fileName);
     if (!file)
     {
