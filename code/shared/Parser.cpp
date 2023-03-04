@@ -43,7 +43,7 @@ void writer(list<Point> points, list<Point> triangles, string fileName){
 }
 
 // Devolve os pontos
-list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals){
+list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals, list<int> normal_indexes){
     ifstream file("../" + fileName);
     list<Point> points {};
 
@@ -54,7 +54,7 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
     else
     {
         string line = "v 1 2 3";
-        std::regex regex(R"((v|f|vn) (-?\d+\.?\d*).*? (-?\d+\.?\d*).*? (-?\d+\.?\d*).*?)");
+        std::regex regex(R"(^(v|f|vn) (-?\d+\.?\d*).*?(?:\/(\d+))? (-?\d+\.?\d*).*?(?:\/(\d+))? (-?\d+\.?\d*).*?(?:\/(\d+))?$)");
         std::smatch match;
 
         while (std::getline(file, line, '\n')) {
@@ -62,15 +62,16 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
             if (std::regex_search(line, match, regex)){
                 if (match[1].str() == "v"){
                     // Vertice
-                    Point p(stof(match[2].str()), stof(match[3].str()), stof(match[4].str()));
+                    Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
                     points.push_back(p);
                 }
                 else if (match[1].str() == "f"){
-                    Point p(stof(match[2].str()), stof(match[3].str()), stof(match[4].str()));
+                    Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
                     triangles->push_back(p);
+                    normal_indexes.push_back(stoi(match[3]));
                 }
                 else if (match[1].str() == "vn"){
-                    Point p(stof(match[2].str()), stof(match[3].str()), stof(match[4].str()));
+                    Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
                     normals->push_back(p);
                 }
             }

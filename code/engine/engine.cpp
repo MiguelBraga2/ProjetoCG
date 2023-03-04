@@ -75,7 +75,7 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
 }
 
 
-void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, float red, float green, float blue){
+void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, list<int> normal_indexes, float red, float green, float blue){
     int index = 0;
     std::list<Point>::iterator it;
     for (it = triangles.begin(); it != triangles.end(); ++it){
@@ -101,9 +101,14 @@ void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, 
 
         Triangle t(p1,p2,p3);
 
-        auto itN = normals.begin();
+        auto itN = normal_indexes.begin();
         advance(itN, index);
-        drawTriangle(*itN, t, 1,1,0);
+
+        auto itN2 = normals.begin();
+        advance(itN2, *itN);
+
+        Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
+        drawTriangle(normal, t, 1,1,0);
 
         index++;
     }
@@ -372,8 +377,9 @@ void renderScene(void) {
     //list<Triangle> figure = drawSphere(2, 4,5);
     list<Point> triang {};
     list<Point> normals {};
-    points = reader("teste.txt", &triang, &normals);
-    drawFigure(normals,triang, points, 1, 1, 0);
+    list<int> normal_indexes {};
+    points = reader("teste.txt", &triang, &normals, normal_indexes);
+    drawFigure(normals,triang, points, normal_indexes, 1, 1, 0);
 
     //drawFigure(triangles,1,1,0);
 
