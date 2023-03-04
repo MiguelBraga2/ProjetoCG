@@ -44,8 +44,14 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
     crossProduct(v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ(), cross_P);
 
     Point v3 (cross_P[0], cross_P[1], cross_P[2]);
+    float norma = sqrt(pow(cross_P[0], 2) + pow(cross_P[1], 2) + pow(cross_P[2], 2));
 
-    /*if (v3.getX() == abs(normal_vector.getX()+0.1) || v3.getX() == abs(normal_vector.getX()-0.1)) && (v3.getY() == abs(normal_vector.getY()+0.1) || (v3.getY() == abs(normal_vector.getY()-0.1))) && (v3.getZ() == abs(normal_vector.getZ()+0.1) || (v3.getZ() == abs(normal_vector.getZ()-0.1))){
+    v3.setX(v3.getX()/norma);
+    v3.setY(v3.getY()/norma);
+    v3.setZ(v3.getZ()/norma);
+
+    // Iguais
+    if (abs(v3.getX() - normal_vector.getX()) < 0.1 && abs(v3.getY() - normal_vector.getY()) < 0.1 && abs(v3.getZ() -normal_vector.getZ()) < 0.1) {
         glColor3f(red, green, blue);
 
         glBegin(GL_TRIANGLES);
@@ -53,19 +59,23 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
         glVertex3f(p3.getX(), p3.getY(), p3.getZ());
         glEnd();
-    }*/
-    /*else if (v3.getX() == -abs(normal_vector.getX()+0.1) || v3.getX() == -abs(normal_vector.getX()-0.1)) && (v3.getY() == -abs(normal_vector.getY()+0.1) || (v3.getY() == -abs(normal_vector.getY()-0.1))) && (v3.getZ() == -abs(normal_vector.getZ()+0.1) || (v3.getZ() == -abs(normal_vector.getZ()-0.1))){
+    } // Simétricos
+    else if (abs(v3.getX() + normal_vector.getX()) < 0.1 && abs(v3.getY() + normal_vector.getY()) < 0.1 && abs(v3.getZ() + normal_vector.getZ()) < 0.1) {
+        glColor3f(red, green, blue);
+
         glBegin(GL_TRIANGLES);
         glVertex3f(p1.getX(), p1.getY(), p1.getZ());
         glVertex3f(p3.getX(), p3.getY(), p3.getZ());
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
         glEnd();
-    }*/
+    }
+
+    glutPostRedisplay();
 
 }
 
 
-void drawFigure(list<Point> triangles, list<Point> points, float red, float green, float blue){
+void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, float red, float green, float blue){
     int index = 0;
     std::list<Point>::iterator it;
     for (it = triangles.begin(); it != triangles.end(); ++it){
@@ -89,12 +99,13 @@ void drawFigure(list<Point> triangles, list<Point> points, float red, float gree
 
         Point p3 = *it;
 
-        glColor3f(red, green, blue);
-        glBegin(GL_TRIANGLES);
-        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-        glEnd();
+        Triangle t(p1,p2,p3);
+
+        auto itN = normals.begin();
+        advance(itN, index);
+        drawTriangle(*itN, t, 1,1,0);
+
+        index++;
     }
 }
 
@@ -328,6 +339,8 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
 
+    glutPostRedisplay();
+
 // put the geometric transformations here
 	
 
@@ -336,9 +349,9 @@ void renderScene(void) {
 	//glutWireSphere(1, 10, 10);
     //drawSphere(2, 18,22);
 
-    list<Triangle> triangles{};
+    //list<Triangle> triangles{};
 
-    triangles = drawCone(1,2,20,3);
+    //triangles = drawCone(1,2,20,3);
 
     //drawFigure(triangles,1,1,0);
     
@@ -346,8 +359,8 @@ void renderScene(void) {
     int grid = 3;
 
     //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
-    triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true)); 
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
+    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true));
     //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
     //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
     //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
@@ -358,9 +371,9 @@ void renderScene(void) {
 
     //list<Triangle> figure = drawSphere(2, 4,5);
     list<Point> triang {};
-    points = reader("teste.txt", &triang);
-    drawFigure(triang, points, 1, 1, 0);
-    triangles = drawSphere(2,10,10);
+    list<Point> normals {};
+    points = reader("teste.txt", &triang, &normals);
+    drawFigure(normals,triang, points, 1, 1, 0);
 
     //drawFigure(triangles,1,1,0);
 

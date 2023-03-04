@@ -43,7 +43,7 @@ void writer(list<Point> points, list<Point> triangles, string fileName){
 }
 
 // Devolve os pontos
-list<Point> reader(string fileName, list<Point>* triangles){
+list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals){
     ifstream file("../" + fileName);
     list<Point> points {};
 
@@ -54,7 +54,7 @@ list<Point> reader(string fileName, list<Point>* triangles){
     else
     {
         string line = "v 1 2 3";
-        std::regex regex(R"(([vf]) (-?\d+\.?\d*).*? (-?\d+\.?\d*).*? (-?\d+\.?\d*).*?)");
+        std::regex regex(R"((v|f|vn) (-?\d+\.?\d*).*? (-?\d+\.?\d*).*? (-?\d+\.?\d*).*?)");
         std::smatch match;
 
         while (std::getline(file, line, '\n')) {
@@ -68,6 +68,10 @@ list<Point> reader(string fileName, list<Point>* triangles){
                 else if (match[1].str() == "f"){
                     Point p(stof(match[2].str()), stof(match[3].str()), stof(match[4].str()));
                     triangles->push_back(p);
+                }
+                else if (match[1].str() == "vn"){
+                    Point p(stof(match[2].str()), stof(match[3].str()), stof(match[4].str()));
+                    normals->push_back(p);
                 }
             }
         }
