@@ -22,7 +22,7 @@ bool comparator (const Point& first, const Point& second){
     return false;
 }
 
-void writer(list<Point> points, list<Point> triangles, string fileName){
+void writer(string fileName, list<Triangle> triangles, list<Point> points){
     ofstream file("../" + fileName);
     if (!file)
     {
@@ -43,7 +43,7 @@ void writer(list<Point> points, list<Point> triangles, string fileName){
 }
 
 // Devolve os pontos
-list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals, list<int> normal_indexes){
+list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals, list<int>* normal_indexes){
     ifstream file("../" + fileName);
     list<Point> points {};
 
@@ -68,7 +68,7 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
                 else if (match[1].str() == "f"){
                     Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
                     triangles->push_back(p);
-                    normal_indexes.push_back(stoi(match[3]));
+                    normal_indexes->push_back(stoi(match[3]));
                 }
                 else if (match[1].str() == "vn"){
                     Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
@@ -77,10 +77,6 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
             }
         }
 
-        for (auto it = points.begin(); it != points.end(); ++it)
-        {
-            cout << "v " << it->getX() << " " << it->getY() << " " << it->getZ() << endl;
-        }
         return points;
     }
 

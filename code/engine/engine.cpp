@@ -105,7 +105,7 @@ void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, 
         advance(itN, index);
 
         auto itN2 = normals.begin();
-        advance(itN2, *itN);
+        advance(itN2, *itN-1);
 
         Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
         drawTriangle(normal, t, 1,1,0);
@@ -402,13 +402,13 @@ void renderScene(void) {
     list<Point> triang {};
     list<Point> normals {};
     list<int> normal_indexes {};
-    points = reader("teste.txt", &triang, &normals, normal_indexes);
+    points = reader("teste.txt", &triang, &normals, &normal_indexes);
     drawFigure(normals,triang, points, normal_indexes, 1, 1, 0);
 
     //drawFigure(triangles,1,1,0);
 // put the drawing instructions here
   
-    drawCone(1, 2, 64, 48);
+    //drawCone(1, 2, 64, 48);
 
 	// End of frame
 	glutSwapBuffers();
