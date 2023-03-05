@@ -7,12 +7,13 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <list>
 #include <iostream>
 #include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
 #include "../shared/Parser.hpp"
-#include <list>
+
 
 float cameraPositionX, cameraPositionY, cameraPositionZ;
 float cameraLookAtX, cameraLookAtY, cameraLookAtZ;
@@ -21,6 +22,7 @@ float pFov, pNear, pFar;
 float width, height;
 float rotationAlpha=0, rotationBeta=0;
 float lookDirX, lookDirY, lookDirZ;
+vector<char*> primitives{};
 
 using namespace rapidxml;
 using namespace std;
@@ -42,7 +44,6 @@ void drawTriangle(Point normal_vector, Triangle t, float red, float green, float
     Point p3 = points[i3];
 
     if (normal_vector.getX() == 0 && normal_vector.getY() == 0 && normal_vector.getZ() == 0){
-        glColor3f(red, green, blue);
         glBegin(GL_TRIANGLES);
         glVertex3f(p1.getX(), p1.getY(), p1.getZ());
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
@@ -66,7 +67,6 @@ void drawTriangle(Point normal_vector, Triangle t, float red, float green, float
 
     // Iguais
     if (abs(v3.getX() - normal_vector.getX()) < 0.1 && abs(v3.getY() - normal_vector.getY()) < 0.1 && abs(v3.getZ() -normal_vector.getZ()) < 0.1) {
-        glColor3f(red, green, blue);
 
         glBegin(GL_TRIANGLES);
         glVertex3f(p1.getX(), p1.getY(), p1.getZ());
@@ -75,7 +75,6 @@ void drawTriangle(Point normal_vector, Triangle t, float red, float green, float
         glEnd();
     } // Simétricos
     else if (abs(v3.getX() + normal_vector.getX()) < 0.1 && abs(v3.getY() + normal_vector.getY()) < 0.1 && abs(v3.getZ() + normal_vector.getZ()) < 0.1) {
-        glColor3f(red, green, blue);
 
         glBegin(GL_TRIANGLES);
         glVertex3f(p1.getX(), p1.getY(), p1.getZ());
@@ -83,8 +82,6 @@ void drawTriangle(Point normal_vector, Triangle t, float red, float green, float
         glVertex3f(p2.getX(), p2.getY(), p2.getZ());
         glEnd();
     }
-
-    glutPostRedisplay();
 
 }
 
@@ -146,7 +143,7 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
-              cameraPositionX + cameraLookAtX,cameraPositionY + cameraLookAtY,cameraPositionZ + cameraLookAtZ,
+              cameraLookAtX,cameraLookAtY,cameraLookAtZ,
 			  cameraUpX,cameraUpY,cameraUpZ);
 
     // put axis drawing in here
@@ -166,42 +163,21 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f,
                -100.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
     glEnd();
-
-    glutPostRedisplay();
-
-// put the geometric transformations here
+     
+    // put the geometric transformations here
 	
-
-    //list<Triangle> triangles{};
-
-    //triangles = drawCone(1,2,20,3);
-
-    //drawFigure(triangles,1,1,0);
-    
-    float side = 3;
-    int grid = 3;
-
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side/2, -side / 2), true));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true));
-    //triangles.splice(triangles.end(), generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false));
-
-    //drawFigure(triangles, 1, 1, 0);
-
-    //list<Triangle> figure = drawSphere(2, 4,5);
-    vector<Triangle> triang {};
-    vector<Point> normals {};
-    vector<int> normal_indexes {};
-    vector<Point> points = reader("teste.txt", &triang, &normals, &normal_indexes);
-    drawFigure(normals,triang, points, normal_indexes, 1, 1, 0);
-
-    //drawFigure(triangles,1,1,0);
     // put the drawing instructions here
-  
-    //drawCone(1, 2, 64, 48);
+    
+    //drawFigure(triangles, 1, 1, 0);
+    for (int i = 0; i < primitives.size(); i++) {
+        vector<Triangle> triangles{};
+        vector<Point> normals{};
+        vector<int> normal_indexes{};
+        vector<Point> points = reader(primitives[i], &triangles, &normals, &normal_indexes);
+        drawFigure(normals, triangles, points, normal_indexes, 1, 1, 0);
+    }
 
 	// End of frame
 	glutSwapBuffers();
@@ -325,86 +301,83 @@ void readXML(char* filePath){
     // Get root node
     xml_node<> *world = doc.first_node("world");
     xml_node<> *window = world->first_node();
-    cout << "Width: " << window->first_attribute()->value() << endl;
-    cout << "Height: " << window->last_attribute()->value() << endl;
-    width = atof(window->first_attribute()->value());
-    height = atof(window->last_attribute()->value());
+    width = stof(window->first_attribute()->value());
+    height = stof(window->last_attribute()->value());
     xml_node<> *camera = window->next_sibling();
     xml_node<> *position = camera->first_node();
     xml_attribute<>* x = position->first_attribute();
     xml_attribute<>* y = x->next_attribute();
     xml_attribute<>* z = y->next_attribute();
-    cameraPositionX = atof(x->value());
-    cameraPositionY = atof(y->value());
-    cameraPositionZ = atof(z->value());
-    cout << "Pos X: " << x->value() << endl;
-    cout << "Pos Y: " << y->value() << endl;
-    cout << "Pos Z: " << z->value() << endl;
+    cameraPositionX = stof(x->value());
+    cameraPositionY = stof(y->value());
+    cameraPositionZ = stof(z->value());
     xml_node<> *lookAt = position->next_sibling();
     x = lookAt->first_attribute();
     y = x->next_attribute();
     z = y->next_attribute();
-    cameraLookAtX = atof(x->value());
-    cameraLookAtY = atof(y->value());
-    cameraLookAtZ = atof(z->value());
-    cout << "Look at X: " << x->value() << endl;
-    cout << "Look at Y: " << y->value() << endl;
-    cout << "Look at Z: " << z->value() << endl;
+    cameraLookAtX = stof(x->value());
+    cameraLookAtY = stof(y->value());
+    cameraLookAtZ = stof(z->value());
     xml_node<> *up = lookAt->next_sibling();
     x = up->first_attribute();
     y = x->next_attribute();
     z = y->next_attribute();
-    cameraUpX = atof(x->value());
-    cameraUpY = atof(y->value());
-    cameraUpZ = atof(z->value());
-    cout << "Up X: " << x->value() << endl;
-    cout << "Up Y: " << y->value() << endl;
-    cout << "Up Z: " << z->value() << endl;
+    cameraUpX = stof(x->value());
+    cameraUpY = stof(y->value());
+    cameraUpZ = stof(z->value());
     xml_node<> *projection = up->next_sibling();
     xml_attribute<>* fov = projection->first_attribute();
     xml_attribute<>* near = fov->next_attribute();
     xml_attribute<>* far = near->next_attribute();
-    pFov = atof(fov->value());
-    pNear = atof(near->value());
-    pFar = atof(far->value());
-    cout << "FOV: " << fov->value() << endl;
-    cout << "Near: " << near->value() << endl;
-    cout << "Far: " << far->value() << endl;
+    pFov = stof(fov->value());
+    pNear = stof(near->value());
+    pFar = stof(far->value());
     xml_node<> *group = world->last_node();
-
-
+    xml_node<> *models = group->first_node();
+    for (xml_node<>* model = models->first_node();
+        model; model = model->next_sibling()) {
+        xml_attribute<>* file = model->first_attribute();
+        char* str = (char *) malloc(sizeof(char)*50);
+        strcpy(str, file->value());
+        primitives.push_back(str);
+    }
 }
 
 int main(int argc, char **argv) {
 	// Parser XML
-	// Configurar câmara e etc
-	// Ler os ficheiros .3d (que devem estar com a ordem correta)
-	// Mostrar os triângulos
+    if (argc == 2)
+    {
+        readXML(argv[1]);
 
-// init GLUT and the window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(width,height);
-	glutCreateWindow("ProjetoCG");
-    glPolygonMode(GL_FRONT, GL_LINE);
-		
-// Required callback registry 
-	glutDisplayFunc(renderScene);
-	glutReshapeFunc(changeSize);
+        // init GLUT and the window
+        glutInit(&argc, argv);
+        glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+        glutInitWindowPosition(100, 100);
+        glutInitWindowSize(width, height);
+        glutCreateWindow("ProjetoCG");
+        glPolygonMode(GL_FRONT, GL_LINE);
 
-	
-// put here the registration of the keyboard callbacks
-    glutSpecialFunc(special_keyboard);
-    glutKeyboardFunc(keyboard_events);
-    //glutPassiveMotionFunc(mouse_function);
+        // Required callback registry 
+        glutDisplayFunc(renderScene);
+        glutReshapeFunc(changeSize);
 
-//  OpenGL settings
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	
-// enter GLUT's main cycle
-	glutMainLoop();
+
+        // put here the registration of the keyboard callbacks
+        glutSpecialFunc(special_keyboard);
+        glutKeyboardFunc(keyboard_events);
+        //glutPassiveMotionFunc(mouse_function);
+
+    //  OpenGL settings
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+
+        // enter GLUT's main cycle
+        glutMainLoop();
+    }
+    else 
+    {
+        cout << "Número de argumentos incorretos" << endl;
+    }
 	
 	return 1;
 }
