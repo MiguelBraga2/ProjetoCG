@@ -117,6 +117,14 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     return triangles;
 }
 
+
+/**
+ * Generates a group of triangles, making a cylinder of given radius and height
+ * @param radius the radius of the base and top circles of the cylinder
+ * @param height the height of the cylinder
+ * @param slices vertical divisions of the sphere
+ * @return a list of generated triangles
+ */
 vector<Triangle> drawCylinder(float radius, float height, int slices, map<string, int>* indexes, int* index) {
 
     int aux = height / 2;
@@ -170,22 +178,29 @@ vector<Triangle> drawCylinder(float radius, float height, int slices, map<string
         Triangle t3((*indexes)[p2.toString()], (*indexes)[p6.toString()], (*indexes)[p5.toString()]);
         triangles.push_back(t3);
 
-        Triangle t3((*indexes)[p2.toString()], (*indexes)[p5.toString()], (*indexes)[p3.toString()]);
-        triangles.push_back(t3);
+        Triangle t4((*indexes)[p2.toString()], (*indexes)[p5.toString()], (*indexes)[p3.toString()]);
+        triangles.push_back(t4);
     }
 
     return triangles;
 
 }
 
-
-vector<Triangle> drawCone(float radius, float height, int numSlices, int numStacks, map<string, int> *indexes, int *index) {
+/**
+ * Generates a group of triangles, making a cone of given radius and height
+ * @param radius the radius of the base circle of the cone
+ * @param height the height of the cone
+ * @param slices vertical divisions of the cone
+ * @param stacks vertical divisions of the cone
+ * @return a list of generated triangles
+ */
+vector<Triangle> drawCone(float radius, float height, int slices, int stacks, map<string, int> *indexes, int *index) {
     vector<Triangle> figure{};
-    double alphaDelta = (2 * M_PI) / numSlices;
-    double stackHeight = height / numStacks;
-    double radiusDec = radius / numStacks;
+    double alphaDelta = (2 * M_PI) / slices;
+    double stackHeight = height / stacks;
+    double radiusDec = radius / stacks;
 
-    for (int i = 0; i < numSlices; i++) {
+    for (int i = 0; i < slices; i++) {
         double alpha = i * alphaDelta;
         float x1 = radius * sin(alpha);
         float x2 = radius * sin(alpha + alphaDelta);
@@ -211,7 +226,7 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
         Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
         figure.push_back(t1);
 
-        for (int j = 0; j < numStacks; j++) {
+        for (int j = 0; j < stacks; j++) {
             double current_radius = radius - j * radiusDec;
             double next_radius = radius - (j + 1) *radiusDec;
 
@@ -249,7 +264,7 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
 
             Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
             figure.push_back(t2);
-            if (j != numStacks - 1) {
+            if (j != stacks - 1) {
                 Triangle t3((*indexes)[p5.toString()], (*indexes)[p7.toString()], (*indexes)[p6.toString()]);
                 figure.push_back(t3);
             }
@@ -260,12 +275,12 @@ vector<Triangle> drawCone(float radius, float height, int numSlices, int numStac
 }
 
 
-bool cmp(pair<string, int> a, pair<string, int> b)
-{
-    return a.second < b.second;
-}
-
-
+/**
+ * Generates a file containing all the vertices and faces required to define the respective primitive
+ * @param filename the realtive path to the output file 
+ * @param indexes the map of points to the respective indexes  
+ * @param triangles the list of triangles that make up a figure
+ */
 void write_triangles(string fileName, map<string, int> indexes, vector<Triangle> triangles) // recebe lista de pontos e os triangulos 
 {
 
@@ -273,7 +288,9 @@ void write_triangles(string fileName, map<string, int> indexes, vector<Triangle>
     for (auto it : indexes) {
         items.push_back(it);
     }
-    sort(items.begin(), items.end(), cmp);
+    sort(items.begin(), items.end(), [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
+        return a.second < b.second;
+    });
 
     ofstream file("../" + fileName);
     if (!file)
