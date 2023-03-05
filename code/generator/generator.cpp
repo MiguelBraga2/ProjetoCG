@@ -33,8 +33,11 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     
     Point base (initial.getX(), initial.getY(), initial.getZ());
 
-    (*indexes)[base.toString()] = (*index);
-    (*index)++;
+    if ((*indexes).count(base.toString()) == 0) {
+        (*indexes)[base.toString()] = (*index);
+        (*index)++;
+    }
+
 
     for(int i=0; i<numSquares; i++) {
         // Generate the 4 points for the 2 triangles
@@ -359,17 +362,14 @@ int main(int argc, char** argv)
     {
         if (argc == 6) 
         {
-            /*int radius = atoi(argv[2]);
+            int radius = atoi(argv[2]);
             int slices = atoi(argv[3]);
             int stacks = atoi(argv[4]);
-            char* file = argv[5];
 
-            Triangle* list = generateSphere(radius, slices, stacks);
-
-            for(int i=0; i<sizeof(list)/sizeof(Triangle); i++)
-            {
-                cout << list[i].toString() << endl;
-            }*/
+            map<string, int> indexes;
+            int index = 0;
+            vector<Triangle> list = drawSphere(radius, slices, stacks, &indexes, &index);
+            write_triangles(argv[5], indexes, list);
         }
         else 
         {

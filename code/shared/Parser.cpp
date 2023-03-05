@@ -43,9 +43,9 @@ void writer(string fileName, list<Point> triangles, list<Point> points){
 }
 
 // Devolve os pontos
-list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals, list<int>* normal_indexes){
+vector<Point> reader(string fileName, vector<Triangle>* triangles, vector<Point>* normals, vector<int>* normal_indexes){
     ifstream file("../" + fileName);
-    list<Point> points {};
+    vector<Point> points {};
 
     if (!file)
     {
@@ -66,7 +66,7 @@ list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals
                     points.push_back(p);
                 }
                 else if (match[1].str() == "f"){
-                    Point p(stof(match[2].str()), stof(match[4].str()), stof(match[6].str()));
+                    Triangle p(stoi(match[2].str()), stoi(match[4].str()), stoi(match[6].str()));
                     triangles->push_back(p);
                     if (match[3].matched == true){
                         normal_indexes->push_back(stoi(match[3]));

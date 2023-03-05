@@ -8,7 +8,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
-#include "libraries/rapidxml-1.13/rapidxml_utils.hpp"
+#include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
 #include "../shared/Parser.hpp"
@@ -32,10 +32,15 @@ void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float 
     cross_P[2] = vectAX * vectBY - vectAY * vectBX;
 }
 
-void drawTriangle(Point normal_vector, Triangle t,  float red, float green, float blue){
-    Point p1 = t.getP1();
-    Point p2 = t.getP2();
-    Point p3 = t.getP3();
+void drawTriangle(Point normal_vector, Triangle t, float red, float green, float blue, vector<Point> points){
+    int i1 = t.getIndP1();
+    int i2 = t.getIndP2();
+    int i3 = t.getIndP3();
+
+    Point p1 = points[i1];
+    Point p2 = points[i2];
+    Point p3 = points[i3];
+
     if (normal_vector.getX() == 0 && normal_vector.getY() == 0 && normal_vector.getZ() == 0){
         glColor3f(red, green, blue);
         glBegin(GL_TRIANGLES);
@@ -84,31 +89,11 @@ void drawTriangle(Point normal_vector, Triangle t,  float red, float green, floa
 }
 
 
-void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, list<int> normal_indexes, float red, float green, float blue){
+void drawFigure(vector<Point> normals, vector<Triangle> triangles, vector<Point> points, vector<int> normal_indexes, float red, float green, float blue){
     int index = 0;
-    std::list<Point>::iterator it;
-    for (it = triangles.begin(); it != triangles.end(); ++it){
-        // Indices
-        float i1 = it->getX();
-        float i2 = it->getY();
-        float i3 = it->getZ();
 
-        auto it = points.begin();
-        advance(it, i1-1);
-
-        Point p1 = *it;
-
-        it = points.begin();
-        advance(it, i2-1);
-
-        Point p2 = *it;
-
-        it = points.begin();
-        advance(it, i3-1);
-
-        Point p3 = *it;
-
-        Triangle t(p1,p2,p3);
+    for(int i=0; i<triangles.size(); i++){
+        Triangle t = triangles[i];
 
         if (normal_indexes.size() > 0){
             auto itN = normal_indexes.begin();
@@ -118,14 +103,15 @@ void drawFigure(list<Point> normals, list<Point> triangles, list<Point> points, 
             advance(itN2, *itN-1);
 
             Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
-            drawTriangle(normal, t, 1,1,0);
+            drawTriangle(normal, t, 1,1,0, points);
         }
         else {
             Point normal(0,0,0);
-            drawTriangle(normal, t, 1,1,0);
+            drawTriangle(normal, t, 1,1,0, points);
         }
 
         index++;
+
     }
 }
 
@@ -151,153 +137,6 @@ void changeSize(int w, int h) {
 	gluPerspective(pFov ,ratio, pNear ,pFar);
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
-}
-
-list<Triangle> drawCone(float radius, float height, int numSlices, int numStacks){
-    list<Triangle> figure{};
-    double alphaDelta = (2 * M_PI) / numSlices;
-    double stackHeight = height / numStacks;
-    double factor = height / radius;
-    glColor3f(1.0, 1.0, 1.0);
-
-    for (int i = 0; i < numSlices; i++) {
-        double alpha = i * alphaDelta;
-        float x1 = radius * sin(alpha);
-        float x2 = radius * sin(alpha + alphaDelta);
-        float z1 = radius * cos(alpha);
-        float z2 = radius * cos(alpha + alphaDelta);
-
-        glBegin(GL_TRIANGLES);
-        glVertex3f(0, 0, 0);
-        glVertex3f(x2, 0, z2);
-        glVertex3f(x1, 0, z1);
-        glEnd();
-
-        Point p1(0, 0, 0);
-        Point p2(x2, 0, z2);
-        Point p3(x1, 0, z1);
-        Triangle t1(p1, p2, p3);
-        figure.push_back(t1);
-        
-        for (int j = 0; j < numStacks; j++) { 
-            double current_radius = (height - j * stackHeight) / factor;
-            double next_radius = (height - (j + 1) * stackHeight) / factor;
-
-            float x3 = current_radius * sin(alpha);
-            float z3 = current_radius * cos(alpha);
-            float x4 = current_radius * sin(alpha + alphaDelta);
-            float z4 = current_radius * cos(alpha + alphaDelta);
-            float x5 = next_radius * sin(alpha);
-            float z5 = next_radius * cos(alpha);
-            float x6 = next_radius * sin(alpha + alphaDelta);
-            float z6 = next_radius * cos(alpha + alphaDelta);
- 
-            Point p4(x3, stackHeight * j, z3);
-            Point p5(x4, stackHeight * j, z4);
-            Point p6(x5, stackHeight * (j + 1), z5);
-            Point p7(x6, stackHeight * (j + 1), z6);
-
-            glBegin(GL_TRIANGLES);
-            glVertex3f(x3, stackHeight * j, z3);
-            glVertex3f(x4, stackHeight * j, z4);
-            glVertex3f(x5, stackHeight * (j + 1), z5);
-            glEnd();
-
-
-            Triangle t2(p4, p5, p6);
-            figure.push_back(t2);
-            if (next_radius!=0) {
-                glBegin(GL_TRIANGLES);
-                glVertex3f(x4, stackHeight * j, z4);
-                glVertex3f(x6, stackHeight * (j + 1), z6);
-                glVertex3f(x5, stackHeight * (j + 1), z5);
-                glEnd();
-
-                Triangle t3(p5, p6, p7);
-                figure.push_back(t3);
-            }
-        }
-    }
-
-    return figure;
-}
-
-/**
- * Generates a group of triangles that combine into a grid, making a square (plane) of given length
- * @param length the length of the larger square
- * @param grid number of smaller squares per side
- * @param direction defines the direction of the plane (for each coordinate, 0 - no direction)
- * For example, 0 in the y direction means the plane is parallel to the y=0 plane
- * @param initial the plane to start generating the plane
- * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
- * @return a list of generated triangles
- */
-list<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir){
-    int numSquares = grid*grid; // each smaller square has 2 triangles
-    float smallerSide = length / grid; // side of each of the smaller squares
-    list<Triangle> triangles{};
-    Point base (initial.getX(), initial.getY(), initial.getZ());
-
-    for(int i=0; i<numSquares; i++) {
-        // Generate the 4 points for the 2 triangles
-        Point p1(base.getX(), base.getY(), base.getZ());
-        Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
-        Point *p2, *p3;
-
-        // Generate the other points of the triangles, depending on the direction of the plane
-        if (direction.getX() == 0){
-            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
-            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
-        }
-        else if (direction.getY() == 0){
-            p2 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
-            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
-        }
-        else if (direction.getZ() == 0){
-            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
-            p3 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
-        }
-
-        // Generate the triangles
-        Triangle* t1, *t2;
-        if (clockWiseDir == false){
-            t1 = new Triangle(p1, p4, *p2);
-            t2 = new Triangle(p1, *p3, p4);
-        }
-        else {
-            t1 = new Triangle(p1, *p2, p4);
-            t2 = new Triangle(p1, p4, *p3);
-        }
-
-        // Add the triangles to the array
-        triangles.push_back(*t1);
-        triangles.push_back(*t2);
-
-        // Move the base point
-        if (direction.getX() == 0){
-            base.setY(base.getY()+smallerSide*direction.getY());
-            if (base.getY() == initial.getY() + length*direction.getY()){
-                base.setY(initial.getY()); // Back to the begin
-                base.setZ(base.getZ() + smallerSide*direction.getZ());
-            }
-        }
-        else if (direction.getY() == 0){
-            base.setX(base.getX()+smallerSide*direction.getX());
-            if (base.getX() == initial.getX() + length*direction.getX()){
-                base.setX(initial.getX()); // Back to the begin
-                base.setZ(base.getZ() + smallerSide*direction.getZ());
-            }
-        }
-        else if (direction.getZ() == 0){
-            base.setY(base.getY()+smallerSide*direction.getY());
-            if (base.getY() == initial.getY() + length*direction.getY()){
-                base.setY(initial.getY()); // Back to the begin
-                base.setX(base.getX() + smallerSide*direction.getX());
-            }
-        }
-    }
-
-    return triangles;
 }
 
 void renderScene(void) {
@@ -352,17 +191,15 @@ void renderScene(void) {
 
     //drawFigure(triangles, 1, 1, 0);
 
-    list<Point> points {};
-
     //list<Triangle> figure = drawSphere(2, 4,5);
-    list<Point> triang {};
-    list<Point> normals {};
-    list<int> normal_indexes {};
-    points = reader("classic-mug.obj", &triang, &normals, &normal_indexes);
+    vector<Triangle> triang {};
+    vector<Point> normals {};
+    vector<int> normal_indexes {};
+    vector<Point> points = reader("teste.txt", &triang, &normals, &normal_indexes);
     drawFigure(normals,triang, points, normal_indexes, 1, 1, 0);
 
     //drawFigure(triangles,1,1,0);
-// put the drawing instructions here
+    // put the drawing instructions here
   
     //drawCone(1, 2, 64, 48);
 
@@ -534,10 +371,11 @@ void readXML(char* filePath){
     cout << "Near: " << near->value() << endl;
     cout << "Far: " << far->value() << endl;
     xml_node<> *group = world->last_node();
+
+
 }
 
 int main(int argc, char **argv) {
-    readXML("../demo.xml");
 	// Parser XML
 	// Configurar câmara e etc
 	// Ler os ficheiros .3d (que devem estar com a ordem correta)

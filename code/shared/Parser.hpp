@@ -6,9 +6,10 @@
 #define ENGINE_PARSER_HPP
 
 #include <list>
+#include <vector>
 #include "triangle.hpp"
 
 void writer(string fileName, list<Point> triangles, list<Point> points);
-list<Point> reader(string fileName, list<Point>* triangles, list<Point>* normals, list<int>* normal_indexes);
+vector<Point> reader(string fileName, vector<Triangle>* triangles, vector<Point>* normals, vector<int>* normal_indexes);
 
 #endif //ENGINE_PARSER_HPP
