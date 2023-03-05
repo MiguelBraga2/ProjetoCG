@@ -117,6 +117,68 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     return triangles;
 }
 
+vector<Triangle> drawCylinder(float radius, float height, int slices, map<string, int>* indexes, int* index) {
+
+    int aux = height / 2;
+    double delta = (2 * M_PI) / slices;
+    double alpha = 0;
+    vector<Triangle> triangles{};
+
+    for (int i = 0; i < slices; i++) {
+        alpha = i * delta;
+        float x1 = radius * sin(alpha);
+        float x2 = radius * sin(alpha + delta);
+        float z1 = radius * cos(alpha);
+        float z2 = radius * cos(alpha + delta);
+
+        Point p1(0, aux, 0);
+        Point p2(x1, aux, z1);
+        Point p3(x2, aux, z2);
+        if ((*indexes).count(p1.toString()) == 0) {
+            (*indexes)[p1.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p2.toString()) == 0) {
+            (*indexes)[p2.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p3.toString()) == 0) {
+            (*indexes)[p3.toString()] = (*index);
+            (*index)++;
+        }
+        Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
+        triangles.push_back(t1);
+
+        Point p4(0, -aux, 0);
+        Point p5(x2, -aux, z2);
+        Point p6(x1, -aux, z1);
+        if ((*indexes).count(p4.toString()) == 0) {
+            (*indexes)[p4.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p5.toString()) == 0) {
+            (*indexes)[p5.toString()] = (*index);
+            (*index)++;
+        }
+        if ((*indexes).count(p6.toString()) == 0) {
+            (*indexes)[p6.toString()] = (*index);
+            (*index)++;
+        }
+        Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
+        triangles.push_back(t2);
+
+        Triangle t3((*indexes)[p2.toString()], (*indexes)[p6.toString()], (*indexes)[p5.toString()]);
+        triangles.push_back(t3);
+
+        Triangle t3((*indexes)[p2.toString()], (*indexes)[p5.toString()], (*indexes)[p3.toString()]);
+        triangles.push_back(t3);
+    }
+
+    return triangles;
+
+}
+
+
 vector<Triangle> drawCone(float radius, float height, int numSlices, int numStacks, map<string, int> *indexes, int *index) {
     vector<Triangle> figure{};
     double alphaDelta = (2 * M_PI) / numSlices;
@@ -359,17 +421,13 @@ int main(int argc, char** argv)
     {
         if (argc == 6) 
         {
-            /*int radius = atoi(argv[2]);
-            int slices = atoi(argv[3]);
-            int stacks = atoi(argv[4]);
-            char* file = argv[5];
+            
+            map<string, int> indexes;
+            int index = 0;
 
-            Triangle* list = generateSphere(radius, slices, stacks);
-
-            for(int i=0; i<sizeof(list)/sizeof(Triangle); i++)
-            {
-                cout << list[i].toString() << endl;
-            }*/
+            vector<Triangle> triangles = drawSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
+            write_triangles(argv[5], indexes, triangles);
+           
         }
         else 
         {
@@ -380,15 +438,13 @@ int main(int argc, char** argv)
     {
         if (argc == 7)
         {
-            float radius = atof(argv[2]);
-            float height = atof(argv[3]);
-            int numSlices = atoi(argv[4]);
-            int numStacks = atoi(argv[5]);
-
+            
             map<string, int> indexes;
             int index = 0;
-            vector<Triangle> triangles = drawCone(radius, height, numSlices, numStacks, &indexes, &index);
+            
+            vector<Triangle> triangles = drawCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), &indexes, &index);
             write_triangles(argv[6], indexes, triangles);
+        
         }
         else 
         {
@@ -427,13 +483,12 @@ int main(int argc, char** argv)
     }
     else if (strcmp(argv[1], "plane") == 0) {
         if (argc == 5) {
-            float length = atof(argv[2]);
-            int grid = atoi(argv[3]);
-
+            
+            float length = stof(argv[2]);
             map<string, int> indexes;
             int index = 0;
 
-            vector<Triangle> triangles = generatePlane(length, grid, Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
+            vector<Triangle> triangles = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
             write_triangles(argv[4], indexes, triangles);
 
         }
@@ -441,5 +496,21 @@ int main(int argc, char** argv)
         {
             cout << "Figura desconhecida";
         }
+    }
+    else if (strcmp(argv[1], "cylinder") == 0) {
+        if (argc == 6) {
+
+            map<string, int> indexes;
+            int index = 0;
+
+            vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes, &index);
+            write_triangles(argv[5], indexes, triangles);
+
+        }
+        else 
+        {
+            cout << "Figura desconhecida";
+        }
+
     }
 }
