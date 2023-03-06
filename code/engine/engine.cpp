@@ -16,14 +16,14 @@
 #include "../shared/IO.hpp"
 
 
-float cameraPositionX, cameraPositionY, cameraPositionZ;
-float cameraLookAtX, cameraLookAtY, cameraLookAtZ;
-float cameraUpX, cameraUpY, cameraUpZ;
-float pFov, pNear, pFar;
-float width, height;
-float rotationAlpha=0, rotationBeta=0;
-float lookDirX, lookDirY, lookDirZ;
-vector<char*> primitives{};
+float cameraPositionX, cameraPositionY, cameraPositionZ,
+    cameraLookAtX, cameraLookAtY, cameraLookAtZ,
+    cameraUpX, cameraUpY, cameraUpZ,
+    fov, near, far,
+    width, height,
+    rotationAlpha=0, rotationBeta=0,
+    lookDirX, lookDirY, lookDirZ;
+vector<string> primitives{};
 vector<vector<Point>*> points {};
 vector<vector<Triangle>> figures {};
 
@@ -88,7 +88,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(pFov ,ratio, pNear ,pFar);
+	gluPerspective(fov ,ratio, near , far);
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -199,53 +199,51 @@ void special_keyboard(int key_code, int x, int y){
 }
 
 void readXML(char* filePath){
-    file<> xmlFile(filePath);
-    // Create & parse document
-    xml_document<> doc;
-    doc.parse<0>(xmlFile.data());
-    // Get root node
-    xml_node<> *world = doc.first_node("world");
+    file<> *xmlFile = new file<>(filePath); // Load XML file
+    xml_document<> *doc = new xml_document<>();  // Create XML document
+    doc->parse<0>(xmlFile->data()); // Parse XML document
+    xml_node<> *world = doc->first_node("world"); // root node
+
+    // world nodes
+    // window
     xml_node<> *window = world->first_node();
+
     width = stof(window->first_attribute()->value());
     height = stof(window->last_attribute()->value());
-    xml_node<> *camera = window->next_sibling();
-    xml_node<> *position = camera->first_node();
-    xml_attribute<>* x = position->first_attribute();
-    xml_attribute<>* y = x->next_attribute();
-    xml_attribute<>* z = y->next_attribute();
-    cameraPositionX = stof(x->value());
-    cameraPositionY = stof(y->value());
-    cameraPositionZ = stof(z->value());
-    xml_node<> *lookAt = position->next_sibling();
-    x = lookAt->first_attribute();
-    y = x->next_attribute();
-    z = y->next_attribute();
-    cameraLookAtX = stof(x->value());
-    cameraLookAtY = stof(y->value());
-    cameraLookAtZ = stof(z->value());
-    xml_node<> *up = lookAt->next_sibling();
-    x = up->first_attribute();
-    y = x->next_attribute();
-    z = y->next_attribute();
-    cameraUpX = stof(x->value());
-    cameraUpY = stof(y->value());
-    cameraUpZ = stof(z->value());
-    xml_node<> *projection = up->next_sibling();
-    xml_attribute<>* fov = projection->first_attribute();
-    xml_attribute<>* near = fov->next_attribute();
-    xml_attribute<>* far = near->next_attribute();
-    pFov = stof(fov->value());
-    pNear = stof(near->value());
-    pFar = stof(far->value());
-    xml_node<> *group = world->last_node();
+
+    //camera
+    xml_node<>* camera = window->next_sibling();
+    xml_node<>* position = camera->first_node();
+    xml_node<>* lookAt = position->next_sibling();
+    xml_node<>* up = lookAt->next_sibling();
+    xml_node<>* projection = up->next_sibling();
+
+    cameraPositionX = stof(position->first_attribute()->value());
+    cameraPositionY = stof(position->first_attribute("y")->value());
+    cameraPositionZ = stof(position->last_attribute()->value());
+    
+    cameraLookAtX = stof(lookAt->first_attribute()->value());
+    cameraLookAtY = stof(lookAt->first_attribute("y")->value());
+    cameraLookAtZ = stof(lookAt->last_attribute()->value());
+
+    cameraUpX = stof(up->first_attribute()->value());
+    cameraUpY = stof(up->first_attribute("y")->value());
+    cameraUpZ = stof(up->first_attribute()->value());
+
+    fov = stof(projection->first_attribute()->value());
+    near = stof(projection->first_attribute("near")->value());
+    far = stof(projection->last_attribute()->value());
+
+    // group 
+    xml_node<>* group = world->first_node("group");
     xml_node<> *models = group->first_node();
-    for (xml_node<>* model = models->first_node();
-        model; model = model->next_sibling()) {
-        xml_attribute<>* file = model->first_attribute();
-        char* str = (char *) malloc(sizeof(char)*50);
-        strcpy(str, file->value());
-        primitives.push_back(str);
+
+    for (xml_node<>* model = models->first_node(); model; model = model->next_sibling()) {
+        primitives.push_back(model->first_attribute()->value());
     }
+
+    delete doc;
+    delete xmlFile;
 }
 
 int main(int argc, char **argv) {
@@ -275,7 +273,7 @@ int main(int argc, char **argv) {
         glutKeyboardFunc(keyboard_events);
         //glutPassiveMotionFunc(mouse_function);
 
-    //  OpenGL settings
+        //  OpenGL settings
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
 
@@ -284,7 +282,7 @@ int main(int argc, char **argv) {
     }
     else 
     {
-        cout << "Número de argumentos incorretos" << endl;
+        cout << "Número incorreto de argumentos" << endl;
     }
 	
 	return 1;
