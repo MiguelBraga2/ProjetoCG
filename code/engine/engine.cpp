@@ -9,6 +9,7 @@
 #include <math.h>
 #include <list>
 #include <iostream>
+#include <string.h>
 #include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
@@ -23,16 +24,11 @@ float width, height;
 float rotationAlpha=0, rotationBeta=0;
 float lookDirX, lookDirY, lookDirZ;
 vector<char*> primitives{};
+vector<vector<Point>> points {};
+vector<vector<Triangle>> figures {};
 
 using namespace rapidxml;
 using namespace std;
-
-void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
-{
-    cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;
-    cross_P[1] = vectAZ * vectBX - vectAX * vectBZ;
-    cross_P[2] = vectAX * vectBY - vectAY * vectBX;
-}
 
 void drawTriangle(Point normal_vector, Triangle t, float red, float green, float blue, vector<Point> points){
     int i1 = t.getIndP1();
@@ -171,13 +167,6 @@ void renderScene(void) {
     // put the drawing instructions here
     
     //drawFigure(triangles, 1, 1, 0);
-    for (int i = 0; i < primitives.size(); i++) {
-        vector<Triangle> triangles{};
-        vector<Point> normals{};
-        vector<int> normal_indexes{};
-        vector<Point> points = reader(primitives[i], &triangles, &normals, &normal_indexes);
-        drawFigure(normals, triangles, points, normal_indexes, 1, 1, 0);
-    }
 
 	// End of frame
 	glutSwapBuffers();
@@ -344,10 +333,16 @@ void readXML(char* filePath){
 }
 
 int main(int argc, char **argv) {
-	// Parser XML
     if (argc == 2)
     {
         readXML(argv[1]);
+        for (int i = 0; i < primitives.size(); i++) {
+            vector<Triangle> triangles{};
+            vector<Point> normals{};
+            vector<int> normal_indexes{};
+            vector<Point> points = reader(primitives[i], &triangles, &normals, &normal_indexes);
+            drawFigure(normals, triangles, points, normal_indexes, 1, 1, 0);
+        }
 
         // init GLUT and the window
         glutInit(&argc, argv);

@@ -10,6 +10,6 @@
 #include "triangle.hpp"
 
 void writer(string fileName, list<Point> triangles, list<Point> points);
-vector<Point> reader(string fileName, vector<Triangle>* triangles, vector<Point>* normals, vector<int>* normal_indexes);
+vector<Point> reader(string fileName, vector<Triangle>* triangles);
 
 #endif //ENGINE_PARSER_HPP
