@@ -13,7 +13,7 @@
 #include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
-#include "../shared/Parser.hpp"
+#include "../shared/IO.hpp"
 
 
 float cameraPositionX, cameraPositionY, cameraPositionZ;
@@ -24,13 +24,21 @@ float width, height;
 float rotationAlpha=0, rotationBeta=0;
 float lookDirX, lookDirY, lookDirZ;
 vector<char*> primitives{};
-vector<vector<Point>> points {};
+vector<vector<Point>*> points {};
 vector<vector<Triangle>> figures {};
 
 using namespace rapidxml;
 using namespace std;
 
-void drawTriangle(Point normal_vector, Triangle t, float red, float green, float blue, vector<Point> points){
+/**
+ * Draw a triangle, using the order specified by the indexes
+ * @param t 3 indexes, specifying the positions of the triangle vertices in the points vector
+ * @param red red color setting
+ * @param green green color setting
+ * @param blue blue color setting
+ * @param points the set of all the points in the figure
+ */
+void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points){
     int i1 = t.getIndP1();
     int i2 = t.getIndP2();
     int i3 = t.getIndP3();
@@ -39,77 +47,30 @@ void drawTriangle(Point normal_vector, Triangle t, float red, float green, float
     Point p2 = points[i2];
     Point p3 = points[i3];
 
-    if (normal_vector.getX() == 0 && normal_vector.getY() == 0 && normal_vector.getZ() == 0){
-        glBegin(GL_TRIANGLES);
-        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-        glEnd();
-        return;
-    }
-
-    Point v1 = Point (p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ() - p1.getZ());
-    Point v2 = Point (p3.getX()-p2.getX(), p3.getY()-p2.getY(), p3.getZ() - p2.getZ());
-
-    float cross_P[3];
-    crossProduct(v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ(), cross_P);
-
-    Point v3 (cross_P[0], cross_P[1], cross_P[2]);
-    float norma = sqrt(pow(cross_P[0], 2) + pow(cross_P[1], 2) + pow(cross_P[2], 2));
-
-    v3.setX(v3.getX()/norma);
-    v3.setY(v3.getY()/norma);
-    v3.setZ(v3.getZ()/norma);
-
-    // Iguais
-    if (abs(v3.getX() - normal_vector.getX()) < 0.1 && abs(v3.getY() - normal_vector.getY()) < 0.1 && abs(v3.getZ() -normal_vector.getZ()) < 0.1) {
-
-        glBegin(GL_TRIANGLES);
-        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-        glEnd();
-    } // Simétricos
-    else if (abs(v3.getX() + normal_vector.getX()) < 0.1 && abs(v3.getY() + normal_vector.getY()) < 0.1 && abs(v3.getZ() + normal_vector.getZ()) < 0.1) {
-
-        glBegin(GL_TRIANGLES);
-        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-        glEnd();
-    }
-
+    glColor3f(red, green, blue);
+    glBegin(GL_TRIANGLES);
+    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+    glEnd();
 }
 
-
-void drawFigure(vector<Point> normals, vector<Triangle> triangles, vector<Point> points, vector<int> normal_indexes, float red, float green, float blue){
-    int index = 0;
-
+/**
+ * Draw a figure, given the vertices and all the triangles
+ * @param triangles list of triangles containing 3 indexes, specifying the positions of the triangle vertices in the points vector
+ * @param points the set of all the points in the figure
+ * @param red red color setting
+ * @param green green color setting
+ * @param blue blue color setting
+ */
+void drawFigure(vector<Triangle> triangles, vector<Point> points, float red, float green, float blue){
     for(int i=0; i<triangles.size(); i++){
         Triangle t = triangles[i];
-
-        if (normal_indexes.size() > 0){
-            auto itN = normal_indexes.begin();
-            advance(itN, index);
-
-            auto itN2 = normals.begin();
-            advance(itN2, *itN-1);
-
-            Point normal (itN2->getX(), itN2->getY(), itN2->getZ());
-            drawTriangle(normal, t, 1,1,0, points);
-        }
-        else {
-            Point normal(0,0,0);
-            drawTriangle(normal, t, 1,1,0, points);
-        }
-
-        index++;
-
+        drawTriangle(t, red, green, blue, points);
     }
 }
 
 void changeSize(int w, int h) {
-
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window with zero width).
 	if(h == 0)
@@ -144,29 +105,35 @@ void renderScene(void) {
 
     // put axis drawing in here
     glBegin(GL_LINES);
+
     // X axis in red
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(
             -100.0f, 0.0f, 0.0f);
     glVertex3f( 100.0f, 0.0f, 0.0f);
+
     // Y Axis in Green
     glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f,
                -100.0f, 0.0f);
     glVertex3f(0.0f, 100.0f, 0.0f);
+
     // Z Axis in Blue
     glColor3f(0.0f, 0.0f, 1.0f);
     glVertex3f(0.0f, 0.0f,
                -100.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
-    glColor3f(1.0f, 1.0f, 1.0f);
     glEnd();
      
     // put the geometric transformations here
 	
     // put the drawing instructions here
     
-    //drawFigure(triangles, 1, 1, 0);
+    for (int i=0; i<figures.size(); i++){
+        vector<Point> figurePoints = *points[i];
+        vector<Triangle> figureTriangles = figures[i];
+        drawFigure(figureTriangles, figurePoints, 1,1,0);
+    }
 
 	// End of frame
 	glutSwapBuffers();
@@ -233,55 +200,6 @@ void special_keyboard(int key_code, int x, int y){
     updateCamera();
 }
 
-
-/*
-void mouse_function(int x, int y){
-    // width height
-    float midY = y/2;
-    float midX = x/2;
-
-    float addAlpha;
-    float addBeta;
-
-    if (x > midX){
-        float step = midX/30;
-        float steps = ((x-midX)/step);
-        addAlpha = steps * M_PI/30;
-        if (y > midY){
-            float step = midY/30;
-            float steps = ((y-midY)/step);
-            addBeta = steps * M_PI/30; // ângulo
-        }
-        else {
-            float step = midY/30;
-            float steps = (y/step);
-            addBeta = steps * M_PI/30; // ângulo
-        }
-    }
-    else {
-        float step = midX/30;
-        float steps = ((x-midX)/step);
-        addAlpha = -steps * M_PI/30;
-        if (y > midY){
-            float step = midY/30;
-            float steps = ((y-midY)/step);
-            addBeta = steps * M_PI/30; // ângulo
-        }
-        else {
-            float step = midY/30;
-            float steps = (y/step);
-            addBeta = steps * M_PI/30; // ângulo
-        }
-    }
-
-    rotationAlpha += addAlpha;
-    rotationBeta += addBeta;
-
-    updateCamera();
-
-    glutPostRedisplay();
-}*/
-
 void readXML(char* filePath){
     file<> xmlFile(filePath);
     // Create & parse document
@@ -337,11 +255,8 @@ int main(int argc, char **argv) {
     {
         readXML(argv[1]);
         for (int i = 0; i < primitives.size(); i++) {
-            vector<Triangle> triangles{};
-            vector<Point> normals{};
-            vector<int> normal_indexes{};
-            vector<Point> points = reader(primitives[i], &triangles, &normals, &normal_indexes);
-            drawFigure(normals, triangles, points, normal_indexes, 1, 1, 0);
+            figures.emplace_back(vector<Triangle>{});
+            points.emplace_back(reader(primitives[i], &figures[i]));
         }
 
         // init GLUT and the window

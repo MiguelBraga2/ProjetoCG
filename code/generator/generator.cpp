@@ -277,43 +277,6 @@ vector<Triangle> drawCone(float radius, float height, int slices, int stacks, ma
     return figure;
 }
 
-
-/**
- * Generates a file containing all the vertices and faces required to define the respective primitive
- * @param filename the realtive path to the output file 
- * @param indexes the map of points to the respective indexes  
- * @param triangles the list of triangles that make up a figure
- */
-void write_triangles(string fileName, map<string, int> indexes, vector<Triangle> triangles) // recebe lista de pontos e os triangulos 
-{
-
-    vector<pair<string, int> > items;
-    for (auto it : indexes) {
-        items.push_back(it);
-    }
-    sort(items.begin(), items.end(), [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-        return a.second < b.second;
-    });
-
-    ofstream file("../" + fileName);
-    if (!file)
-    {
-        cout << "Não é possível abrir o ficheiro " << fileName << endl;
-    }
-    else
-    {   
-        for (auto it : items) {
-            file << "v " << it.first << endl;
-        }
-
-        for (auto it = triangles.begin(); it != triangles.end(); ++it)
-        {
-            file << "f " << (*it).getIndP1() << " " << (*it).getIndP2() << " " << (*it).getIndP3() << endl;
-        }
-    }
-}
-
-
 /**
  * Generates a group of triangles that combined approximate a sphere with a given radius using slices and stacks
  * The sphere is centered in the origin (0,0,0)
