@@ -11,6 +11,7 @@
 #include <algorithm>
 #include "../shared/point.hpp"
 #include "../shared/triangle.hpp"
+#include "../shared/IO.hpp"
 
 using namespace std;
 
@@ -286,13 +287,13 @@ vector<Triangle> drawCone(float radius, float height, int slices, int stacks, ma
  * @return
  */
 vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<string, int>* indexes, int* index){
-    float alpha = M_PI/numSlices; // Defines the position around the y axis
+    float alpha = 2*M_PI/numSlices; // Defines the position around the y axis
     float initialBeta = M_PI/numStacks; // Defines the height
     float beta = -M_PI/2 + (numStacks-1)* initialBeta;
     vector<Triangle> figure {};
     int ind=0;
 
-    for (int i=0; i<numSlices*2; i++){
+    for (int i=0; i<numSlices; i++){
         float nextAlpha = (i+1)*alpha;
         Point p1(0,radius, 0);
         Point p2(radius*cos(beta)*sin(i*alpha), radius*sin(beta), radius*cos(i*alpha)*cos(beta));
@@ -321,7 +322,7 @@ vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<stri
         float nextBeta = -M_PI/2+(i+2)*initialBeta; // height above
 
 
-        for (int j=0; j<numSlices*2; j++){
+        for (int j=0; j<numSlices; j++){
             float currentAlpha = j*alpha;
             float nextAlpha = (j+1)*alpha;
 
@@ -371,7 +372,7 @@ vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<stri
 
     beta = -M_PI/2+initialBeta;
 
-    for (int i=0; i<numSlices*2; i++){
+    for (int i=0; i<numSlices; i++){
         float nextAlpha = (i+1)*alpha;
 
         Point p1(0,-radius, 0);
@@ -411,7 +412,7 @@ int main(int argc, char** argv)
             map<string, int> indexes;
             int index = 0;
             vector<Triangle> list = drawSphere(radius, slices, stacks, &indexes, &index);
-            write_triangles(argv[5], indexes, list);
+            writer(argv[5], indexes, list);
         }
         else 
         {
@@ -427,7 +428,7 @@ int main(int argc, char** argv)
             int index = 0;
             
             vector<Triangle> triangles = drawCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), &indexes, &index);
-            write_triangles(argv[6], indexes, triangles);
+            writer(argv[6], indexes, triangles);
         
         }
         else 
@@ -457,7 +458,7 @@ int main(int argc, char** argv)
             aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
 
-            write_triangles(argv[4], indexes, triangles);
+            writer(argv[4], indexes, triangles);
         }
         else 
         {
@@ -473,7 +474,7 @@ int main(int argc, char** argv)
             int index = 0;
 
             vector<Triangle> triangles = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
-            write_triangles(argv[4], indexes, triangles);
+            writer(argv[4], indexes, triangles);
 
         }
         else
@@ -488,7 +489,7 @@ int main(int argc, char** argv)
             int index = 0;
 
             vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes, &index);
-            write_triangles(argv[5], indexes, triangles);
+            writer(argv[5], indexes, triangles);
 
         }
         else 

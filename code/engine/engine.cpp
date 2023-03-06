@@ -130,9 +130,7 @@ void renderScene(void) {
     // put the drawing instructions here
     
     for (int i=0; i<figures.size(); i++){
-        vector<Point> figurePoints = *points[i];
-        vector<Triangle> figureTriangles = figures[i];
-        drawFigure(figureTriangles, figurePoints, 1,1,0);
+        drawFigure(figures [i], *(points[i]), 1,1,0);
     }
 
 	// End of frame
