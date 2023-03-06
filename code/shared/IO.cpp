@@ -88,12 +88,12 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
 
                     if (match[3].matched == true){
                         // Get the points
-                        Point p1 = (*points)[pointInd1];
-                        Point p2 = (*points)[pointInd2];
-                        Point p3 = (*points)[pointInd3];
+                        Point p1 = (*points)[pointInd1-1];
+                        Point p2 = (*points)[pointInd2-1];
+                        Point p3 = (*points)[pointInd3-1];
 
                         int normalIndex = stoi(match[3].str()); // Assume all normal indexes are the same
-                        Point normalVector = normals[normalIndex];
+                        Point normalVector = normals[normalIndex-1];
 
                         // From the 3 points, create 2 vectors
                         Point v1 (p1.getX()-p2.getX(), p1.getY()-p2.getY(), p1.getZ()-p2.getZ());
@@ -112,10 +112,10 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
 
                         // Iguais
                         if (abs(perpendicular.getX() - normalVector.getX()) < 0.1 && abs(perpendicular.getY() - normalVector.getY()) < 0.1 && abs(perpendicular.getZ() -normalVector.getZ()) < 0.1) {
-                            t = new Triangle(pointInd1, pointInd2, pointInd3);
+                            t = new Triangle(pointInd1-1, pointInd3-1, pointInd2-1);
                         } // Simétricos
                         else if (abs(perpendicular.getX() + normalVector.getX()) < 0.1 && abs(perpendicular.getY() + normalVector.getY()) < 0.1 && abs(perpendicular.getZ() + normalVector.getZ()) < 0.1) {
-                            t = new Triangle(pointInd1, pointInd3, pointInd2);
+                            t = new Triangle(pointInd1-1, pointInd2-1, pointInd3-1);
                         }
                     } else {
                         t = new Triangle(pointInd1, pointInd2, pointInd3);

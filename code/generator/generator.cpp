@@ -399,6 +399,22 @@ vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<stri
     return figure;
 }
 
+vector<Triangle> drawTorus(float innerRadius, float outerRadius, float slices, float stacks, map<string, int>* indexes, int* index){
+    float alpha = 2*M_PI/slices; // Defines the position around the y axis
+    float initialBeta = M_PI/stacks; // Defines the height
+    vector<Triangle> figure {};
+
+    for(int i=0; i<slices; i++){ // Percorrer as slices
+        float beta = -M_PI/2;
+        float currentAlpha = i*alpha;
+        for(int j=0; j<2*stacks; j++){ // Percorrer as stacks
+            float nextBeta = beta+initialBeta;
+            float nextAlpha = currentAlpha+alpha;
+        }
+    }
+}
+
+
 int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
@@ -497,5 +513,20 @@ int main(int argc, char** argv)
             cout << "Figura desconhecida";
         }
 
+    }
+    else if (strcmp(argv[1], "torus") == 0){
+        if (argc == 7) {
+            // Torus InnerRadius OuterRadius Slices Stacks
+
+            map<string, int> indexes;
+            int index=0;
+
+            vector<Triangle> triangles = drawTorus(stof(argv[2]), stof(argv[3]), stof(argv[4]), stof(argv[5]), &indexes, &index);
+            writer(argv[6], indexes, triangles);
+        }
+        else
+        {
+            cout << "Figura desconhecida";
+        }
     }
 }

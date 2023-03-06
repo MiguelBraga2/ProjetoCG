@@ -70,6 +70,24 @@ void drawFigure(vector<Triangle> triangles, vector<Point> points, float red, flo
     }
 }
 
+void drawTorus(float innerRadius, float outerRadius, float slices, float stacks){
+    float alpha = 2*M_PI/slices; // Defines the position around the y axis
+    float initialBeta = M_PI/stacks; // Defines the height
+    vector<Triangle> figure {};
+    float radius = (outerRadius-innerRadius)/2;
+
+    for(int i=0; i<slices; i++){ // Percorrer as slices
+        float beta = -M_PI/2;
+        float currentAlpha = i*alpha;
+        for(int j=0; j<2*stacks; j++){ // Percorrer as stacks
+            float nextBeta = beta+initialBeta;
+            float nextAlpha = currentAlpha+alpha;
+
+            Point p1()
+        }
+    }
+}
+
 void changeSize(int w, int h) {
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window with zero width).
