@@ -148,7 +148,7 @@ void renderScene(void) {
     // put the drawing instructions here
     
     for (int i=0; i<figures.size(); i++){
-        drawFigure(figures [i], *(points[i]), 1,1,0);
+        drawFigure(figures [i], *(points[i]), 1,1,1);
     }
 
 	// End of frame

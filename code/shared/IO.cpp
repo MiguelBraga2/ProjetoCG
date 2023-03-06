@@ -36,9 +36,9 @@ void writer(string fileName, map<string, int> indexes, vector<Triangle> triangle
             file << "v " << it.first << endl;
         }
 
-        for (auto it = triangles.begin(); it != triangles.end(); ++it)
+        for (auto it : triangles)
         {
-            file << "f " << (*it).getIndP1() << " " << (*it).getIndP2() << " " << (*it).getIndP3() << endl;
+            file << "f " << it.getIndP1() << " " << it.getIndP2() << " " << it.getIndP3() << endl;
         }
     }
 }
