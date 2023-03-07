@@ -121,6 +121,56 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     return triangles;
 }
 
+vector<Triangle> generatePlane1(float length, int grid, vector<Point>* points) {
+    float smallerSide = length / grid; // side of each of the smaller squares
+    float x, x1, z, z1;
+    vector<Triangle> triangles{};
+
+    for (int i = 0; i < grid; i++) {
+        x = -length / 2 + smallerSide * i;
+        x1 = -length / 2 + smallerSide * (i + 1);
+
+        for (int j = 0; j < grid; j++) {
+            z = length / 2 - smallerSide * i;
+            z1 = length / 2 - smallerSide * (i + 1);
+
+            if (i == 0 && j == 0) {
+                Point p1(x, 0, z);
+                Point p2(x, 0, z1);
+                Point p3(x1, 0, z);
+                Point p4(x1, 0, z1);
+
+                points->push_back(p1);
+                points->push_back(p2);
+                points->push_back(p3);
+                points->push_back(p4);
+            }
+            else if (i == 0){
+                Point p1(x, 0, z1);
+                Point p2(x1, 0, z1);
+
+                points->push_back(p1);
+                points->push_back(p2);
+            }
+            else {
+                Point p1(x1, 0, z1);
+
+                points->push_back(p1);
+            }
+
+            Triangle t1(i + j * (grid + 1), i + (j + 1) * (grid + 1), (i + 1) + (j + 1) * (grid + 1));
+            triangles.push_back(t1);
+
+            Triangle t2(i + j * (grid + 1), (i + 1) + (j + 1) * (grid + 1), (i + 1) + j * (grid + 1));
+            triangles.push_back(t2);
+
+        }
+
+    }
+
+    return triangles;
+}
+
 
 /**
  * Generates a group of triangles, making a cylinder of given radius and height
@@ -129,7 +179,7 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
  * @param slices vertical divisions of the sphere
  * @return a list of generated triangles
  */
-vector<Triangle> drawCylinder(float radius, float height, int slices, map<string, int>* indexes, int* index) {
+vector<Triangle> drawCylinder(float radius, float height, int slices, vector<Point>* points) {
 
     float aux = height / 2;
     double delta = (2 * M_PI) / slices;
@@ -144,7 +194,7 @@ vector<Triangle> drawCylinder(float radius, float height, int slices, map<string
         z1 = radius * cos(alpha);
         z2 = radius * cos(alpha + delta);
 
-        Point p1(0, aux, 0);
+        /*Point p1(0, aux, 0);
         Point p2(x1, aux, z1);
         Point p3(x2, aux, z2);
         if ((*indexes).count(p1.toString()) == 0) {
@@ -184,7 +234,7 @@ vector<Triangle> drawCylinder(float radius, float height, int slices, map<string
         triangles.push_back(t3);
 
         Triangle t4((*indexes)[p2.toString()], (*indexes)[p5.toString()], (*indexes)[p3.toString()]);
-        triangles.push_back(t4);
+        triangles.push_back(t4);*/
     }
 
     return triangles;
@@ -199,13 +249,19 @@ vector<Triangle> drawCylinder(float radius, float height, int slices, map<string
  * @param stacks vertical divisions of the cone
  * @return a list of generated triangles
  */
-vector<Triangle> drawCone(float radius, float height, int slices, int stacks, map<string, int> *indexes, int *index) {
+vector<Triangle> drawCone(float radius, float height, int slices, int stacks, vector<Point> *points) {
     vector<Triangle> figure{};
     double alphaDelta = (2 * M_PI) / slices;
     double stackHeight = height / stacks;
     double radiusDec = radius / stacks;
     float x1, z1, x2, z2, x3, z3, x4, z4, x5, z5, x6, z6;
     double current_radius, next_radius, alpha;
+
+    Point p1(0, 0, 0);
+    Point p2(0, 0, radius);
+    points->push_back(p1);
+    points->push_back(p2);
+
 
     for (int i = 0; i < slices; i++) {
         alpha = i * alphaDelta;
@@ -214,26 +270,13 @@ vector<Triangle> drawCone(float radius, float height, int slices, int stacks, ma
         z1 = radius * cos(alpha);
         z2 = radius * cos(alpha + alphaDelta);
 
-        Point p1(0, 0, 0);
-        Point p2(x2, 0, z2);
-        Point p3(x1, 0, z1);
-        if ((*indexes).count(p1.toString()) == 0) {
-            (*indexes)[p1.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p2.toString()) == 0) {
-            (*indexes)[p2.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p3.toString()) == 0) {
-            (*indexes)[p3.toString()] = (*index);
-            (*index)++;
-        }
+        Point p3(x2, 0, z2);
+        points->push_back(p3);
 
-        Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
+      /*  Triangle t1(points[0], points[1], points[1]);
         figure.push_back(t1);
 
-        for (int j = 0; j < stacks; j++) {
+        for (int j = 0; j < stacks -1 ; j++) {
             current_radius = radius - j * radiusDec;
             next_radius = radius - (j + 1) *radiusDec;
 
@@ -251,31 +294,18 @@ vector<Triangle> drawCone(float radius, float height, int slices, int stacks, ma
             Point p6(x5, stackHeight * (j + 1), z5);
             Point p7(x6, stackHeight * (j + 1), z6);
 
-            if ((*indexes).count(p4.toString()) == 0) {
-                (*indexes)[p4.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p5.toString()) == 0) {
-                (*indexes)[p5.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p6.toString()) == 0) {
-                (*indexes)[p6.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p7.toString()) == 0) {
-                (*indexes)[p7.toString()] = (*index);
-                (*index)++;
-            }
-
+     
 
             Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
             figure.push_back(t2);
-            if (j != stacks - 1) {
+       
                 Triangle t3((*indexes)[p5.toString()], (*indexes)[p7.toString()], (*indexes)[p6.toString()]);
                 figure.push_back(t3);
-            }
         }
+
+        Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
+        figure.push_back(t2);*/
+
     }
 
     return figure;
@@ -415,11 +445,10 @@ int main(int argc, char** argv)
         if (argc == 7)
         {
             
-            map<string, int> indexes;
-            int index = 0;
+            vector<Point> indexes;
             
-            vector<Triangle> triangles = drawCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), &indexes, &index);
-            writer(argv[6], indexes, triangles);
+            vector<Triangle> triangles = drawCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), &indexes);
+            //writer(argv[6], indexes, triangles);
         
         }
         else 
@@ -476,11 +505,10 @@ int main(int argc, char** argv)
     else if (strcmp(argv[1], "cylinder") == 0) {
         if (argc == 6) {
 
-            map<string, int> indexes;
-            int index = 0;
+            vector<Point> indexes;
 
-            vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes, &index);
-            writer(argv[5], indexes, triangles);
+            vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes);
+            //writer(argv[5], indexes, triangles);
 
         }
         else 
