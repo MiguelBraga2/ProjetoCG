@@ -53,7 +53,7 @@ void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float 
 // Devolve os pontos
 vector<Point>* reader(string fileName, vector<Triangle>* triangles){
     ifstream file("../" + fileName);
-    vector<Point>* points = new vector<Point>();
+    vector<Point> *points = new vector<Point>();
     vector<Point> normals {};
     vector<int> normal_indexes {};
 
@@ -105,7 +105,7 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
 
                         Point perpendicular (cross_P[0], cross_P[1], cross_P[2]);
 
-                        float norma = sqrt(pow(cross_P[0], 2) + pow(cross_P[1], 2) + pow(cross_P[2], 2)); // Normalization
+                        double norma = sqrt(pow(cross_P[0], 2) + pow(cross_P[1], 2) + pow(cross_P[2], 2)); // Normalization
                         perpendicular.setX(perpendicular.getX()/norma);
                         perpendicular.setY(perpendicular.getY()/norma);
                         perpendicular.setZ(perpendicular.getZ()/norma);
