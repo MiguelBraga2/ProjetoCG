@@ -9,8 +9,8 @@
 #include <math.h>
 #include <list>
 #include <iostream>
-#include <string.h>
-#include "../libraries/rapidxml-1.13/rapidxml_utils.hpp"
+#include <string>
+#include "../libraries/tinyxml2.h"
 #include "../shared/triangle.hpp"
 #include "../shared/point.hpp"
 #include "../shared/IO.hpp"
@@ -23,11 +23,11 @@ float cameraPositionX, cameraPositionY, cameraPositionZ,
     width, height,
     rotationAlpha=0, rotationBeta=0,
     lookDirX, lookDirY, lookDirZ;
-vector<string> primitives{};
-vector<vector<Point>*> points {};
-vector<vector<Triangle>> figures {};
+vector<vector<Point> *> *points;
+vector<vector<Triangle> *> *figures;
 
-using namespace rapidxml;
+
+using namespace tinyxml2;
 using namespace std;
 
 /**
@@ -63,10 +63,10 @@ void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> 
  * @param green green color setting
  * @param blue blue color setting
  */
-void drawFigure(vector<Triangle> triangles, vector<Point> points, float red, float green, float blue){
-    for(int i=0; i<triangles.size(); i++){
-        Triangle t = triangles[i];
-        drawTriangle(t, red, green, blue, points);
+void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, float green, float blue){
+    int size = triangles->size();
+    for(int i=0; i < size; i++){
+        drawTriangle((*triangles)[i], red, green, blue, (*points));
     }
 }
 
@@ -189,12 +189,16 @@ void renderScene(void) {
     // put the geometric transformations here
 	
     // put the drawing instructions here
-    
+
     /*for (int i=0; i<figures.size(); i++){
         drawFigure(figures [i], *(points[i]), 1,1,1);
     }*/
 
     drawTorus(1,2,40,40);
+    int size = figures->size();
+    for (int i=0; i< size; i++){
+        drawFigure((*figures)[i], (*points)[i], 1,1,1);
+    }
 
 	// End of frame
 	glutSwapBuffers();
@@ -261,62 +265,81 @@ void special_keyboard(int key_code, int x, int y){
     updateCamera();
 }
 
-void readXML(char* filePath){
-    file<> *xmlFile = new file<>(filePath); // Load XML file
-    xml_document<> *doc = new xml_document<>();  // Create XML document
-    doc->parse<0>(xmlFile->data()); // Parse XML document
-    xml_node<> *world = doc->first_node("world"); // root node
+vector<string>* readXML(char* filePath){
+    vector<string>* primitives = new vector<string>();
+    XMLDocument *doc = new XMLDocument();
+    XMLError result = doc->LoadFile(filePath);
+    XMLNode* world = doc->FirstChildElement("world");
+  
+    if (world) {
+        // window
+        XMLElement* window = world->FirstChildElement("window");
+        if (window) {
+            width =  stof(window->Attribute("width"));
+            height = stof(window->Attribute("height"));
+        }
+        
+        // camera
+        XMLElement* camera = world->FirstChildElement("camera");
+        if (camera) {
+            XMLElement* position = camera->FirstChildElement("position");
+            if (position) {
+                cameraPositionX = stof(position->Attribute("x"));
+                cameraPositionY = stof(position->Attribute("y"));
+                cameraPositionZ = stof(position->Attribute("z"));
+            }
+            XMLElement* lookAt = camera->FirstChildElement("lookAt");
+            if (lookAt) {
+                cameraLookAtX = stof(lookAt->Attribute("x"));
+                cameraLookAtY = stof(lookAt->Attribute("y"));
+                cameraLookAtZ = stof(lookAt->Attribute("z"));
+            }
+            XMLElement* up = camera->FirstChildElement("up");
+            if (up) {
+                cameraUpX = stof(up->Attribute("x"));
+                cameraUpY = stof(up->Attribute("y"));
+                cameraUpZ = stof(up->Attribute("z"));
+            }
+            XMLElement* projection = camera->FirstChildElement("projection");
+            if (projection) {
+                fov = stof(projection->Attribute("fov"));
+                near = stof(projection->Attribute("near"));
+                far = stof(projection->Attribute("far"));
+            }
+        }
 
-    // world nodes
-    // window
-    xml_node<> *window = world->first_node();
-
-    width = stof(window->first_attribute()->value());
-    height = stof(window->last_attribute()->value());
-
-    //camera
-    xml_node<>* camera = window->next_sibling();
-    xml_node<>* position = camera->first_node();
-    xml_node<>* lookAt = position->next_sibling();
-    xml_node<>* up = lookAt->next_sibling();
-    xml_node<>* projection = up->next_sibling();
-
-    cameraPositionX = stof(position->first_attribute()->value());
-    cameraPositionY = stof(position->first_attribute("y")->value());
-    cameraPositionZ = stof(position->last_attribute()->value());
-    
-    cameraLookAtX = stof(lookAt->first_attribute()->value());
-    cameraLookAtY = stof(lookAt->first_attribute("y")->value());
-    cameraLookAtZ = stof(lookAt->last_attribute()->value());
-
-    cameraUpX = stof(up->first_attribute()->value());
-    cameraUpY = stof(up->first_attribute("y")->value());
-    cameraUpZ = stof(up->first_attribute()->value());
-
-    fov = stof(projection->first_attribute()->value());
-    near = stof(projection->first_attribute("near")->value());
-    far = stof(projection->last_attribute()->value());
-
-    // group 
-    xml_node<>* group = world->first_node("group");
-    xml_node<> *models = group->first_node();
-
-    for (xml_node<>* model = models->first_node(); model; model = model->next_sibling()) {
-        primitives.push_back(model->first_attribute()->value());
+        // group
+        XMLElement* group = world->FirstChildElement("group");
+        if (group) {
+            XMLElement* models = group->FirstChildElement("models");
+            if (models) {
+                for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
+                    primitives->emplace_back(model->Attribute("file"));
+                }
+            }
+        }
     }
 
     delete doc;
-    delete xmlFile;
+
+    return primitives;
 }
 
 int main(int argc, char **argv) {
     if (argc == 2)
     {
-        readXML(argv[1]);
-        for (int i = 0; i < primitives.size(); i++) {
-            figures.emplace_back(vector<Triangle>{});
-            points.emplace_back(reader(primitives[i], &figures[i]));
+        vector<string> *primitives = readXML(argv[1]);
+        figures = new vector<vector<Triangle> *>();
+        points = new vector<vector<Point> *>();
+        
+        int size = primitives->size();
+        for (int i = 0; i < size; i++) {
+            figures->emplace_back(new vector<Triangle>());
+            points->emplace_back(reader((*primitives)[i], (*figures)[i]));
         }
+
+        primitives->clear();
+        delete primitives;
 
         // init GLUT and the window
         glutInit(&argc, argv);
@@ -342,6 +365,20 @@ int main(int argc, char **argv) {
 
         // enter GLUT's main cycle
         glutMainLoop();
+
+        size = figures->size();
+        for (int i = 0; i < size; i++) {
+            vector<Triangle>* fig = (*figures)[i];
+            delete fig;
+        }
+        delete figures;
+
+        size = points->size();
+        for (int i = 0; i < size; i++) {
+            vector<Point>* pts = (*points)[i];
+            delete pts;
+        }
+        delete points;
     }
     else 
     {
