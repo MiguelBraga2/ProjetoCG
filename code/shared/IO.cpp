@@ -43,6 +43,28 @@ void writer(string fileName, map<string, int> indexes, vector<Triangle> triangle
     }
 }
 
+void writer1(string fileName, vector<Point> points, vector<Triangle> triangles) // recebe lista de pontos e os triangulos
+{
+
+    ofstream file("../" + fileName);
+    if (!file)
+    {
+        cout << "Não é possível abrir o ficheiro " << fileName << endl;
+    }
+    else
+    {
+        for (auto it : points) {
+            file << "v " << it.getX() << " " << it.getY() << " " << it.getZ() << endl;
+        }
+
+        for (auto it : triangles)
+        {
+            file << "f " << it.getIndP1() << " " << it.getIndP2() << " " << it.getIndP3() << endl;
+        }
+    }
+}
+
+
 void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
 {
     cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;

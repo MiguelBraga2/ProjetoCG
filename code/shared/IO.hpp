@@ -10,6 +10,7 @@
 #include "triangle.hpp"
 
 void writer(string fileName, map<string, int> indexes, vector<Triangle> triangles);
+void writer1(string fileName, vector<Point> points, vector<Triangle> triangles);
 vector<Point>* reader(string fileName, vector<Triangle>* triangles);
 void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[]);
 
