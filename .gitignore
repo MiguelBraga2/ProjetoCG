@@ -7,3 +7,4 @@ demo.xml
 cmake-build-debug/
 code/engine/build
 code/generator/build/
+*.obj
