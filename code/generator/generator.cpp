@@ -121,48 +121,6 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     return triangles;
 }
 
-vector<Triangle> generatePlane1(float length, int grid, vector<Point>* points) {
-    float smallerSide = length / grid; // side of each of the smaller squares
-    float x, x1, z, z1;
-    vector<Triangle> triangles{};
-
-    for (int i = 0; i < grid; i++) {
-        x = -length / 2 + smallerSide * i;
-        x1 = -length / 2 + smallerSide * (i + 1);
-
-        for (int j = 0; j < grid; j++) {
-            z = - length / 2 + smallerSide * j;
-            z1 = - length / 2 + smallerSide * (j + 1);
-
-            if (i == 0 && j == 0) {
-                (*points)[i + j * (grid + 1)].setPoint(x, 0, z);
-                (*points)[(i + 1) + j * (grid + 1)].setPoint(x1, 0, z);
-                (*points)[i + (j + 1) * (grid + 1)].setPoint(x, 0, z1);
-                (*points)[(i + 1) + (j + 1) * (grid + 1)].setPoint(x1, 0, z1);
-            } else if (i == 0){
-                (*points)[i + (j + 1) * (grid + 1)].setPoint(x, 0, z1);
-                (*points)[(i + 1) + (j + 1) * (grid + 1)].setPoint(x1, 0, z1);
-            } else if (j == 0) {
-                (*points)[(i + 1) + j * (grid + 1)].setPoint(x1, 0, z);
-                (*points)[(i + 1) + (j + 1) * (grid + 1)].setPoint(x1, 0, z1);
-            } else {
-                (*points)[(i + 1) + (j + 1) * (grid + 1)].setPoint(x1, 0, z1);
-            }
-
-            Triangle t1(i + j * (grid + 1), i + (j + 1) * (grid + 1), (i + 1) + (j + 1) * (grid + 1));
-            triangles.push_back(t1);
-
-            Triangle t2(i + j * (grid + 1), (i + 1) + (j + 1) * (grid + 1), (i + 1) + j * (grid + 1));
-            triangles.push_back(t2);
-
-        }
-
-    }
-
-    return triangles;
-}
-
-
 /**
  * Generates a group of triangles, making a cylinder of given radius and height
  * @param radius the radius of the base and top circles of the cylinder
@@ -449,21 +407,18 @@ vector<Triangle> drawTorus(float innerRadius, float outerRadius, float slices, f
 }
 
 
+
 int main(int argc, char** argv)
 {
     if (strcmp(argv[1], "sphere") == 0)
     {
-        if (argc == 6)
+        if (argc == 6) 
         {
-
             map<string, int> indexes;
             int index = 0;
-
             vector<Triangle> list = drawSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
             writer(argv[5], indexes, list);
-
-        }
-        else
+        } else 
         {
             cout << "Número de argumentos inválido";
         }
@@ -472,13 +427,10 @@ int main(int argc, char** argv)
     {
         if (argc == 7)
         {
-
             map<string, int> indexes;
             int index = 0;
-
-            vector<Triangle> triangles = drawCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), &indexes, &index);
-            writer(argv[6], indexes, triangles);
-
+            vector<Triangle> list = drawSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
+            writer(argv[5], indexes, list);
         }
         else
         {
@@ -491,10 +443,8 @@ int main(int argc, char** argv)
         {
             float side = stof(argv[2]);
             int grid = stoi(argv[3]);
-
             map<string, int> indexes;
             int index = 0;
-
             vector<Triangle> triangles = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
             vector<Triangle> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
@@ -506,7 +456,6 @@ int main(int argc, char** argv)
             triangles.insert(triangles.end(), aux.begin(), aux.end());
             aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
-
             writer(argv[4], indexes, triangles);
         }
         else
@@ -516,29 +465,26 @@ int main(int argc, char** argv)
 
     }
     else if (strcmp(argv[1], "plane") == 0) {
-        if (argc == 5) {
-
+        if (argc == 5) 
+        {
             float length = stof(argv[2]);
-            int grid = stoi(argv[3]);
-            vector<Point> indexes((grid+1) * (grid+1));
-            vector<Triangle> triangles = generatePlane1(length, grid, &indexes);
-            writer1(argv[4], indexes, triangles);
-
+            map<string, int> indexes;
+            int index = 0;
+            vector<Triangle> triangles = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
+            writer(argv[4], indexes, triangles);
         }
-        else
+        else 
         {
             cout << "Figura desconhecida";
         }
     }
     else if (strcmp(argv[1], "cylinder") == 0) {
-        if (argc == 6) {
-
+        if (argc == 6) 
+        {
             map<string, int> indexes;
             int index = 0;
-
             vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes, &index);
             writer(argv[5], indexes, triangles);
-
         }
         else
         {
@@ -547,7 +493,8 @@ int main(int argc, char** argv)
 
     }
     else if (strcmp(argv[1], "torus") == 0) {
-        if (argc == 7) {
+        if (argc == 7) 
+        {
             // Torus InnerRadius OuterRadius Slices Stacks
 
             map<string, int> indexes;

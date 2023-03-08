@@ -190,11 +190,6 @@ void renderScene(void) {
 	
     // put the drawing instructions here
 
-    /*for (int i=0; i<figures.size(); i++){
-        drawFigure(figures [i], *(points[i]), 1,1,1);
-    }*/
-
-    drawTorus(1,2,40,40);
     int size = figures->size();
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
