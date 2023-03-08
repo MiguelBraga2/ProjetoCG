@@ -72,58 +72,61 @@ void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, f
 
 void drawTorus(float innerRadius, float outerRadius, float slices, float stacks){
     float alpha = 2*M_PI/slices; // Defines the position around the y axis
-    float beta = M_PI/stacks; // Defines the height
+    float beta = 2*M_PI/stacks; // Defines the height
     vector<Triangle> figure {};
     float radius = (outerRadius-innerRadius)/2;
     float distanceToOrigin = innerRadius + radius;
 
     for(int i=0; i<slices; i++){ // Percorrer as slices
-        float currentBeta = -M_PI/2 + i*beta;
         float currentAlpha = i*alpha;
         for(int j=0; j<2*stacks; j++){ // Percorrer as stacks
-            float nextBeta = -M_PI/2 + (i+1)*beta;
+            float currentBeta = -M_PI/2 + j*beta;
+            float nextBeta = -M_PI/2 + (j+1)*beta;
             float nextAlpha = (i+1)*alpha;
 
             Point c(distanceToOrigin*sin(currentAlpha),0,distanceToOrigin*cos(currentAlpha));
+            Point c2(distanceToOrigin*sin(nextAlpha),0,distanceToOrigin*cos(nextAlpha));
 
-            Point p1 (radius*cos(beta)*sin(currentAlpha),radius*sin(beta), radius*cos(beta)*sin(currentAlpha));
-            Point p2 (radius*cos(nextBeta)*sin(currentAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*sin(currentAlpha));
-            Point p3 (radius*cos(nextBeta)*sin(nextAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*sin(nextAlpha));
-            Point p4 (radius*cos(beta)*sin(nextAlpha),radius*sin(beta), radius*cos(beta)*sin(nextAlpha));
+            Point p1 (radius*cos(currentBeta)*sin(currentAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
+            Point p2 (radius*cos(nextBeta)*sin(currentAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p3 (radius*cos(nextBeta)*sin(nextAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
+            Point p4 (radius*cos(currentBeta)*sin(nextAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
 
             Point p5(p1.getX() + c.getX(), p1.getY() + c.getY(), p1.getZ() + c.getZ());
             Point p6(p2.getX() + c.getX(), p2.getY() + c.getY(), p2.getZ() + c.getZ());
-            Point p7(p3.getX() + c.getX(), p3.getY() + c.getY(), p3.getZ() + c.getZ());
-            Point p8(p4.getX() + c.getX(), p4.getY() + c.getY(), p4.getZ() + c.getZ());
+            Point p7(p3.getX() + c2.getX(), p3.getY() + c2.getY(), p3.getZ() + c2.getZ());
+            Point p8(p4.getX() + c2.getX(), p4.getY() + c2.getY(), p4.getZ() + c2.getZ());
 
-            glColor3f(1,1,0);
+            glColor3f(1, 1, 0);
+
+            glBegin(GL_TRIANGLES);
+            glVertex3f(p7.getX(), p7.getY(), p7.getZ());
+            glVertex3f(p6.getX(), p6.getY(), p6.getZ());
+            glVertex3f(p5.getX(), p5.getY(), p5.getZ());
+            glEnd();
+
+            glBegin(GL_TRIANGLES);
+            glVertex3f(p7.getX(), p7.getY(), p7.getZ());
+            glVertex3f(p5.getX(), p5.getY(), p5.getZ());
+            glVertex3f(p8.getX(), p8.getY(), p8.getZ());
+            glEnd();
             // Interior do torus
-            if (cos(currentBeta) > 0){
-                glBegin(GL_TRIANGLES);
-                glVertex3f(p7.getX(), p7.getY(), p7.getZ());
-                glVertex3f(p5.getX(), p5.getY(), p5.getZ());
-                glVertex3f(p6.getX(), p6.getY(), p6.getZ());
-                glEnd();
+            /*if (cos(currentBeta) > 0){
 
-                glBegin(GL_TRIANGLES);
-                glVertex3f(p7.getX(), p7.getY(), p7.getZ());
-                glVertex3f(p8.getX(), p8.getY(), p8.getZ());
-                glVertex3f(p5.getX(), p5.getY(), p5.getZ());
-                glEnd();
             } // Exterior do torus
             else {
                 glBegin(GL_TRIANGLES);
                 glVertex3f(p7.getX(), p7.getY(), p7.getZ());
-                glVertex3f(p6.getX(), p6.getY(), p6.getZ());
                 glVertex3f(p5.getX(), p5.getY(), p5.getZ());
+                glVertex3f(p6.getX(), p6.getY(), p6.getZ());
                 glEnd();
 
                 glBegin(GL_TRIANGLES);
                 glVertex3f(p7.getX(), p7.getY(), p7.getZ());
-                glVertex3f(p5.getX(), p5.getY(), p5.getZ());
                 glVertex3f(p8.getX(), p8.getY(), p8.getZ());
+                glVertex3f(p5.getX(), p5.getY(), p5.getZ());
                 glEnd();
-            }
+            }*/
         }
     }
 }
@@ -158,7 +161,7 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
-              cameraLookAtX,cameraLookAtY,cameraLookAtZ,
+              cameraLookAtX+cameraPositionX,cameraLookAtY+cameraPositionY,cameraLookAtZ+cameraPositionZ,
 			  cameraUpX,cameraUpY,cameraUpZ);
 
     // put axis drawing in here
@@ -186,7 +189,12 @@ void renderScene(void) {
     // put the geometric transformations here
 	
     // put the drawing instructions here
-    
+
+    /*for (int i=0; i<figures.size(); i++){
+        drawFigure(figures [i], *(points[i]), 1,1,1);
+    }*/
+
+    drawTorus(1,2,40,40);
     int size = figures->size();
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
