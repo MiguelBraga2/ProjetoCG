@@ -12,60 +12,16 @@
 #include <string>
 #include "../libraries/tinyxml2.h"
 #include "../shared/triangle.hpp"
-#include "../shared/point.hpp"
 #include "../shared/IO.hpp"
+#include "camera.hpp"
 
-float alfa = 0.0f, betaAngle, cameraRadius;
-
-float cameraPositionX, cameraPositionY, cameraPositionZ,
-    cameraLookAtX, cameraLookAtY, cameraLookAtZ,
-    cameraUpX, cameraUpY, cameraUpZ,
-    fov, near, far,
-    width, height,
-    rotationAlpha=0, rotationBeta=0,
-    lookDirX, lookDirY, lookDirZ;
+float width, height;
+Camera* camera;
 vector<vector<Point> *> *points;
 vector<vector<Triangle> *> *figures;
-int cameraMode = 0; // 0 - Modo explorador, 1 - Modo FPS
-
-
 
 using namespace tinyxml2;
 using namespace std;
-
-void spherical2Cartesian() {
-
-    cameraPositionX = cameraRadius * cos(betaAngle) * sin(alfa);
-    cameraPositionY = cameraRadius * sin(betaAngle);
-    cameraPositionZ = cameraRadius * cos(betaAngle) * cos(alfa);
-}
-
-float calculateBeta(){
-    // r * sin(beta) = y
-    // sin(beta) = y/r
-    // beta = arcsin(y/r)
-
-    float acsin = asin(cameraPositionY/cameraRadius);
-
-    return acsin;
-
-}
-
-float calculateAlpha(){
-    float camPositionY = cameraLookAtY; // Projection in the same y-plane as the lookAtPoint
-    float zSide = cameraPositionZ-cameraLookAtZ; // Length of the side of the triangle parallel to the z axis
-    float xSide = cameraPositionX-cameraLookAtX; // Length of the side of the triangle parallel to the x axis
-    float hip = sqrt(pow(cameraPositionX-cameraLookAtX, 2) + pow(cameraPositionY-cameraLookAtZ, 2)); // the hypotenuse
-
-    float accos = acos(zSide/hip); // Angle of Beta (if in the 1st or 2nd quadrants)
-
-    if (xSide < 0){ // Adjust if the angle is in the 3rd or 4th quadrants
-        accos = M_PI - accos + M_PI;
-    }
-
-    cout << accos*180/M_PI << endl;
-    return accos;
-}
 
 /**
  * Draw a triangle, using the order specified by the indexes
@@ -125,7 +81,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(fov ,ratio, near , far);
+	gluPerspective(camera->getFov() ,ratio, camera->getNear() , camera->getFar());
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -136,14 +92,14 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
-              cameraLookAtX/*+cameraPositionX*/,cameraLookAtY/*+cameraPositionY*/,cameraLookAtZ/*+cameraPositionZ*/,
-			  cameraUpX,cameraUpY,cameraUpZ);
+	gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
+              camera->getLookAtPosition().getX(),camera->getLookAtPosition().getY(),camera->getLookAtPosition().getZ(),
+			  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
 
     // put axis drawing in here
     glBegin(GL_LINES);
 
-    // X axis in red
+    // X-axis in red
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(
             -100.0f, 0.0f, 0.0f);
@@ -178,7 +134,7 @@ void renderScene(void) {
 // write function to process keyboard events
 
 void keyboard_events(unsigned char key, int x, int y) {
-    if (key == 'w'){
+    /*if (key == 'w'){
         cameraPositionX += cameraLookAtX;
         cameraPositionY += cameraLookAtY;
         cameraPositionZ += cameraLookAtZ;
@@ -201,11 +157,19 @@ void keyboard_events(unsigned char key, int x, int y) {
         cameraPositionX -= crossP[0];
         cameraPositionY -= crossP[1];
         cameraPositionZ -= crossP[2];
+    }*/
+
+    if (key == '2'){
+        camera->incrementIncrement();
+    }
+    else if (key == '1'){
+        camera->decrementIncrement();
     }
 
     glutPostRedisplay();
 }
 
+/*
 void updateCamera(){
     cameraLookAtX = cos(rotationBeta)*sin(rotationAlpha);
     cameraLookAtY = sin(rotationBeta);
@@ -217,38 +181,28 @@ void updateCamera(){
     cameraLookAtZ = cameraLookAtZ / lookAtLength;
 
     glutPostRedisplay();
-}
+}*/
 
 void processSpecialKeys(int key, int xx, int yy) {
-
     switch (key) {
-
         case GLUT_KEY_RIGHT:
-            alfa += 0.1; break;
+            camera->incrementAlfa(); break;
 
         case GLUT_KEY_LEFT:
-            alfa -= 0.1; break;
+            camera->decrementAlfa(); break;
 
         case GLUT_KEY_UP:
-            betaAngle += 0.1f;
-            if (betaAngle > 1.5f)
-                betaAngle = 1.5f;
-            break;
+            camera->incrementBeta(); break;
 
         case GLUT_KEY_DOWN:
-            betaAngle -= 0.1f;
-            if (betaAngle < -1.5f)
-                betaAngle = -1.5f;
-            break;
+            camera->decrementBeta(); break;
 
-        case GLUT_KEY_PAGE_DOWN: cameraRadius -= 0.1f;
-            if (cameraRadius < 0.1f)
-                cameraRadius = 0.1f;
-            break;
+        case GLUT_KEY_PAGE_DOWN:
+            camera->decrementRadius(); break;
 
-        case GLUT_KEY_PAGE_UP: cameraRadius += 0.1f; break;
+        case GLUT_KEY_PAGE_UP: camera->incrementRadius(); break;
     }
-    spherical2Cartesian();
+
     glutPostRedisplay();
 }
 
@@ -257,6 +211,8 @@ vector<string>* readXML(char* filePath){
     XMLDocument *doc = new XMLDocument();
     XMLError result = doc->LoadFile(filePath);
     XMLNode* world = doc->FirstChildElement("world");
+    float fov, far, near;
+    Point* cameraPosition, *cameraLookAt, *cameraUpVector;
   
     if (world) {
         // window
@@ -267,32 +223,29 @@ vector<string>* readXML(char* filePath){
         }
         
         // camera
-        XMLElement* camera = world->FirstChildElement("camera");
-        if (camera) {
-            XMLElement* position = camera->FirstChildElement("position");
+        XMLElement* cameraAtt = world->FirstChildElement("camera");
+        if (cameraAtt) {
+            XMLElement* position = cameraAtt->FirstChildElement("position");
             if (position) {
-                cameraPositionX = stof(position->Attribute("x"));
-                cameraPositionY = stof(position->Attribute("y"));
-                cameraPositionZ = stof(position->Attribute("z"));
+                cameraPosition = new Point(stof(position->Attribute("x")),
+                                             stof(position->Attribute("y")),
+                                             stof(position->Attribute("z")));
             }
-            XMLElement* lookAt = camera->FirstChildElement("lookAt");
+            XMLElement* lookAt = cameraAtt->FirstChildElement("lookAt");
             if (lookAt) {
-                cameraLookAtX = stof(lookAt->Attribute("x"));
-                cameraLookAtY = stof(lookAt->Attribute("y"));
-                cameraLookAtZ = stof(lookAt->Attribute("z"));
+                cameraLookAt = new Point (stof(lookAt->Attribute("x")), stof(lookAt->Attribute("y")), stof(lookAt->Attribute("z")));
             }
-            XMLElement* up = camera->FirstChildElement("up");
+            XMLElement* up = cameraAtt->FirstChildElement("up");
             if (up) {
-                cameraUpX = stof(up->Attribute("x"));
-                cameraUpY = stof(up->Attribute("y"));
-                cameraUpZ = stof(up->Attribute("z"));
+                cameraUpVector = new Point (stof(up->Attribute("x")), stof(up->Attribute("y")), stof(up->Attribute("z")));
             }
-            XMLElement* projection = camera->FirstChildElement("projection");
+            XMLElement* projection = cameraAtt->FirstChildElement("projection");
             if (projection) {
                 fov = stof(projection->Attribute("fov"));
                 near = stof(projection->Attribute("near"));
                 far = stof(projection->Attribute("far"));
             }
+            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
         }
 
         // group
@@ -316,9 +269,6 @@ int main(int argc, char **argv) {
     if (argc == 2)
     {
         vector<string> *primitives = readXML(argv[1]);
-        cameraRadius = sqrt(pow(cameraPositionX-cameraLookAtX, 2) + pow(cameraPositionY-cameraLookAtY, 2) + pow(cameraPositionZ-cameraLookAtZ, 2));
-        alfa = calculateAlpha();
-        betaAngle = calculateBeta();
 
         figures = new vector<vector<Triangle> *>();
         points = new vector<vector<Point> *>();

@@ -1,0 +1,127 @@
+#include "camera.hpp"
+#include <math.h>
+
+//
+// Created by mike on 09-03-2023.
+//
+Camera::Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float near,float far) {
+    this->position = position;
+    this->lookAtPosition = lookAtPosition;
+    this->upVector = upVector;
+    this->fov = fov;
+    this->near = near;
+    this->far = far;
+    this->cameraRadius = sqrt(pow(this->position.getX()-this->lookAtPosition.getX(), 2) +
+                        pow(this->position.getY()-this->lookAtPosition.getY(), 2) +
+                        pow(this->position.getZ()-this->lookAtPosition.getZ(), 2));
+    this->increment = 0.01;
+    calculateBeta();
+    calculateAlpha();
+}
+
+void Camera::spherical2Cartesian() {
+    this->position.setX(this->cameraRadius * cos(this->beta) * sin(this->alfa));
+    this->position.setY(this->cameraRadius * sin(this->beta));
+    this->position.setZ(this->cameraRadius * cos(this->beta) * cos(this->alfa));
+}
+
+void Camera::incrementAlfa(){
+    this->alfa += this->increment;
+    this->spherical2Cartesian();
+}
+
+void Camera::decrementAlfa(){
+    this->alfa -= this->increment;
+    this->spherical2Cartesian();
+}
+
+void Camera::incrementBeta(){
+    this->beta += this->increment;
+    if (beta > 1.5f)
+        beta = 1.5f;
+    this->spherical2Cartesian();
+}
+
+void Camera::decrementBeta(){
+    this->beta -= this->increment;
+    if (beta < -1.5f)
+        beta = -1.5f;
+    this->spherical2Cartesian();
+}
+
+void Camera::incrementRadius(){
+    this->cameraRadius += this->increment;
+    this->spherical2Cartesian();
+}
+
+void Camera::decrementRadius(){
+    this->cameraRadius -= this->increment;
+    if (cameraRadius < 0.1f)
+        cameraRadius = 0.1f;
+    this->spherical2Cartesian();
+}
+
+void Camera::incrementIncrement() {
+    this->increment += 0.01;
+}
+
+void Camera::decrementIncrement() {
+    this->increment -= 0.01;
+    if (this->increment <= 0){
+        this->increment = 0.01;
+    }
+}
+
+void Camera::calculateBeta(){
+    // r * sin(beta) = y
+    // sin(beta) = y/r
+    // beta = arcsin(y/r)
+
+    float acsin = asin(this->position.getY()/this->cameraRadius);
+    beta = acsin; // By default between -PI/2 and PI/2 because of arcsin domain
+    cout << beta*180/M_PI << endl;
+}
+
+void Camera::calculateAlpha(){
+    float camPositionY = this->lookAtPosition.getY(); // Projection in the same y-plane as the lookAtPoint
+    float zSide = this->position.getZ()-this->lookAtPosition.getZ(); // Length of the side of the triangle parallel to the z axis
+    float xSide = this->position.getX()-this->lookAtPosition.getX(); // Length of the side of the triangle parallel to the x axis
+    float hip = sqrt(pow(this->position.getX()-this->lookAtPosition.getX(), 2) + pow(this->position.getZ()-this->lookAtPosition.getZ(), 2)); // the hypotenuse
+
+    float accos = acos(zSide/hip); // Angle of Beta (if in the 1st or 2nd quadrants)
+
+    if (xSide < 0){ // Adjust if the angle is in the 3rd or 4th quadrants
+        alfa = M_PI - accos + M_PI;
+    }
+    else {
+        alfa = accos;
+    }
+
+    cout << alfa*180/M_PI << endl;
+}
+
+Point Camera::getPosition() {
+    return position;
+}
+
+Point Camera::getLookAtPosition() {
+    return lookAtPosition;
+}
+
+Point Camera::getUpVector() {
+    return upVector;
+}
+
+float Camera::getFov() {
+    return fov;
+}
+
+float Camera::getNear() {
+    return near;
+}
+
+float Camera::getFar() {
+    return far;
+}
+
+
