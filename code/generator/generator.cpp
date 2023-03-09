@@ -390,19 +390,58 @@ vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<stri
     return figure;
 }
 
-vector<Triangle> drawTorus(float innerRadius, float outerRadius, float slices, float stacks, map<string, int>* indexes, int* index) {
-    float alpha = 2 * M_PI / slices; // Defines the position around the y axis
-    float initialBeta = M_PI / stacks; // Defines the height
-    vector<Triangle> figure{};
+vector<Triangle> drawTorus(float innerRadius, float outerRadius, float slices, float stacks, map<string, int>* indexes, int* index){
+    float alpha = 2*M_PI/slices; // Defines the position around the y axis
+    float beta = 2*M_PI/stacks; // Defines the height
+    vector<Triangle> figure {};
+    float radius = (outerRadius-innerRadius)/2;
+    float distanceToOrigin = innerRadius + radius;
 
-    for (int i = 0; i < slices; i++) { // Percorrer as slices
-        float beta = -M_PI / 2;
-        float currentAlpha = i * alpha;
-        for (int j = 0; j < 2 * stacks; j++) { // Percorrer as stacks
-            float nextBeta = beta + initialBeta;
-            float nextAlpha = currentAlpha + alpha;
+    for(int i=0; i<slices; i++){ // Percorrer as slices
+        float currentAlpha = i*alpha;
+        for(int j=0; j<2*stacks; j++){ // Percorrer as stacks
+            float currentBeta = -M_PI/2 + j*beta;
+            float nextBeta = -M_PI/2 + (j+1)*beta;
+            float nextAlpha = (i+1)*alpha;
+
+            Point c(distanceToOrigin*sin(currentAlpha),0,distanceToOrigin*cos(currentAlpha));
+            Point c2(distanceToOrigin*sin(nextAlpha),0,distanceToOrigin*cos(nextAlpha));
+
+            Point p1 (radius*cos(currentBeta)*sin(currentAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
+            Point p2 (radius*cos(nextBeta)*sin(currentAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
+            Point p3 (radius*cos(nextBeta)*sin(nextAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
+            Point p4 (radius*cos(currentBeta)*sin(nextAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+
+            Point p5(p1.getX() + c.getX(), p1.getY() + c.getY(), p1.getZ() + c.getZ());
+            Point p6(p2.getX() + c.getX(), p2.getY() + c.getY(), p2.getZ() + c.getZ());
+            Point p7(p3.getX() + c2.getX(), p3.getY() + c2.getY(), p3.getZ() + c2.getZ());
+            Point p8(p4.getX() + c2.getX(), p4.getY() + c2.getY(), p4.getZ() + c2.getZ());
+
+            if ((*indexes).count(p5.toString()) == 0) {
+                (*indexes)[p5.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p6.toString()) == 0) {
+                (*indexes)[p6.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p7.toString()) == 0) {
+                (*indexes)[p7.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p8.toString()) == 0) {
+                (*indexes)[p8.toString()] = (*index);
+                (*index)++;
+            }
+
+            Triangle t ( (*indexes)[p7.toString()], (*indexes)[p6.toString()], (*indexes)[p5.toString()]);
+            figure.push_back(t);
+
+            Triangle t2 ( (*indexes)[p7.toString()], (*indexes)[p5.toString()], (*indexes)[p8.toString()]);
+            figure.push_back(t2);
         }
     }
+
     return figure;
 }
 
@@ -495,7 +534,7 @@ int main(int argc, char** argv)
     else if (strcmp(argv[1], "torus") == 0) {
         if (argc == 7) 
         {
-            // Torus InnerRadius OuterRadius Slices Stacks
+            // torus InnerRadius OuterRadius Slices Stacks
 
             map<string, int> indexes;
             int index = 0;

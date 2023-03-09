@@ -25,7 +25,7 @@ void writer(string fileName, map<string, int> indexes, vector<Triangle> triangle
         return a.second < b.second;
     });
 
-    ofstream file("../" + fileName);
+    ofstream file("../../figures/" + fileName);
     if (!file)
     {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
