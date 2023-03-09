@@ -25,6 +25,8 @@ float cameraPositionX, cameraPositionY, cameraPositionZ,
     lookDirX, lookDirY, lookDirZ;
 vector<vector<Point> *> *points;
 vector<vector<Triangle> *> *figures;
+int cameraMode = 0; // 0 - Modo explorador, 1 - Modo FPS
+
 
 
 using namespace tinyxml2;
@@ -194,7 +196,7 @@ void renderScene(void) {
         drawFigure(figures [i], *(points[i]), 1,1,1);
     }*/
 
-    drawTorus(1,2,40,40);
+    //drawTorus(1,2,40,40);
     int size = figures->size();
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);

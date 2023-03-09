@@ -52,7 +52,7 @@ void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float 
 
 // Devolve os pontos
 vector<Point>* reader(string fileName, vector<Triangle>* triangles){
-    ifstream file("../" + fileName);
+    ifstream file("../../figures/" + fileName);
     vector<Point> *points = new vector<Point>();
     vector<Point> normals {};
     vector<int> normal_indexes {};
