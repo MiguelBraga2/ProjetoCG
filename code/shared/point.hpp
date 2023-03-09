@@ -10,6 +10,7 @@ private:
     float x, y, z;
 
 public:
+    Point();
     Point(float x, float y, float z);
     float getX();
     float getY();
@@ -17,6 +18,7 @@ public:
     void setX(float x);
     void setY(float y);
     void setZ(float z);
+    void setPoint(float x, float y, float z);
     string toString();
 };
 
