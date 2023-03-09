@@ -15,6 +15,7 @@
 #include "../shared/point.hpp"
 #include "../shared/IO.hpp"
 
+float alfa = 0.0f, betaAngle, cameraRadius;
 
 float cameraPositionX, cameraPositionY, cameraPositionZ,
     cameraLookAtX, cameraLookAtY, cameraLookAtZ,
@@ -31,6 +32,40 @@ int cameraMode = 0; // 0 - Modo explorador, 1 - Modo FPS
 
 using namespace tinyxml2;
 using namespace std;
+
+void spherical2Cartesian() {
+
+    cameraPositionX = cameraRadius * cos(betaAngle) * sin(alfa);
+    cameraPositionY = cameraRadius * sin(betaAngle);
+    cameraPositionZ = cameraRadius * cos(betaAngle) * cos(alfa);
+}
+
+float calculateBeta(){
+    // r * sin(beta) = y
+    // sin(beta) = y/r
+    // beta = arcsin(y/r)
+
+    float acsin = asin(cameraPositionY/cameraRadius);
+
+    return acsin;
+
+}
+
+float calculateAlpha(){
+    float camPositionY = cameraLookAtY; // Projection in the same y-plane as the lookAtPoint
+    float zSide = cameraPositionZ-cameraLookAtZ; // Length of the side of the triangle parallel to the z axis
+    float xSide = cameraPositionX-cameraLookAtX; // Length of the side of the triangle parallel to the x axis
+    float hip = sqrt(pow(cameraPositionX-cameraLookAtX, 2) + pow(cameraPositionY-cameraLookAtZ, 2)); // the hypotenuse
+
+    float accos = acos(zSide/hip); // Angle of Beta (if in the 1st or 2nd quadrants)
+
+    if (xSide < 0){ // Adjust if the angle is in the 3rd or 4th quadrants
+        accos = M_PI - accos + M_PI;
+    }
+
+    cout << accos*180/M_PI << endl;
+    return accos;
+}
 
 /**
  * Draw a triangle, using the order specified by the indexes
@@ -163,7 +198,7 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 	gluLookAt(cameraPositionX,cameraPositionY,cameraPositionZ,
-              cameraLookAtX+cameraPositionX,cameraLookAtY+cameraPositionY,cameraLookAtZ+cameraPositionZ,
+              cameraLookAtX/*+cameraPositionX*/,cameraLookAtY/*+cameraPositionY*/,cameraLookAtZ/*+cameraPositionZ*/,
 			  cameraUpX,cameraUpY,cameraUpZ);
 
     // put axis drawing in here
@@ -192,11 +227,6 @@ void renderScene(void) {
 	
     // put the drawing instructions here
 
-    /*for (int i=0; i<figures.size(); i++){
-        drawFigure(figures [i], *(points[i]), 1,1,1);
-    }*/
-
-    //drawTorus(1,2,40,40);
     int size = figures->size();
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
@@ -250,21 +280,37 @@ void updateCamera(){
     glutPostRedisplay();
 }
 
-void special_keyboard(int key_code, int x, int y){
-    if (key_code == GLUT_KEY_LEFT){
-        rotationAlpha -= M_PI/30;
-    }
-    else if (key_code == GLUT_KEY_RIGHT){
-        rotationAlpha += M_PI/30;
-    }
-    else if (key_code == GLUT_KEY_UP){
-        rotationBeta += M_PI/30;
-    }
-    else if (key_code == GLUT_KEY_DOWN){
-        rotationBeta -= M_PI/30;
-    }
+void processSpecialKeys(int key, int xx, int yy) {
 
-    updateCamera();
+    switch (key) {
+
+        case GLUT_KEY_RIGHT:
+            alfa += 0.1; break;
+
+        case GLUT_KEY_LEFT:
+            alfa -= 0.1; break;
+
+        case GLUT_KEY_UP:
+            betaAngle += 0.1f;
+            if (betaAngle > 1.5f)
+                betaAngle = 1.5f;
+            break;
+
+        case GLUT_KEY_DOWN:
+            betaAngle -= 0.1f;
+            if (betaAngle < -1.5f)
+                betaAngle = -1.5f;
+            break;
+
+        case GLUT_KEY_PAGE_DOWN: cameraRadius -= 0.1f;
+            if (cameraRadius < 0.1f)
+                cameraRadius = 0.1f;
+            break;
+
+        case GLUT_KEY_PAGE_UP: cameraRadius += 0.1f; break;
+    }
+    spherical2Cartesian();
+    glutPostRedisplay();
 }
 
 vector<string>* readXML(char* filePath){
@@ -331,6 +377,10 @@ int main(int argc, char **argv) {
     if (argc == 2)
     {
         vector<string> *primitives = readXML(argv[1]);
+        cameraRadius = sqrt(pow(cameraPositionX-cameraLookAtX, 2) + pow(cameraPositionY-cameraLookAtY, 2) + pow(cameraPositionZ-cameraLookAtZ, 2));
+        alfa = calculateAlpha();
+        betaAngle = calculateBeta();
+
         figures = new vector<vector<Triangle> *>();
         points = new vector<vector<Point> *>();
         
@@ -345,6 +395,7 @@ int main(int argc, char **argv) {
 
         // init GLUT and the window
         glutInit(&argc, argv);
+        //cout << betaAngle*180/M_PI << endl;
         glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
         glutInitWindowPosition(100, 100);
         glutInitWindowSize(width, height);
@@ -357,7 +408,7 @@ int main(int argc, char **argv) {
 
 
         // put here the registration of the keyboard callbacks
-        glutSpecialFunc(special_keyboard);
+        glutSpecialFunc(processSpecialKeys);
         glutKeyboardFunc(keyboard_events);
         //glutPassiveMotionFunc(mouse_function);
 
