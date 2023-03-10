@@ -33,6 +33,11 @@ public:
     float getFar();
     void incrementIncrement();
     void decrementIncrement();
+    void moveForwards();
+    void moveBackwards();
+    void moveLeft();
+    void moveRight();
+    void changeMode();
 
 private:
     /**

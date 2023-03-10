@@ -15,6 +15,7 @@ Camera::Camera(const Point &position, const Point &lookAtPosition, const Point &
                         pow(this->position.getY()-this->lookAtPosition.getY(), 2) +
                         pow(this->position.getZ()-this->lookAtPosition.getZ(), 2));
     this->increment = 0.01;
+    this->mode = 0;
     calculateBeta();
     calculateAlpha();
 }
@@ -72,6 +73,15 @@ void Camera::decrementIncrement() {
     }
 }
 
+void Camera::changeMode(){
+    if (this->mode == 0){
+
+    }
+    else if (this->mode = 1){
+        this->mode = 0;
+    }
+}
+
 void Camera::calculateBeta(){
     // r * sin(beta) = y
     // sin(beta) = y/r
@@ -79,7 +89,7 @@ void Camera::calculateBeta(){
 
     float acsin = asin(this->position.getY()/this->cameraRadius);
     beta = acsin; // By default between -PI/2 and PI/2 because of arcsin domain
-    cout << beta*180/M_PI << endl;
+    cout << "Beta: " << beta*180/M_PI << endl;
 }
 
 void Camera::calculateAlpha(){
@@ -97,7 +107,7 @@ void Camera::calculateAlpha(){
         alfa = accos;
     }
 
-    cout << alfa*180/M_PI << endl;
+    cout << "Alfa: " << alfa*180/M_PI << endl;
 }
 
 Point Camera::getPosition() {

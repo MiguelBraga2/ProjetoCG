@@ -134,16 +134,12 @@ void renderScene(void) {
 // write function to process keyboard events
 
 void keyboard_events(unsigned char key, int x, int y) {
-    /*if (key == 'w'){
-        cameraPositionX += cameraLookAtX;
-        cameraPositionY += cameraLookAtY;
-        cameraPositionZ += cameraLookAtZ;
+    if (key == 'w'){
+        //camera->moveForwards();
     }
     else if (key == 's'){
-        cameraPositionX -= cameraLookAtX;
-        cameraPositionY -= cameraLookAtY;
-        cameraPositionZ -= cameraLookAtZ;
-    }
+        //camera->moveBackwards();
+    }/*
     else if (key == 'a'){
         float* crossP = (float*) malloc(3*sizeof(float));
         crossProduct(0, 1, 0, cameraLookAtX, cameraLookAtY, cameraLookAtZ, crossP);
@@ -164,6 +160,9 @@ void keyboard_events(unsigned char key, int x, int y) {
     }
     else if (key == '1'){
         camera->decrementIncrement();
+    }
+    else if (key == 'm'){
+        camera->changeMode();
     }
 
     glutPostRedisplay();

@@ -468,8 +468,8 @@ int main(int argc, char** argv)
         {
             map<string, int> indexes;
             int index = 0;
-            vector<Triangle> list = drawSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
-            writer(argv[5], indexes, list);
+            vector<Triangle> list = drawCone(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &index);
+            writer(argv[6], indexes, list);
         }
         else
         {
