@@ -484,17 +484,17 @@ int main(int argc, char** argv)
             int grid = stoi(argv[3]);
             map<string, int> indexes;
             int index = 0;
-            vector<Triangle> triangles = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
+            vector<Triangle> triangles {}; //= generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
             vector<Triangle> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
             aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            //aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+            //triangles.insert(triangles.end(), aux.begin(), aux.end());
+            //aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
+            //triangles.insert(triangles.end(), aux.begin(), aux.end());
+            //aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+            //triangles.insert(triangles.end(), aux.begin(), aux.end());
             writer(argv[4], indexes, triangles);
         }
         else

@@ -63,7 +63,7 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
     }
     else
     {
-        string line = "v 1 2 3";
+        string line;
         std::regex regex(R"(^(v|f|vn) (-?\d+\.?\d*).*?(?:\/(\d+))? (-?\d+\.?\d*).*?(?:\/(\d+))? (-?\d+\.?\d*).*?(?:\/(\d+))?$)");
         std::smatch match;
 
