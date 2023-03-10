@@ -89,7 +89,6 @@ void Camera::calculateBeta(){
 
     float acsin = asin(this->position.getY()/this->cameraRadius);
     beta = acsin; // By default between -PI/2 and PI/2 because of arcsin domain
-    cout << "Beta: " << beta*180/M_PI << endl;
 }
 
 void Camera::calculateAlpha(){
@@ -109,8 +108,6 @@ void Camera::calculateAlpha(){
     else {
         alfa = accos;
     }
-
-    cout << "Alfa: " << alfa*180/M_PI << endl;
 }
 
 Point Camera::getPosition() {

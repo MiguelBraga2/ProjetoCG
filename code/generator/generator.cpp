@@ -544,4 +544,7 @@ int main(int argc, char** argv)
             cout << "Figura desconhecida";
         }
     }
+    else {
+        cout << "Figura desconhecida";
+    }
 }
