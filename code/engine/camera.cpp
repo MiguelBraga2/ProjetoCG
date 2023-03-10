@@ -93,6 +93,9 @@ void Camera::calculateBeta(){
 }
 
 void Camera::calculateAlpha(){
+    if (position.getX() == 0 && position.getZ() == 0){
+        position.setZ(0.01);
+    }
     float camPositionY = this->lookAtPosition.getY(); // Projection in the same y-plane as the lookAtPoint
     float zSide = this->position.getZ()-this->lookAtPosition.getZ(); // Length of the side of the triangle parallel to the z axis
     float xSide = this->position.getX()-this->lookAtPosition.getX(); // Length of the side of the triangle parallel to the x axis
