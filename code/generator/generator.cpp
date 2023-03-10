@@ -27,7 +27,6 @@ using namespace std;
  * @return a list of generated triangles
  */
 vector<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, map<string, int> *indexes, int *index){
-    int numSquares = grid*grid; // each smaller square has 2 triangles
     float smallerSide = length / grid; // side of each of the smaller squares
     
     vector<Triangle> triangles{}; 
@@ -40,81 +39,77 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
     }
 
 
-    for(int i=0; i<numSquares; i++) {
-        // Generate the 4 points for the 2 triangles
-        Point p1(base.getX(), base.getY(), base.getZ());
-        Point p4(base.getX()+smallerSide*direction.getX(), base.getY()+smallerSide*direction.getY(), base.getZ()+smallerSide*direction.getZ()); // Point in the opposite side of the smaller square
-        Point *p2, *p3;
+    for(int i=0; i<grid; i++) {
+        for (int j = 0; j < grid; j++) {
+            // Generate the 4 points for the 2 triangles
+            Point p1(base.getX(), base.getY(), base.getZ());
+            Point p4(base.getX() + smallerSide * direction.getX(), base.getY() + smallerSide * direction.getY(),
+                     base.getZ() + smallerSide * direction.getZ()); // Point in the opposite side of the smaller square
+            Point *p2, *p3;
 
-        if ((*indexes).count(p1.toString()) == 0) {
-            (*indexes)[p1.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p4.toString()) == 0) {
-            (*indexes)[p4.toString()] = (*index);
-            (*index)++;
-        }
-        
+            if ((*indexes).count(p1.toString()) == 0) {
+                (*indexes)[p1.toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count(p4.toString()) == 0) {
+                (*indexes)[p4.toString()] = (*index);
+                (*index)++;
+            }
 
-        // Generate the other points of the triangles, depending on the direction of the plane
-        if (direction.getX() == 0){
-            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
-            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
-        }
-        else if (direction.getY() == 0){
-            p2 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
-            p3 = new Point (base.getX(), base.getY(), base.getZ()+smallerSide*direction.getZ());
-        }
-        else if (direction.getZ() == 0){
-            p2 = new Point (base.getX(), base.getY()+smallerSide*direction.getY(), base.getZ());
-            p3 = new Point (base.getX()+smallerSide*direction.getX(), base.getY(), base.getZ());
-        }
 
-        if ((*indexes).count((*p2).toString()) == 0) {
-            (*indexes)[(*p2).toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count((*p3).toString()) == 0) {
-            (*indexes)[(*p3).toString()] = (*index);
-            (*index)++;
-        }
+            // Generate the other points of the triangles, depending on the direction of the plane
+            if (direction.getX() == 0) {
+                p2 = new Point(base.getX(), base.getY() + smallerSide * direction.getY(), base.getZ());
+                p3 = new Point(base.getX(), base.getY(), base.getZ() + smallerSide * direction.getZ());
+            } else if (direction.getY() == 0) {
+                p2 = new Point(base.getX() + smallerSide * direction.getX(), base.getY(), base.getZ());
+                p3 = new Point(base.getX(), base.getY(), base.getZ() + smallerSide * direction.getZ());
+            } else if (direction.getZ() == 0) {
+                p2 = new Point(base.getX(), base.getY() + smallerSide * direction.getY(), base.getZ());
+                p3 = new Point(base.getX() + smallerSide * direction.getX(), base.getY(), base.getZ());
+            }
 
-        // Generate the triangles
-        Triangle* t1, *t2;
-        if (clockWiseDir == false){
-            t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p2).toString()]);
-            t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p3).toString()], (*indexes)[p4.toString()]);
-        }
-        else {
-            t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p2).toString()], (*indexes)[p4.toString()]);
-            t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p3).toString()]);
-        }
+            if ((*indexes).count((*p2).toString()) == 0) {
+                (*indexes)[(*p2).toString()] = (*index);
+                (*index)++;
+            }
+            if ((*indexes).count((*p3).toString()) == 0) {
+                (*indexes)[(*p3).toString()] = (*index);
+                (*index)++;
+            }
 
-        // Add the triangles to the array
-        triangles.push_back(*t1);
-        triangles.push_back(*t2);
+            // Generate the triangles
+            Triangle *t1, *t2;
+            if (clockWiseDir == false) {
+                t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p2).toString()]);
+                t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p3).toString()], (*indexes)[p4.toString()]);
+            } else {
+                t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p2).toString()], (*indexes)[p4.toString()]);
+                t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p3).toString()]);
+            }
 
-        // Move the base point
-        if (direction.getX() == 0){
-            base.setY(base.getY()+smallerSide*direction.getY());
-            if (base.getY() == initial.getY() + length*direction.getY()){
-                base.setY(initial.getY()); // Back to the begin
-                base.setZ(base.getZ() + smallerSide*direction.getZ());
+            // Add the triangles to the array
+            triangles.push_back(*t1);
+            triangles.push_back(*t2);
+
+            // Move the base point
+            if (direction.getX() == 0) {
+                base.setY(base.getY() + smallerSide * direction.getY());
+            } else if (direction.getY() == 0) {
+                base.setX(base.getX() + smallerSide * direction.getX());
+            } else if (direction.getZ() == 0) {
+                base.setY(base.getY() + smallerSide * direction.getY());
             }
         }
-        else if (direction.getY() == 0){
-            base.setX(base.getX()+smallerSide*direction.getX());
-            if (base.getX() == initial.getX() + length*direction.getX()){
-                base.setX(initial.getX()); // Back to the begin
-                base.setZ(base.getZ() + smallerSide*direction.getZ());
-            }
-        }
-        else if (direction.getZ() == 0){
-            base.setY(base.getY()+smallerSide*direction.getY());
-            if (base.getY() == initial.getY() + length*direction.getY()){
-                base.setY(initial.getY()); // Back to the begin
-                base.setX(base.getX() + smallerSide*direction.getX());
-            }
+        if (direction.getX() == 0) {
+            base.setZ(base.getZ() + smallerSide * direction.getZ());
+            base.setY(initial.getY());
+        } else if (direction.getY() == 0) {
+            base.setZ(base.getZ() + smallerSide * direction.getZ());
+            base.setX(initial.getX());
+        } else if (direction.getZ() == 0) {
+            base.setX(base.getX() + smallerSide * direction.getX());
+            base.setY(initial.getY());
         }
     }
 
@@ -482,19 +477,21 @@ int main(int argc, char** argv)
         {
             float side = stof(argv[2]);
             int grid = stoi(argv[3]);
+
             map<string, int> indexes;
             int index = 0;
-            vector<Triangle> triangles {}; //= generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
+
+            vector<Triangle> triangles = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
             vector<Triangle> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
             aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
             triangles.insert(triangles.end(), aux.begin(), aux.end());
-            //aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
-            //triangles.insert(triangles.end(), aux.begin(), aux.end());
-            //aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
-            //triangles.insert(triangles.end(), aux.begin(), aux.end());
-            //aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-            //triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
+            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+            triangles.insert(triangles.end(), aux.begin(), aux.end());
             writer(argv[4], indexes, triangles);
         }
         else

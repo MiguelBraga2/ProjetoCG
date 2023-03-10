@@ -131,5 +131,5 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
         }
         return points;
     }
-
+    return NULL;
 }
