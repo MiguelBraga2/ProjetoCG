@@ -20,7 +20,7 @@ Camera* camera;
 vector<vector<Point> *> *points;
 vector<vector<Triangle> *> *figures;
 
-float startAngle1 = 0, startAngle2 = 0.4, startAngleLua = 0;
+float angle=0;
 
 using namespace tinyxml2;
 using namespace std;
@@ -43,6 +43,19 @@ void drawOrbit(float radius, float alpha, float red, float green, float blue, fl
     glutSolidSphere(1, 100, 100);
     glPopMatrix();
 
+}
+
+void drawEllipticalOrbit(Point center, float a, float b, Point rgb, float alpha){
+    // Ellipse equation: (x,y) = (a * cos(alpha), b * sin(alpha))
+    // https://en.wikipedia.org/wiki/Ellipse#Standard_parametric_representation
+    float posX = a * cos(alpha);
+    float posZ = b * sin(alpha);
+    glPushMatrix();
+    glTranslatef(center.getX(), center.getY(), center.getZ());
+    glTranslatef(posX, 0, posZ);
+    glColor3f(rgb.getX(), rgb.getY(), rgb.getZ());
+    glutSolidSphere(3, 100, 100);
+    glPopMatrix();
 }
 
 /**
@@ -148,13 +161,10 @@ void renderScene(void) {
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
     }
-    glColor3f(1, 1, 0);
-    glutSolidSphere(4, 100, 100);
-    drawOrbit(100, startAngle1, 1, 0, 0, 1, 15, startAngleLua, 1,1,1, -2);
-    drawOrbit(60, startAngle2, 0, 1, 0, 2, 20, startAngleLua, 1,1,1, -1);
-    startAngle1 += 0.05;
-    startAngle2 += 0.1;
-    startAngleLua += 0.3;
+    Point colors {1,1,0};
+    Point center {50,50,50};
+    drawEllipticalOrbit(center, 20, 50, colors, angle);
+    angle += 0.1;
 	// End of frame
 	glutSwapBuffers();
 }
