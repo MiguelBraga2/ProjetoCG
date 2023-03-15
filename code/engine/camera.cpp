@@ -38,15 +38,15 @@ void Camera::decrementAlfa(){
 
 void Camera::incrementBeta(){
     this->beta += this->increment;
-    if (beta > 1.5f)
-        beta = 1.5f;
+    if (beta > M_PI/2)
+        beta = M_PI/2;
     this->spherical2Cartesian();
 }
 
 void Camera::decrementBeta(){
     this->beta -= this->increment;
-    if (beta < -1.5f)
-        beta = -1.5f;
+    if (beta < -M_PI/2)
+        beta = -M_PI/2;
     this->spherical2Cartesian();
 }
 

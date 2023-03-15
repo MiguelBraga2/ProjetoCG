@@ -20,8 +20,30 @@ Camera* camera;
 vector<vector<Point> *> *points;
 vector<vector<Triangle> *> *figures;
 
+float startAngle1 = 0, startAngle2 = 0.4, startAngleLua = 0;
+
 using namespace tinyxml2;
 using namespace std;
+
+// Radians
+void drawOrbit(float radius, float alpha, float red, float green, float blue, float equation, float radiusLua, float alphaLua, float redLua, float greenLua, float blueLua, float equationLua){
+    float posX = radius * cos(alpha);
+    float posZ = radius * sin(alpha);
+    glPushMatrix();
+    glTranslatef(posX, equation*posX, posZ);
+    glColor3f(red,green,blue);
+    glutSolidSphere(3, 100, 100);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(posX, equation*posX, posZ);
+    float luaX = radiusLua * cos(alphaLua);
+    float luaZ = radiusLua * sin(alphaLua);
+    glTranslatef(luaX, equationLua*luaX, luaZ);
+    glColor3f(redLua, greenLua, blueLua);
+    glutSolidSphere(1, 100, 100);
+    glPopMatrix();
+
+}
 
 /**
  * Draw a triangle, using the order specified by the indexes
@@ -126,7 +148,13 @@ void renderScene(void) {
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
     }
-
+    glColor3f(1, 1, 0);
+    glutSolidSphere(4, 100, 100);
+    drawOrbit(100, startAngle1, 1, 0, 0, 1, 15, startAngleLua, 1,1,1, -2);
+    drawOrbit(60, startAngle2, 0, 1, 0, 2, 20, startAngleLua, 1,1,1, -1);
+    startAngle1 += 0.05;
+    startAngle2 += 0.1;
+    startAngleLua += 0.3;
 	// End of frame
 	glutSwapBuffers();
 }
@@ -288,10 +316,10 @@ int main(int argc, char **argv) {
         glutInitWindowPosition(100, 100);
         glutInitWindowSize(width, height);
         glutCreateWindow("ProjetoCG");
-        glPolygonMode(GL_FRONT, GL_LINE);
+        //glPolygonMode(GL_FRONT, GL_LINE);
 
         // Required callback registry 
-        glutDisplayFunc(renderScene);
+        glutIdleFunc(renderScene);
         glutReshapeFunc(changeSize);
 
 
