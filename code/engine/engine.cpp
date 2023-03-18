@@ -14,6 +14,10 @@
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
 #include "camera.hpp"
+#include "Transformations/Rotation.h"
+#include "Transformations/Scale.h"
+#include "Transformations/Translation.h"
+#include "Transformations/Transformation.h"
 
 float width, height;
 Camera* camera;
@@ -305,6 +309,7 @@ vector<string>* readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2)
     {
+        cout << t->toString();
         vector<string> *primitives = readXML(argv[1]);
 
         figures = new vector<vector<Triangle> *>();
