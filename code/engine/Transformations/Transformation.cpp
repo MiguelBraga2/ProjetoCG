@@ -1,7 +1,3 @@
-//
-// Created by mike on 18-03-2023.
-//
-
 #include "Transformation.h"
 
 Transformation::Transformation(float x, float y, float z){

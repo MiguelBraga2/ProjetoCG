@@ -1,7 +1,3 @@
-//
-// Created by mike on 18-03-2023.
-//
-
 #ifndef ENGINE_TRANSFORMATION_H
 #define ENGINE_TRANSFORMATION_H
 

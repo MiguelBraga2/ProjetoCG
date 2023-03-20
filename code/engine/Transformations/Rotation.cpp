@@ -1,7 +1,3 @@
-//
-// Created by mike on 18-03-2023.
-//
-
 #include "Rotation.h"
 
 Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z) {
