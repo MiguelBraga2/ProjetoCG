@@ -309,7 +309,6 @@ vector<string>* readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2)
     {
-        cout << t->toString();
         vector<string> *primitives = readXML(argv[1]);
 
         figures = new vector<vector<Triangle> *>();
