@@ -15,7 +15,7 @@ private:
     vector<Group> subgroups;
 
 public:
-    void drawGroup();
+    void drawGroup(float red, float green, float blue);
     void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points);
     void drawFigure(vector<Triangle>* triangles, vector<Point>* points, float red, float green, float blue);
     void readXML(char* fileName)

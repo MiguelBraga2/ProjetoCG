@@ -89,7 +89,7 @@ inline bool instanceof(const T *ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-void Group::drawGroup() {
+void Group::drawGroup(float red, float green, float blue) {
     glPushMatrix();
 
     // Apply the transformations
@@ -110,11 +110,12 @@ void Group::drawGroup() {
 
 
     for (int i=0; i<this->points.size(); i++) {
-
+        this->drawFigure(this->figures[i], this->points[i], red, green, blue);
     }
 
     for(int i=0; i<this->subgroups.size(); i++){
-
+        Group g = this->subgroups[i];
+        g.drawGroup();
     }
     glPopMatrix();
 }
