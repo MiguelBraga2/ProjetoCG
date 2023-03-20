@@ -319,7 +319,7 @@ vector<float> generateSphere(float radius, int slices, int stacks, vector<unsign
 }
 
 
-vector<float> drawTorus(float innerRadius, float outerRadius, float slices, float stacks, vector<unsigned int>* indexes){
+vector<float> generateTorus(float innerRadius, float outerRadius, float slices, float stacks, vector<unsigned int>* indexes){
     vector<float> vertices;
    
     float alpha = 2 * M_PI / slices; // Defines the position around the y axis
@@ -444,7 +444,7 @@ int main(int argc, char** argv) {
     else if (strcmp(argv[1], "torus") == 0) {
         if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
             vector<unsigned int> indexes;
-            vector<float> vertices = drawTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
+            vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
             writer(argv[6], indexes, vertices);
         }
         else {
