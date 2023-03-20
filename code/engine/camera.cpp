@@ -1,9 +1,6 @@
 #include "camera.hpp"
 #include <math.h>
 
-//
-// Created by mike on 09-03-2023.
-//
 Camera::Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float near,float far) {
     this->position = position;
     this->lookAtPosition = lookAtPosition;
@@ -28,26 +25,48 @@ void Camera::spherical2Cartesian() {
 
 void Camera::incrementAlfa(){
     this->alfa += this->increment;
-    this->spherical2Cartesian();
+    if (this->mode == 0){
+        this->spherical2Cartesian();
+    }
+    else if (this->mode == 1){
+        this->calculateDirection();
+    }
+
 }
 
 void Camera::decrementAlfa(){
     this->alfa -= this->increment;
-    this->spherical2Cartesian();
+    if (this->mode == 0){
+        this->spherical2Cartesian();
+    }
+    else if (this->mode == 1){
+        this->calculateDirection();
+    }
+
 }
 
 void Camera::incrementBeta(){
     this->beta += this->increment;
     if (beta > M_PI/2)
         beta = M_PI/2;
-    this->spherical2Cartesian();
+    if (this->mode == 0){
+        this->spherical2Cartesian();
+    }
+    else if (this->mode == 1){
+        this->calculateDirection();
+    }
 }
 
 void Camera::decrementBeta(){
     this->beta -= this->increment;
     if (beta < -M_PI/2)
         beta = -M_PI/2;
-    this->spherical2Cartesian();
+    if (this->mode == 0){
+        this->spherical2Cartesian();
+    }
+    else if (this->mode == 1){
+        this->calculateDirection();
+    }
 }
 
 void Camera::incrementRadius(){
@@ -73,13 +92,40 @@ void Camera::decrementIncrement() {
     }
 }
 
+void Camera::calculateDirection() {
+    this->d.setX(this->cameraRadius * cos(beta) * sin(alfa));
+    this->d.setY(this->cameraRadius * sin(beta));
+    this->d.setZ(this->cameraRadius * cos(beta) * cos(alfa));
+}
+
+void Camera::moveForwards() {
+    if (mode == 1){ // Modo FPS
+        this->position.setX(this->position.getX() + this->d.getX());
+        this->position.setY(this->position.getY() + this->d.getY());
+        this->position.setZ(this->position.getZ() + this->d.getZ());
+    }
+}
+
+void Camera::moveBackwards() {
+    if (mode == 1){ // Modo FPS
+        this->position.setX(this->position.getX() - this->d.getX());
+        this->position.setY(this->position.getY() - this->d.getY());
+        this->position.setZ(this->position.getZ() - this->d.getZ());
+    }
+}
+
 void Camera::changeMode(){
     if (this->mode == 0){
-
+        this->mode = 1;
+        this->calculateDirection();
     }
     else if (this->mode = 1){
         this->mode = 0;
     }
+}
+
+int Camera::getMode() {
+    return mode;
 }
 
 void Camera::calculateBeta(){
@@ -132,6 +178,10 @@ float Camera::getNear() {
 
 float Camera::getFar() {
     return far;
+}
+
+Point Camera::getD() {
+    return d;
 }
 
 

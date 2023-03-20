@@ -10,6 +10,12 @@
 #include "Transformations/Translation.h"
 #include "Transformations/Rotation.h"
 
+Group::Group() {
+    this->transformations = nullptr;
+    this->points = nullptr;
+    this->subgroups = nullptr;
+    this->figures = nullptr;
+}
 // Radians
 /*
 void drawOrbit(float radius, float alpha, float red, float green, float blue, float equation, float radiusLua, float alphaLua, float redLua, float greenLua, float blueLua, float equationLua){
@@ -83,14 +89,14 @@ void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, f
         drawTriangle((*triangles)[i], red, green, blue, (*points));
     }
 }
-
+/*
 template<typename Base, typename T>
 inline bool instanceof(const T *ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
-}
+}*/
 
 void Group::drawGroup(float red, float green, float blue) {
-    glPushMatrix();
+    /*glPushMatrix();
 
     // Apply the transformations
     for (int i=0; i<this->transformations.size(); i++) {
@@ -114,8 +120,8 @@ void Group::drawGroup(float red, float green, float blue) {
     }
 
     for(int i=0; i<this->subgroups.size(); i++){
-        Group g = this->subgroups[i];
-        g.drawGroup();
+        Group g = (this->subgroups)[i];
+        g.drawGroup(red, green, blue);
     }
-    glPopMatrix();
+    glPopMatrix();*/
 }

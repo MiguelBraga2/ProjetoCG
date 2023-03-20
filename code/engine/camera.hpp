@@ -15,6 +15,7 @@ private:
     float increment;
     int mode; // 0 - Explorer mode, 1 - FPS mode
     float alfa, beta, cameraRadius;
+    Point d {};
 
 public:
     Camera();
@@ -44,8 +45,16 @@ private:
      * Convert spherical coordenates (alpha and beta) into x, y, z coordinates
      */
     void spherical2Cartesian();
+
+public:
+    Point getD();
+
+    int getMode();
+
+private:
     void calculateBeta();
     void calculateAlpha();
+    void calculateDirection();
 };
 
 #endif
