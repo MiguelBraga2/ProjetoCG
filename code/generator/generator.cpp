@@ -374,84 +374,90 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
 
 
 int main(int argc, char** argv) {
-    if (strcmp(argv[1], "sphere") == 0) {
-        if (argc == 6) {
-            vector<unsigned int> indexes;
-            vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes);
-            writer(argv[5], indexes, vertices);
-        } else {
-            cout << "Número de argumentos inválido" << endl;
+    if (argc > 1) {
+        if (strcmp(argv[1], "sphere") == 0) {
+            if (argc == 6) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes);
+                writer(argv[5], indexes, vertices);
+            }
+            else {
+                cout << "Sphere: número de argumentos inválido." << endl;
+            }
         }
-    }
-    else if (strcmp(argv[1], "cone") == 0) {
-        if (argc == 7) {
-            vector<unsigned int> indexes;
-            vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
-            writer(argv[6], indexes, vertices);
+        else if (strcmp(argv[1], "cone") == 0) {
+            if (argc == 7) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
+                writer(argv[6], indexes, vertices);
+            }
+            else {
+                cout << "Cone: número de argumentos inválido." << endl;
+            }
         }
-        else {
-            cout << "Número de argumentos inválido" << endl;
-        }
-    }
-    else if (strcmp(argv[1], "box") == 0) {
-        if (argc == 5) {
-            float side = stof(argv[2]);
-            int grid = stoi(argv[3]);
+        else if (strcmp(argv[1], "box") == 0) {
+            if (argc == 5) {
+                float side = stof(argv[2]);
+                int grid = stoi(argv[3]);
 
-            vector<unsigned int> indexes;
-            int index = 0;
+                vector<unsigned int> indexes;
+                int index = 0;
 
-            vector<float> vertices = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
-            vector<float> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-            vertices.insert(vertices.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false, &indexes, &index);
-            vertices.insert(vertices.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
-            vertices.insert(vertices.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
-            vertices.insert(vertices.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true, &indexes, &index);
-            vertices.insert(vertices.end(), aux.begin(), aux.end());
-            writer(argv[4], indexes, vertices);
-        }
-        else {
-            cout << "Número de argumentos inválido" << endl;
-        }
+                vector<float> vertices = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
+                vector<float> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                writer(argv[4], indexes, vertices);
+            }
+            else {
+                cout << "Box: número de argumentos inválido." << endl;
+            }
 
-    }
-    else if (strcmp(argv[1], "plane") == 0) {
-        if (argc == 5) {
-            vector<unsigned int> indexes;
-            float length = stof(argv[2]);
-            int index = 0;
-            vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
-            writer(argv[4], indexes, vertices);
+        }
+        else if (strcmp(argv[1], "plane") == 0) {
+            if (argc == 5) {
+                vector<unsigned int> indexes;
+                float length = stof(argv[2]);
+                int index = 0;
+                vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
+                writer(argv[4], indexes, vertices);
+            }
+            else {
+                cout << "Plane: número de argumentos inválido." << endl;
+            }
+        }
+        else if (strcmp(argv[1], "cylinder") == 0) {
+            if (argc == 6) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateCylinder(stof(argv[2]), stof(argv[3]), stoi(argv[4]), &indexes);
+                writer(argv[5], indexes, vertices);
+            }
+            else {
+                cout << "Cylinder: número de argumentos inválido." << endl;
+            }
+        }
+        else if (strcmp(argv[1], "torus") == 0) {
+            if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
+                writer(argv[6], indexes, vertices);
+            }
+            else {
+                cout << "Torus: número de argumentos inválido." << endl;
+            }
         }
         else {
-            cout << "Número de argumentos inválido" << endl;
+            cout << "Figura desconhecida." << endl;
         }
-    }
-    else if (strcmp(argv[1], "cylinder") == 0) {
-        if (argc == 6) {
-            vector<unsigned int> indexes;
-            vector<float> vertices = generateCylinder(stof(argv[2]), stof(argv[3]), stoi(argv[4]), &indexes);
-            writer(argv[5], indexes, vertices);
-        }
-        else {
-            cout << "Número de argumentos inválido" << endl;
-        }
-    }
-    else if (strcmp(argv[1], "torus") == 0) {
-        if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
-            vector<unsigned int> indexes;
-            vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
-            writer(argv[6], indexes, vertices);
-        }
-        else {
-            cout << "Número de argumentos inválido" << endl;
-        }
-    }
+    } 
     else {
-        cout << "Figura desconhecida" << endl;
+        cout << "Não existem argumentos a serem passados." << endl;
     }
 }
