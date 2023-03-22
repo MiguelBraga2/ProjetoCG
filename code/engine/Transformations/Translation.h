@@ -6,8 +6,11 @@
 
 class Translation : public Transformation{
 public:
-    Translation(float x, float y, float z);
-    string toString() override;
+    Translation(float x1, float y1, float z1, float x, float y, float z);
+
+    Translation(float x1, float y1, float z1);
+
+    string toString() ;
 };
 
 
