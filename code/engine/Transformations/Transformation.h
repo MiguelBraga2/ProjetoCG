@@ -5,25 +5,28 @@
 
 using namespace std;
 
-class Transformation {
-private:
-    float x, y, z;
-public:
-    Transformation(float x, float y, float z);
-    float getX() const;
+class Transformation{
 
-    void setX(float x);
+public:
+
+    float x;
+    float y;
+    float z;
+
+    Transformation(float x, float y, float z);
+
+    float getX() const;
 
     float getY() const;
 
-    void setY(float y);
-
     float getZ() const;
+
+    void setX(float x);
+
+    void setY(float y);
 
     void setZ(float z);
 
-    virtual string toString() = 0;
 };
-
 
 #endif //ENGINE_TRANSFORMATION_H

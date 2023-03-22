@@ -13,7 +13,7 @@ Triangle::Triangle(int indP1, int indP2, int indP3)
 }
 
 int Triangle::getIndP1() 
-{ 
+{
     return this->indP1;
 };
 

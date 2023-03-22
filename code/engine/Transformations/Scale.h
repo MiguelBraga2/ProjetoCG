@@ -6,7 +6,7 @@
 class Scale : public Transformation{
 public:
     Scale(float x, float y, float z);
-    string toString() override;
+    string toString() ;
 };
 
 

@@ -9,6 +9,17 @@
 #include "Transformations/Scale.h"
 #include "Transformations/Translation.h"
 #include "Transformations/Rotation.h"
+#include "Transformations/Transformation.h"
+#include "../libraries/tinyxml2.h"
+#include "camera.hpp"
+#include "../shared/IO.hpp"
+#include <iostream>
+#include <utility>
+
+float width, height;
+Camera* camera;
+
+using namespace tinyxml2;
 
 // Radians
 /*
@@ -43,6 +54,29 @@ void drawEllipticalOrbit(Point center, float a, float b, Point rgb, float alpha)
     glutSolidSphere(3, 100, 100);
     glPopMatrix();
 }*/
+
+Group::Group( vector<Transformation> transformations,vector<vector<Point> *> points,vector<vector<Triangle> *> figures,vector<Group> subgroups){
+    this->transformations=std::move(transformations);
+    this->points=points;
+    this->figures=figures;
+    this->subgroups=std::move(subgroups);
+}
+
+const vector<Transformation> &Group::getTransformations() const {
+    return transformations;
+}
+
+const vector<vector<Point> *> &Group::getPoints() const {
+    return points;
+}
+
+const vector<vector<Triangle> *> &Group::getFigures() const {
+    return figures;
+}
+
+const vector<Group> &Group::getSubgroups() const {
+    return subgroups;
+}
 
 /**
  * Draw a triangle, using the order specified by the indexes
@@ -85,9 +119,10 @@ void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, f
 }
 
 template<typename Base, typename T>
-inline bool instanceof(const T *ptr) {
-    return dynamic_cast<const Base*>(ptr) != nullptr;
+bool instanceof(const T *ptr) {
+    return dynamic_cast<const Base *>(ptr) != NULL;
 }
+
 
 void Group::drawGroup() {
     glPushMatrix();
@@ -117,4 +152,44 @@ void Group::drawGroup() {
 
     }
     glPopMatrix();
+}
+
+void Group::readXML(XMLElement *group) {
+    // group
+        if (group) {
+            this->transformations = vector<Transformation>();
+            XMLElement* transformationsElem = group->FirstChildElement("transformations");
+            if (transformationsElem) {
+                for (XMLElement* transform = transformationsElem->FirstChildElement("translate"); transform != NULL; transform = transform->NextSiblingElement("translate")) {
+                    Transformation t = Translation(0, 0, 0, *transform->Attribute("x"), *transform->Attribute("y"),
+                                                   *transform->Attribute("z"));
+                    this->transformations.push_back(t);
+                }
+            }
+            XMLElement* models = group->FirstChildElement("models");
+            if (models) {
+                vector<string> *primitives = NULL;
+
+                this->figures = vector<vector<Triangle> *>();
+                this->points = vector<vector<Point> *>();
+
+                for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
+
+                    primitives->emplace_back(model->Attribute("file"));
+
+                    int size = primitives->size();
+                    for (int i = 0; i < size; i++) {
+                        this->figures.emplace_back(new vector<Triangle>());
+                        this->points.emplace_back(reader((*primitives)[i], (figures)[i]));
+                    }
+
+                    primitives->clear();
+                    delete primitives;
+                }
+            }
+            XMLElement* subGroup = group->FirstChildElement("group");
+            if (subGroup) {
+                readXML(subGroup);
+            }
+        }
 }

@@ -216,17 +216,6 @@ vector<string>* readXML(char* filePath){
             }
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
         }
-
-        // group
-        XMLElement* group = world->FirstChildElement("group");
-        if (group) {
-            XMLElement* models = group->FirstChildElement("models");
-            if (models) {
-                for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
-                    primitives->emplace_back(model->Attribute("file"));
-                }
-            }
-        }
     }
 
     delete doc;
@@ -237,7 +226,7 @@ vector<string>* readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2)
     {
-        vector<string> *primitives = readXML(argv[1]);
+        /*vector<string> *primitives = readXML(argv[1]);
 
         figures = new vector<vector<Triangle> *>();
         points = new vector<vector<Point> *>();
@@ -249,7 +238,7 @@ int main(int argc, char **argv) {
         }
 
         primitives->clear();
-        delete primitives;
+        delete primitives;*/
 
         // init GLUT and the window
         glutInit(&argc, argv);
