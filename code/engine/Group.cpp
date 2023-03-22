@@ -21,6 +21,12 @@ Camera* camera;
 
 using namespace tinyxml2;
 
+Group::Group() {
+    this->transformations = nullptr;
+    this->points = nullptr;
+    this->subgroups = nullptr;
+    this->figures = nullptr;
+}
 // Radians
 /*
 void drawOrbit(float radius, float alpha, float red, float green, float blue, float equation, float radiusLua, float alphaLua, float redLua, float greenLua, float blueLua, float equationLua){
@@ -117,8 +123,9 @@ void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, f
         drawTriangle((*triangles)[i], red, green, blue, (*points));
     }
 }
-
+/*
 template<typename Base, typename T>
+<<<<<<< HEAD
 bool instanceof(const T *ptr) {
     return dynamic_cast<const Base *>(ptr) != NULL;
 }
@@ -126,6 +133,13 @@ bool instanceof(const T *ptr) {
 
 void Group::drawGroup() {
     glPushMatrix();
+=======
+inline bool instanceof(const T *ptr) {
+    return dynamic_cast<const Base*>(ptr) != nullptr;
+}*/
+
+void Group::drawGroup(float red, float green, float blue) {
+    /*glPushMatrix();
 
     // Apply the transformations
     for (int i=0; i<this->transformations.size(); i++) {
@@ -145,12 +159,14 @@ void Group::drawGroup() {
 
 
     for (int i=0; i<this->points.size(); i++) {
-
+        this->drawFigure(this->figures[i], this->points[i], red, green, blue);
     }
 
     for(int i=0; i<this->subgroups.size(); i++){
-
+        Group g = (this->subgroups)[i];
+        g.drawGroup(red, green, blue);
     }
+
     glPopMatrix();
 }
 
@@ -192,4 +208,5 @@ void Group::readXML(XMLElement *group) {
                 readXML(subGroup);
             }
         }
+    glPopMatrix();*/
 }

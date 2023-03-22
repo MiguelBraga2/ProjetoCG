@@ -59,9 +59,16 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
-              camera->getLookAtPosition().getX(),camera->getLookAtPosition().getY(),camera->getLookAtPosition().getZ(),
-			  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
+    if (camera->getMode() == 0){
+        gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
+                  camera->getLookAtPosition().getX() ,camera->getLookAtPosition().getY(),camera->getLookAtPosition().getZ(),
+                  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
+    } else if (camera->getMode() == 1){
+        gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
+                  camera->getPosition().getX() + camera->getD().getX(),camera->getPosition().getY() + camera->getD().getY(),camera->getPosition().getZ() + camera->getD().getZ(),
+                  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
+    }
+
 
     // put axis drawing in here
     glBegin(GL_LINES);
@@ -98,6 +105,7 @@ void renderScene(void) {
     drawEllipticalOrbit(center, 20, 50, colors, angle);
     angle += 0.1;
 	// End of frame*/
+    glutWireTeapot(5);
 	glutSwapBuffers();
 }
 
@@ -105,10 +113,10 @@ void renderScene(void) {
 
 void keyboard_events(unsigned char key, int x, int y) {
     if (key == 'w'){
-        //camera->moveForwards();
+        camera->moveForwards();
     }
     else if (key == 's'){
-        //camera->moveBackwards();
+        camera->moveBackwards();
     }/*
     else if (key == 'a'){
         float* crossP = (float*) malloc(3*sizeof(float));

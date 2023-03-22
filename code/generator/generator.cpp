@@ -6,9 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <map>
 #include <string>
-#include <algorithm>
 #include "../shared/point.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
@@ -26,95 +24,102 @@ using namespace std;
  * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
  * @return a list of generated triangles
  */
-vector<Triangle> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, map<string, int> *indexes, int *index){
-    float smallerSide = length / grid; // side of each of the smaller squares
-    
-    vector<Triangle> triangles{}; 
-    
+vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index){
+    vector<float> vertices;
+    float step = length / grid; // side of each of the smaller squares
+     
     Point base (initial.getX(), initial.getY(), initial.getZ());
 
-    if ((*indexes).count(base.toString()) == 0) {
-        (*indexes)[base.toString()] = (*index);
-        (*index)++;
-    }
-
-
     for(int i=0; i<grid; i++) {
+        
+        vertices.push_back(base.getX());
+        vertices.push_back(base.getY());
+        vertices.push_back(base.getZ());
+
+        if (direction.getX() == 0) {
+            vertices.push_back(base.getX());
+            vertices.push_back(base.getY());
+            vertices.push_back(base.getZ() + step * direction.getZ());
+        }
+        else if (direction.getY() == 0) {
+            vertices.push_back(base.getX() + step * direction.getX());
+            vertices.push_back(base.getY());
+            vertices.push_back(base.getZ());
+        }
+        else if (direction.getZ() == 0) {
+            vertices.push_back(base.getX() + step * direction.getX());
+            vertices.push_back(base.getY());
+            vertices.push_back(base.getZ());
+        }
+
         for (int j = 0; j < grid; j++) {
-            // Generate the 4 points for the 2 triangles
-            Point p1(base.getX(), base.getY(), base.getZ());
-            Point p4(base.getX() + smallerSide * direction.getX(), base.getY() + smallerSide * direction.getY(),
-                     base.getZ() + smallerSide * direction.getZ()); // Point in the opposite side of the smaller square
-            Point *p2, *p3;
 
-            if ((*indexes).count(p1.toString()) == 0) {
-                (*indexes)[p1.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p4.toString()) == 0) {
-                (*indexes)[p4.toString()] = (*index);
-                (*index)++;
-            }
-
-
-            // Generate the other points of the triangles, depending on the direction of the plane
             if (direction.getX() == 0) {
-                p2 = new Point(base.getX(), base.getY() + smallerSide * direction.getY(), base.getZ());
-                p3 = new Point(base.getX(), base.getY(), base.getZ() + smallerSide * direction.getZ());
-            } else if (direction.getY() == 0) {
-                p2 = new Point(base.getX() + smallerSide * direction.getX(), base.getY(), base.getZ());
-                p3 = new Point(base.getX(), base.getY(), base.getZ() + smallerSide * direction.getZ());
-            } else if (direction.getZ() == 0) {
-                p2 = new Point(base.getX(), base.getY() + smallerSide * direction.getY(), base.getZ());
-                p3 = new Point(base.getX() + smallerSide * direction.getX(), base.getY(), base.getZ());
+                vertices.push_back(base.getX());
+                vertices.push_back(base.getY() + step * direction.getY());
+                vertices.push_back(base.getZ());
+            }
+            else if (direction.getY() == 0) {
+                vertices.push_back(base.getX());
+                vertices.push_back(base.getY());
+                vertices.push_back(base.getZ() + step * direction.getZ());
+            }
+            else if (direction.getZ() == 0) {
+                vertices.push_back(base.getX());
+                vertices.push_back(base.getY() + step * direction.getY());
+                vertices.push_back(base.getZ());
             }
 
-            if ((*indexes).count((*p2).toString()) == 0) {
-                (*indexes)[(*p2).toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count((*p3).toString()) == 0) {
-                (*indexes)[(*p3).toString()] = (*index);
-                (*index)++;
-            }
-
-            // Generate the triangles
-            Triangle *t1, *t2;
+            vertices.push_back(base.getX() + step * direction.getX());
+            vertices.push_back(base.getY() + step * direction.getY());
+            vertices.push_back(base.getZ() + step * direction.getZ());          
+            
             if (clockWiseDir == false) {
-                t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p2).toString()]);
-                t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p3).toString()], (*indexes)[p4.toString()]);
-            } else {
-                t1 = new Triangle((*indexes)[p1.toString()], (*indexes)[(*p2).toString()], (*indexes)[p4.toString()]);
-                t2 = new Triangle((*indexes)[p1.toString()], (*indexes)[p4.toString()], (*indexes)[(*p3).toString()]);
-            }
+                indexes->push_back(*index);
+                indexes->push_back((*index) + 3);
+                indexes->push_back((*index) + 1);
 
-            // Add the triangles to the array
-            triangles.push_back(*t1);
-            triangles.push_back(*t2);
+                indexes->push_back(*index);
+                indexes->push_back((*index) + 2);
+                indexes->push_back((*index) + 3);
+            } else {
+                indexes->push_back(*index);
+                indexes->push_back((*index) + 1);
+                indexes->push_back((*index) + 3);
+
+                indexes->push_back(*index);
+                indexes->push_back((*index) + 3);
+                indexes->push_back((*index) + 2);
+            }
 
             // Move the base point
             if (direction.getX() == 0) {
-                base.setY(base.getY() + smallerSide * direction.getY());
+                base.setY(base.getY() + step * direction.getY()); 
             } else if (direction.getY() == 0) {
-                base.setX(base.getX() + smallerSide * direction.getX());
+                base.setZ(base.getZ() + step * direction.getZ());
             } else if (direction.getZ() == 0) {
-                base.setY(base.getY() + smallerSide * direction.getY());
+                base.setY(base.getY() + step * direction.getY());
             }
+
+            (*index) += 2;
         }
         if (direction.getX() == 0) {
-            base.setZ(base.getZ() + smallerSide * direction.getZ());
+            base.setZ(base.getZ() + step * direction.getZ());
             base.setY(initial.getY());
         } else if (direction.getY() == 0) {
-            base.setZ(base.getZ() + smallerSide * direction.getZ());
-            base.setX(initial.getX());
+            base.setX(base.getX() + step * direction.getX());
+            base.setZ(initial.getZ());
         } else if (direction.getZ() == 0) {
-            base.setX(base.getX() + smallerSide * direction.getX());
+            base.setX(base.getX() + step * direction.getX());
             base.setY(initial.getY());
         }
+
+        (*index) += 2;
     }
 
-    return triangles;
+    return vertices;
 }
+
 
 /**
  * Generates a group of triangles, making a cylinder of given radius and height
@@ -123,65 +128,57 @@ vector<Triangle> generatePlane(float length, int grid, Point direction, Point in
  * @param slices vertical divisions of the sphere
  * @return a list of generated triangles
  */
-vector<Triangle> drawCylinder(float radius, float height, int slices, map<string, int>* indexes, int* index) {
-
+vector<float> generateCylinder(float radius, float height, int slices,vector<unsigned int>* indexes) {
+    vector<float> vertices;
     float aux = height / 2;
-    double delta = (2 * M_PI) / slices;
-    double alpha;
-    float x1, x2, z1, z2;
-    vector<Triangle> triangles{};
-
+    double sliceStep = (2 * M_PI) / slices;
+    int index = 0;
+ 
     for (int i = 0; i < slices; i++) {
-        alpha = i * delta;
-        x1 = radius * sin(alpha);
-        x2 = radius * sin(alpha + delta);
-        z1 = radius * cos(alpha);
-        z2 = radius * cos(alpha + delta);
+        vertices.push_back(0);
+        vertices.push_back(-aux);
+        vertices.push_back(0);
 
-        Point p1(0, aux, 0);
-        Point p2(x1, aux, z1);
-        Point p3(x2, aux, z2);
-        if ((*indexes).count(p1.toString()) == 0) {
-            (*indexes)[p1.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p2.toString()) == 0) {
-            (*indexes)[p2.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p3.toString()) == 0) {
-            (*indexes)[p3.toString()] = (*index);
-            (*index)++;
-        }
-        Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
-        triangles.push_back(t1);
+        vertices.push_back(radius * sin(i * sliceStep));
+        vertices.push_back(-aux);
+        vertices.push_back(radius * cos(i * sliceStep));
 
-        Point p4(0, -aux, 0);
-        Point p5(x2, -aux, z2);
-        Point p6(x1, -aux, z1);
-        if ((*indexes).count(p4.toString()) == 0) {
-            (*indexes)[p4.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p5.toString()) == 0) {
-            (*indexes)[p5.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p6.toString()) == 0) {
-            (*indexes)[p6.toString()] = (*index);
-            (*index)++;
-        }
-        Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
-        triangles.push_back(t2);
+        vertices.push_back(radius * sin((i + 1) * sliceStep));
+        vertices.push_back(-aux);
+        vertices.push_back(radius * cos((i + 1) * sliceStep));
 
-        Triangle t3((*indexes)[p2.toString()], (*indexes)[p6.toString()], (*indexes)[p5.toString()]);
-        triangles.push_back(t3);
+        vertices.push_back(radius * sin(i * sliceStep));
+        vertices.push_back(aux);
+        vertices.push_back(radius * cos(i * sliceStep));
 
-        Triangle t4((*indexes)[p2.toString()], (*indexes)[p5.toString()], (*indexes)[p3.toString()]);
-        triangles.push_back(t4);
+        vertices.push_back(radius * sin((i + 1) * sliceStep));
+        vertices.push_back(aux);
+        vertices.push_back(radius * cos((i + 1) * sliceStep));
+
+        vertices.push_back(0);
+        vertices.push_back(aux);
+        vertices.push_back(0);
+
+        indexes->push_back(index);
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 1);
+
+        indexes->push_back(index + 1);
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 3);
+
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 4);
+        indexes->push_back(index + 3);
+
+        indexes->push_back(index + 3);
+        indexes->push_back(index + 4);
+        indexes->push_back(index + 5);
+
+        index += 6;
     }
 
-    return triangles;
+    return vertices;
 
 }
 
@@ -193,358 +190,274 @@ vector<Triangle> drawCylinder(float radius, float height, int slices, map<string
  * @param stacks vertical divisions of the cone
  * @return a list of generated triangles
  */
-vector<Triangle> drawCone(float radius, float height, int slices, int stacks, map<string, int>* indexes, int* index) {
-    vector<Triangle> figure{};
-    double alphaDelta = (2 * M_PI) / slices;
-    double stackHeight = height / stacks;
+vector<float> generateCone(float radius, float height, int slices, int stacks, vector<unsigned int>* indexes) {
+    vector<float> vertices;
+    double sliceStep = 2 * M_PI / slices;
+    double stackStep = height / stacks;
     double radiusDec = radius / stacks;
-    float x1, z1, x2, z2, x3, z3, x4, z4, x5, z5, x6, z6;
-    double current_radius, next_radius, alpha;
+    int index = 0;
 
     for (int i = 0; i < slices; i++) {
-        alpha = i * alphaDelta;
-        x1 = radius * sin(alpha);
-        x2 = radius * sin(alpha + alphaDelta);
-        z1 = radius * cos(alpha);
-        z2 = radius * cos(alpha + alphaDelta);
+        vertices.push_back(0);
+        vertices.push_back(0);
+        vertices.push_back(0);
+        
+        vertices.push_back(radius * sin(i * sliceStep));
+        vertices.push_back(0);
+        vertices.push_back(radius * cos(i * sliceStep));
 
-        Point p1(0, 0, 0);
-        Point p2(x2, 0, z2);
-        Point p3(x1, 0, z1);
-        if ((*indexes).count(p1.toString()) == 0) {
-            (*indexes)[p1.toString()] = (*index);
-            (*index)++;
+        vertices.push_back(radius * sin((i + 1) * sliceStep));
+        vertices.push_back(0);
+        vertices.push_back(radius * cos((i + 1) * sliceStep));
+
+        indexes->push_back(index);
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 1);
+        
+        index++;
+
+        for (int j = 0; j < stacks - 1; j++) {
+            vertices.push_back((radius - (j + 1) * radiusDec) * sin(i * sliceStep));
+            vertices.push_back((j + 1) * stackStep);
+            vertices.push_back((radius - (j + 1) * radiusDec) * cos(i * sliceStep));
+
+            vertices.push_back((radius - (j + 1) * radiusDec) * sin((i + 1) * sliceStep));
+            vertices.push_back((j + 1) * stackStep);
+            vertices.push_back((radius - (j + 1) * radiusDec) * cos((i + 1) * sliceStep));
+
+            indexes->push_back(index);
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 2);
+
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 3);
+            indexes->push_back(index + 2);
+
+            index += 2;
         }
-        if ((*indexes).count(p2.toString()) == 0) {
-            (*indexes)[p2.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p3.toString()) == 0) {
-            (*indexes)[p3.toString()] = (*index);
-            (*index)++;
-        }
 
-        Triangle t1((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
-        figure.push_back(t1);
+        vertices.push_back(0);
+        vertices.push_back(height);
+        vertices.push_back(0);
 
-        for (int j = 0; j < stacks; j++) {
-            current_radius = radius - j * radiusDec;
-            next_radius = radius - (j + 1) * radiusDec;
+        indexes->push_back(index);
+        indexes->push_back(index + 1);
+        indexes->push_back(index + 2);
 
-            x3 = current_radius * sin(alpha);
-            z3 = current_radius * cos(alpha);
-            x4 = current_radius * sin(alpha + alphaDelta);
-            z4 = current_radius * cos(alpha + alphaDelta);
-            x5 = next_radius * sin(alpha);
-            z5 = next_radius * cos(alpha);
-            x6 = next_radius * sin(alpha + alphaDelta);
-            z6 = next_radius * cos(alpha + alphaDelta);
-
-            Point p4(x3, stackHeight * j, z3);
-            Point p5(x4, stackHeight * j, z4);
-            Point p6(x5, stackHeight * (j + 1), z5);
-            Point p7(x6, stackHeight * (j + 1), z6);
-
-            if ((*indexes).count(p4.toString()) == 0) {
-                (*indexes)[p4.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p5.toString()) == 0) {
-                (*indexes)[p5.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p6.toString()) == 0) {
-                (*indexes)[p6.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p7.toString()) == 0) {
-                (*indexes)[p7.toString()] = (*index);
-                (*index)++;
-            }
-
-
-            Triangle t2((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
-            figure.push_back(t2);
-            if (j != stacks - 1) {
-                Triangle t3((*indexes)[p5.toString()], (*indexes)[p7.toString()], (*indexes)[p6.toString()]);
-                figure.push_back(t3);
-            }
-        }
+        index += 3;
     }
 
-    return figure;
+    return vertices;
 }
 
 /**
  * Generates a group of triangles that combined approximate a sphere with a given radius using slices and stacks
  * The sphere is centered in the origin (0,0,0)
  * @param radius the radius of the sphere
- * @param numSlices vertical divisions of the sphere
- * @param numStacks horizontal divisions of the sphere
+ * @param slices vertical divisions of the sphere
+ * @param stacks horizontal divisions of the sphere
  * @return
  */
-vector<Triangle> drawSphere(float radius, int numSlices, int numStacks, map<string, int>* indexes, int* index) {
-    vector<Triangle> figure{};
-    float alphaDelta = (2 * M_PI) / numSlices; // Defines the position around the y axis
-    float alpha, nextAlpha;
-    float betaDelta = M_PI / numStacks; // Defines the height
-    float beta, nextBeta;
+vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes) {
+    vector<float> vertices;
+    
+    float sliceStep = 2 * M_PI / slices; 
+    float stackStep = M_PI / stacks;
+    int index = 0;
+    
+    for (int i = 0; i < slices; i++) {
+        vertices.push_back(0);
+        vertices.push_back(-radius);
+        vertices.push_back(0);
 
+        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin(i * sliceStep));  
+        vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
+        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos(i * sliceStep));
 
-    for (int i = 0; i < numSlices; i++) {
-        alpha = i * alphaDelta;
-        nextAlpha = (i + 1) * alphaDelta;
-        beta = -M_PI / 2 + betaDelta;
+        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin((i + 1) * sliceStep));
+        vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
+        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos((i + 1) * sliceStep));
+        
+        indexes->push_back(index);
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 1);
+        
+        index++;
 
-        Point p1(0, -radius, 0);
-        Point p2(radius * cos(beta) * sin(nextAlpha), radius * sin(beta), radius * cos(nextAlpha) * cos(beta));
-        Point p3(radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(alpha) * cos(beta));
+        for (int j = 1; j < stacks - 1; j++) {
+            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin(i * sliceStep));
+            vertices.push_back(radius * sin(-M_PI / 2 + (j + 1) * stackStep));
+            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos(i * sliceStep));
 
-        if ((*indexes).count(p1.toString()) == 0) {
-            (*indexes)[p1.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p2.toString()) == 0) {
-            (*indexes)[p2.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p3.toString()) == 0) {
-            (*indexes)[p3.toString()] = (*index);
-            (*index)++;
-        }
+            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin((i + 1) * sliceStep));
+            vertices.push_back(radius * sin(-M_PI / 2 + (j + 1) * stackStep));
+            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos((i + 1) * sliceStep));
 
-        Triangle t((*indexes)[p1.toString()], (*indexes)[p2.toString()], (*indexes)[p3.toString()]);
-        figure.push_back(t);
+            indexes->push_back(index);
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 2);
 
-        for (int j = 1; j < numStacks - 1; j++) {
-            beta = j * betaDelta - M_PI / 2;
-            nextBeta = (j + 1) * betaDelta - M_PI / 2; // height above
-
-            Point p4(radius * cos(nextBeta) * sin(alpha), radius * sin(nextBeta), radius * cos(nextBeta) * cos(alpha));
-            Point p5(radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha));
-            Point p6(radius * cos(beta) * sin(nextAlpha), radius * sin(beta), radius * cos(beta) * cos(nextAlpha));
-
-            if ((*indexes).count(p4.toString()) == 0) {
-                (*indexes)[p4.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p5.toString()) == 0) {
-                (*indexes)[p5.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p6.toString()) == 0) {
-                (*indexes)[p6.toString()] = (*index);
-                (*index)++;
-            }
-
-            Triangle t1((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
-            figure.push_back(t1);
-
-            Point p7(radius * cos(nextBeta) * sin(nextAlpha), radius * sin(nextBeta), radius * cos(nextBeta) * cos(nextAlpha));
-            Point p8(radius * cos(nextBeta) * sin(alpha), radius * sin(nextBeta), radius * cos(nextBeta) * cos(alpha));
-            Point p9(radius * cos(beta) * sin(nextAlpha), radius * sin(beta), radius * cos(beta) * cos(nextAlpha));
-
-            if ((*indexes).count(p7.toString()) == 0) {
-                (*indexes)[p7.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p8.toString()) == 0) {
-                (*indexes)[p8.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p9.toString()) == 0) {
-                (*indexes)[p9.toString()] = (*index);
-                (*index)++;
-            }
-
-            Triangle t2((*indexes)[p7.toString()], (*indexes)[p8.toString()], (*indexes)[p9.toString()]);
-            figure.push_back(t2);
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 3);
+            indexes->push_back(index + 2);
+            
+            index += 2;
         }
 
-        beta = M_PI / 2 - betaDelta;
-        Point p4(0, radius, 0);
-        Point p5(radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha));
-        Point p6(radius * cos(beta) * sin(nextAlpha), radius * sin(beta), radius * cos(beta) * cos(nextAlpha));
+        vertices.push_back(0);
+        vertices.push_back(radius);
+        vertices.push_back(0);
 
-        if ((*indexes).count(p4.toString()) == 0) {
-            (*indexes)[p4.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p5.toString()) == 0) {
-            (*indexes)[p5.toString()] = (*index);
-            (*index)++;
-        }
-        if ((*indexes).count(p6.toString()) == 0) {
-            (*indexes)[p6.toString()] = (*index);
-            (*index)++;
-        }
-        Triangle t1((*indexes)[p4.toString()], (*indexes)[p5.toString()], (*indexes)[p6.toString()]);
-        figure.push_back(t1);
+        indexes->push_back(index);
+        indexes->push_back(index + 1);
+        indexes->push_back(index + 2);
+
+        index += 3;
     }
 
-    return figure;
+    return vertices;
 }
 
-vector<Triangle> drawTorus(float innerRadius, float outerRadius, float slices, float stacks, map<string, int>* indexes, int* index){
-    float alpha = 2*M_PI/slices; // Defines the position around the y axis
-    float beta = 2*M_PI/stacks; // Defines the height
-    vector<Triangle> figure {};
-    float radius = (outerRadius-innerRadius)/2;
+
+vector<float> generateTorus(float innerRadius, float outerRadius, float slices, float stacks, vector<unsigned int>* indexes){
+    vector<float> vertices;
+   
+    float alpha = 2 * M_PI / slices; // Defines the position around the y axis
+    float beta = M_PI / stacks; // Defines the height
+    float radius = (outerRadius - innerRadius) / 2;
     float distanceToOrigin = innerRadius + radius;
+    int index = 0;
 
-    for(int i=0; i<slices; i++){ // Percorrer as slices
-        float currentAlpha = i*alpha;
-        for(int j=0; j<2*stacks; j++){ // Percorrer as stacks
-            float currentBeta = -M_PI/2 + j*beta;
-            float nextBeta = -M_PI/2 + (j+1)*beta;
-            float nextAlpha = (i+1)*alpha;
+    for(int i=0; i < slices; i++){ // Percorrer as slices
 
-            Point c(distanceToOrigin*sin(currentAlpha),0,distanceToOrigin*cos(currentAlpha));
-            Point c2(distanceToOrigin*sin(nextAlpha),0,distanceToOrigin*cos(nextAlpha));
+        Point c1(distanceToOrigin * sin(i * alpha), 0, distanceToOrigin * cos(i * alpha));
+        Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
 
-            Point p1 (radius*cos(currentBeta)*sin(currentAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(currentAlpha));
-            Point p2 (radius*cos(nextBeta)*sin(currentAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(currentAlpha));
-            Point p3 (radius*cos(nextBeta)*sin(nextAlpha),radius*sin(nextBeta), radius*cos(nextBeta)*cos(nextAlpha));
-            Point p4 (radius*cos(currentBeta)*sin(nextAlpha),radius*sin(currentBeta), radius*cos(currentBeta)*cos(nextAlpha));
+        vertices.push_back(c1.getX());
+        vertices.push_back(-radius);
+        vertices.push_back(c1.getZ());
 
-            Point p5(p1.getX() + c.getX(), p1.getY() + c.getY(), p1.getZ() + c.getZ());
-            Point p6(p2.getX() + c.getX(), p2.getY() + c.getY(), p2.getZ() + c.getZ());
-            Point p7(p3.getX() + c2.getX(), p3.getY() + c2.getY(), p3.getZ() + c2.getZ());
-            Point p8(p4.getX() + c2.getX(), p4.getY() + c2.getY(), p4.getZ() + c2.getZ());
+        vertices.push_back(c2.getX());
+        vertices.push_back(-radius);
+        vertices.push_back(c2.getZ());
 
-            if ((*indexes).count(p5.toString()) == 0) {
-                (*indexes)[p5.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p6.toString()) == 0) {
-                (*indexes)[p6.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p7.toString()) == 0) {
-                (*indexes)[p7.toString()] = (*index);
-                (*index)++;
-            }
-            if ((*indexes).count(p8.toString()) == 0) {
-                (*indexes)[p8.toString()] = (*index);
-                (*index)++;
-            }
+        for(int j = 0; j < 2 * stacks; j++){ // Percorrer as stacks
 
-            Triangle t ( (*indexes)[p7.toString()], (*indexes)[p6.toString()], (*indexes)[p5.toString()]);
-            figure.push_back(t);
+            Point p1 (radius * cos(-M_PI / 2 + (j + 1) * beta) * sin(i * alpha), radius * sin(-M_PI / 2 + (j + 1) * beta), radius * cos(-M_PI / 2 + (j + 1) * beta) * cos(i * alpha));
+            Point p2 (radius * cos(-M_PI / 2 + (j + 1) * beta) * sin((i + 1) * alpha), radius * sin(-M_PI / 2 + (j + 1) * beta), radius * cos(-M_PI / 2 + (j + 1) * beta) * cos((i + 1) * alpha));
 
-            Triangle t2 ( (*indexes)[p7.toString()], (*indexes)[p5.toString()], (*indexes)[p8.toString()]);
-            figure.push_back(t2);
+            vertices.push_back(c1.getX() + p1.getX());
+            vertices.push_back(c1.getY() + p1.getY());
+            vertices.push_back(c1.getZ() + p1.getZ());
+
+            vertices.push_back(c2.getX() + p2.getX());
+            vertices.push_back(c2.getY() + p2.getY());
+            vertices.push_back(c2.getZ() + p2.getZ());
+
+            indexes->push_back(index);
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 2);
+
+            indexes->push_back(index + 1);
+            indexes->push_back(index + 3);
+            indexes->push_back(index + 2);
+
+            index += 2;
         }
+
+        index += 2;
     }
 
-    return figure;
+    return vertices;
 }
 
 
 
-int main(int argc, char** argv)
-{
-    if (strcmp(argv[1], "sphere") == 0)
-    {
-        if (argc == 6) 
-        {
-            map<string, int> indexes;
-            int index = 0;
-            vector<Triangle> list = drawSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
-            writer(argv[5], indexes, list);
-        } else 
-        {
-            cout << "Número de argumentos inválido";
+int main(int argc, char** argv) {
+    if (argc > 1) {
+        if (strcmp(argv[1], "sphere") == 0) {
+            if (argc == 6) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes);
+                writer(argv[5], indexes, vertices);
+            }
+            else {
+                cout << "Sphere: número de argumentos inválido." << endl;
+            }
         }
-    }
-    else if (strcmp(argv[1], "cone") == 0)
-    {
-        if (argc == 7)
-        {
-            map<string, int> indexes;
-            int index = 0;
-            vector<Triangle> list = drawCone(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &index);
-            writer(argv[6], indexes, list);
+        else if (strcmp(argv[1], "cone") == 0) {
+            if (argc == 7) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
+                writer(argv[6], indexes, vertices);
+            }
+            else {
+                cout << "Cone: número de argumentos inválido." << endl;
+            }
         }
-        else
-        {
-            cout << "Número de argumentos inválido";
-        }
-    }
-    else if (strcmp(argv[1], "box") == 0)
-    {
-        if (argc == 5)
-        {
-            float side = stof(argv[2]);
-            int grid = stoi(argv[3]);
+        else if (strcmp(argv[1], "box") == 0) {
+            if (argc == 5) {
+                float side = stof(argv[2]);
+                int grid = stoi(argv[3]);
 
-            map<string, int> indexes;
-            int index = 0;
+                vector<unsigned int> indexes;
+                int index = 0;
 
-            vector<Triangle> triangles = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
-            vector<Triangle> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-            triangles.insert(triangles.end(), aux.begin(), aux.end());
-            writer(argv[4], indexes, triangles);
-        }
-        else
-        {
-            cout << "Número de argumentos inválido";
-        }
+                vector<float> vertices = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
+                vector<float> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true, &indexes, &index);
+                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                writer(argv[4], indexes, vertices);
+            }
+            else {
+                cout << "Box: número de argumentos inválido." << endl;
+            }
 
-    }
-    else if (strcmp(argv[1], "plane") == 0) {
-        if (argc == 5) 
-        {
-            float length = stof(argv[2]);
-            map<string, int> indexes;
-            int index = 0;
-            vector<Triangle> triangles = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
-            writer(argv[4], indexes, triangles);
         }
-        else 
-        {
-            cout << "Figura desconhecida";
+        else if (strcmp(argv[1], "plane") == 0) {
+            if (argc == 5) {
+                vector<unsigned int> indexes;
+                float length = stof(argv[2]);
+                int index = 0;
+                vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index);
+                writer(argv[4], indexes, vertices);
+            }
+            else {
+                cout << "Plane: número de argumentos inválido." << endl;
+            }
         }
-    }
-    else if (strcmp(argv[1], "cylinder") == 0) {
-        if (argc == 6) 
-        {
-            map<string, int> indexes;
-            int index = 0;
-            vector<Triangle> triangles = drawCylinder(stof(argv[2]), stof(argv[3]), stof(argv[4]), &indexes, &index);
-            writer(argv[5], indexes, triangles);
+        else if (strcmp(argv[1], "cylinder") == 0) {
+            if (argc == 6) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateCylinder(stof(argv[2]), stof(argv[3]), stoi(argv[4]), &indexes);
+                writer(argv[5], indexes, vertices);
+            }
+            else {
+                cout << "Cylinder: número de argumentos inválido." << endl;
+            }
         }
-        else
-        {
-            cout << "Figura desconhecida";
+        else if (strcmp(argv[1], "torus") == 0) {
+            if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
+                writer(argv[6], indexes, vertices);
+            }
+            else {
+                cout << "Torus: número de argumentos inválido." << endl;
+            }
         }
-
-    }
-    else if (strcmp(argv[1], "torus") == 0) {
-        if (argc == 7) 
-        {
-            // torus InnerRadius OuterRadius Slices Stacks
-
-            map<string, int> indexes;
-            int index = 0;
-
-            vector<Triangle> triangles = drawTorus(stof(argv[2]), stof(argv[3]), stof(argv[4]), stof(argv[5]), &indexes, &index);
-            writer(argv[6], indexes, triangles);
+        else {
+            cout << "Figura desconhecida." << endl;
         }
-        else
-        {
-            cout << "Figura desconhecida";
-        }
-    }
+    } 
     else {
-        cout << "Figura desconhecida";
+        cout << "Não existem argumentos a serem passados." << endl;
     }
 }
