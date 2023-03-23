@@ -53,45 +53,6 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-/**
- * Draw a triangle, using the order specified by the indexes
- * @param t 3 indexes, specifying the positions of the triangle vertices in the points vector
- * @param red red color setting
- * @param green green color setting
- * @param blue blue color setting
- * @param points the set of all the points in the figure
- */
-void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points){
-    int i1 = t.getIndP1();
-    int i2 = t.getIndP2();
-    int i3 = t.getIndP3();
-
-    Point p1 = points[i1];
-    Point p2 = points[i2];
-    Point p3 = points[i3];
-
-    glColor3f(red, green, blue);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-    glEnd();
-}
-
-/**
- * Draw a figure, given the vertices and all the triangles
- * @param triangles list of triangles containing 3 indexes, specifying the positions of the triangle vertices in the points vector
- * @param points the set of all the points in the figure
- * @param red red color setting
- * @param green green color setting
- * @param blue blue color setting
- */
-void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, float green, float blue){
-    int size = triangles->size();
-    for(int i=0; i < size; i++){
-        drawTriangle((*triangles)[i], red, green, blue, (*points));
-    }
-}
 
 void renderScene(void) {
 	// clear buffers
@@ -108,7 +69,6 @@ void renderScene(void) {
                   camera->getPosition().getX() + camera->getD().getX(),camera->getPosition().getY() + camera->getD().getY(),camera->getPosition().getZ() + camera->getD().getZ(),
                   camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
     }
-
 
     // put axis drawing in here
     glBegin(GL_LINES);
@@ -131,19 +91,14 @@ void renderScene(void) {
                -100.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
-     
-    // put the geometric transformations here
-	
-    // put the drawing instructions here
 
-    //g.drawGroup(1,1,1);
-    /*Point colors {1,1,0};
-    Point center {50,50,50};
-    drawEllipticalOrbit(center, 20, 50, colors, angle);
-    angle += 0.1;*/
-	// End of frame
-    //glutWireTeapot(5);
-	glutSwapBuffers();
+    glColor3f(1.0f, 1.0f, 1.0f);
+     
+    // transformation and drawing instructions here
+    group->drawGroup(1, 1, 1);
+    
+    // End of frame
+    glutSwapBuffers();
 }
 
 // write function to process keyboard events
@@ -298,9 +253,16 @@ int main(int argc, char **argv) {
         glutKeyboardFunc(keyboard_events);
         //glutPassiveMotionFunc(mouse_function);
 
-        //  OpenGL settings
+        // Required for VBOs 
+        glewInit();
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        group->prepareBuffers();
+
+        // 	OpenGL settings
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT, GL_LINE);
 
         // enter GLUT's main cycle
         glutMainLoop();

@@ -1,10 +1,17 @@
 #ifndef ENGINE_GROUP_H
 #define ENGINE_GROUP_H
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
 #include <vector>
 #include "../shared/triangle.hpp"
 #include "../libraries/tinyxml2.h"
-#include "Transformations/Transformation.hpp"
+#include "Transformations/transformation.hpp"
 #include "Transformations/scale.hpp"
 #include "Transformations/translation.hpp"
 #include "Transformations/rotation.hpp"
@@ -16,13 +23,14 @@ private:
     vector<Transformation> transformations;
     vector<vector<float>> vertices;
     vector<vector<unsigned int>> indexes;
+    GLuint* buffers;
+    GLuint* indexs;
     vector<Group> subgroups;
 
 public:
     Group();
+    void prepareBuffers();
     void drawGroup(float red, float green, float blue);
-    void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points);
-    void drawFigure(vector<Triangle>* triangles, vector<Point>* points, float red, float green, float blue);
     void readXML(XMLElement* group);
 };
 

@@ -109,17 +109,35 @@ void Group::drawGroup(float red, float green, float blue) {
         this->transformations[i].applyTransformation();
     }
 
-    /*
-    for (int i=0; i<this->points.size(); i++) {
-        this->drawFigure(this->figures[i], this->points[i], red, green, blue);
+    for (int i = 0; i < this->vertices.size(); i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+        glDrawElements(GL_TRIANGLES, this->indexes[i].size(), GL_UNSIGNED_INT, 0);
     }
 
-    for(int i=0; i<this->subgroups.size(); i++){
-        Group g = (this->subgroups)[i];
-        g.drawGroup(red, green, blue);
-    }*/
+    for (int i = 0; i < this->subgroups.size(); i++) {
+        this->subgroups[i].drawGroup(red, green, blue);
+    }
 
     glPopMatrix();
+}
+
+void Group::prepareBuffers() {
+    glGenBuffers(this->vertices.size(), this->buffers);
+    glGenBuffers(this->indexes.size(), this->indexs);
+
+    for (int i = 0; i < this->vertices.size(); i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->vertices[i].size(), this->vertices[i].data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->indexes[i].size(), this->indexes[i].data(), GL_STATIC_DRAW);
+    }
+     
+    for (int i = 0; i < this->subgroups.size(); i++) {
+        this->subgroups[i].prepareBuffers();
+    }
+
 }
 
 void Group::readXML(XMLElement *group) {
@@ -160,6 +178,9 @@ void Group::readXML(XMLElement *group) {
                 this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
                 i++;
             }
+
+            this->buffers = new GLuint(i);
+            this->indexs = new GLuint(i);
         }
 
         /* Groups */
