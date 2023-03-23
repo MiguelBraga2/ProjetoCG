@@ -6,26 +6,21 @@
 #endif
 
 #include "Group.h"
-#include "Transformations/Scale.h"
-#include "Transformations/Translation.h"
-#include "Transformations/Rotation.h"
-#include "Transformations/Transformation.h"
+#include "Transformations/Transformation.hpp"
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "../shared/IO.hpp"
 #include <iostream>
 #include <utility>
+#include <stdlib.h>
 
-float width, height;
-Camera* camera;
+/*float width, height;
+Camera* camera;*/
 
 using namespace tinyxml2;
 
 Group::Group() {
-    this->transformations = nullptr;
-    this->points = nullptr;
-    this->subgroups = nullptr;
-    this->figures = nullptr;
+
 }
 // Radians
 /*
@@ -61,29 +56,6 @@ void drawEllipticalOrbit(Point center, float a, float b, Point rgb, float alpha)
     glPopMatrix();
 }*/
 
-Group::Group( vector<Transformation> transformations,vector<vector<Point> *> points,vector<vector<Triangle> *> figures,vector<Group> subgroups){
-    this->transformations=std::move(transformations);
-    this->points=points;
-    this->figures=figures;
-    this->subgroups=std::move(subgroups);
-}
-
-const vector<Transformation> &Group::getTransformations() const {
-    return transformations;
-}
-
-const vector<vector<Point> *> &Group::getPoints() const {
-    return points;
-}
-
-const vector<vector<Triangle> *> &Group::getFigures() const {
-    return figures;
-}
-
-const vector<Group> &Group::getSubgroups() const {
-    return subgroups;
-}
-
 /**
  * Draw a triangle, using the order specified by the indexes
  * @param t 3 indexes, specifying the positions of the triangle vertices in the points vector
@@ -92,6 +64,7 @@ const vector<Group> &Group::getSubgroups() const {
  * @param blue blue color setting
  * @param points the set of all the points in the figure
  */
+ /*
 void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points){
     int i1 = t.getIndP1();
     int i2 = t.getIndP2();
@@ -107,7 +80,7 @@ void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> 
     glVertex3f(p2.getX(), p2.getY(), p2.getZ());
     glVertex3f(p3.getX(), p3.getY(), p3.getZ());
     glEnd();
-}
+}*/
 
 /**
  * Draw a figure, given the vertices and all the triangles
@@ -117,47 +90,26 @@ void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> 
  * @param green green color setting
  * @param blue blue color setting
  */
+/*
 void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, float green, float blue){
     int size = triangles->size();
     for(int i=0; i < size; i++){
         drawTriangle((*triangles)[i], red, green, blue, (*points));
     }
 }
-/*
-template<typename Base, typename T>
-<<<<<<< HEAD
-bool instanceof(const T *ptr) {
-    return dynamic_cast<const Base *>(ptr) != NULL;
-}
-
-
-void Group::drawGroup() {
-    glPushMatrix();
-=======
-inline bool instanceof(const T *ptr) {
-    return dynamic_cast<const Base*>(ptr) != nullptr;
-}*/
+*/
 
 void Group::drawGroup(float red, float green, float blue) {
-    /*glPushMatrix();
+    glPushMatrix();
 
     // Apply the transformations
     for (int i=0; i<this->transformations.size(); i++) {
-        if (instanceof<Scale>(&this->transformations[i])){
-            Scale* s = (Scale*) (&this->transformations[i]);
-            glScalef(s->getX(), s->getY(), s->getZ());
-        }
-        else if (instanceof<Translation>(&this->transformations[i])){
-            Translation* t = (Translation* ) (&this->transformations[i]);
-            glTranslatef(t->getX(), t->getY(), t->getZ());
-        }
-        else if (instanceof<Rotation>(&this->transformations[i])){
-            Rotation* r = (Rotation*) (&this->transformations[i]);
-            glRotatef(r->getAngle(), r->getX(), r->getY(), r->getZ());
-        }
+        Transformation* t = this->transformations[i];
+        t->applyTransformation();
     }
 
-
+    glutWireTeapot(2);
+    /*
     for (int i=0; i<this->points.size(); i++) {
         this->drawFigure(this->figures[i], this->points[i], red, green, blue);
     }
@@ -165,48 +117,65 @@ void Group::drawGroup(float red, float green, float blue) {
     for(int i=0; i<this->subgroups.size(); i++){
         Group g = (this->subgroups)[i];
         g.drawGroup(red, green, blue);
-    }
+    }*/
 
     glPopMatrix();
 }
 
 void Group::readXML(XMLElement *group) {
     // group
-        if (group) {
-            this->transformations = vector<Transformation>();
-            XMLElement* transformationsElem = group->FirstChildElement("transformations");
-            if (transformationsElem) {
-                for (XMLElement* transform = transformationsElem->FirstChildElement("translate"); transform != NULL; transform = transform->NextSiblingElement("translate")) {
-                    Transformation t = Translation(0, 0, 0, *transform->Attribute("x"), *transform->Attribute("y"),
-                                                   *transform->Attribute("z"));
+    if (group) {
+        this->transformations = vector<Transformation*>();
+        XMLElement* transformationsElem = group->FirstChildElement("transform");
+        if (transformationsElem) {
+            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
+                string tagName = transform->Value();
+
+                float x = stof(transform->Attribute("x"));
+                float y = stof(transform->Attribute("y"));
+                float z = stof(transform->Attribute("z"));
+
+                if (tagName.compare("translate") == 0){
+                    Translation* t = new Translation(x, y, z);
+                    this->transformations.push_back(t);
+                }
+                else if (tagName.compare("rotate") == 0){
+                    float angle = stof(transform->Attribute("angle"));
+                    Rotation* t = new Rotation(x, y, z,angle);
+                    this->transformations.push_back(t);
+                }
+                else if (tagName.compare("scale") == 0){
+                    Scale* t = new Scale(x, y, z);
                     this->transformations.push_back(t);
                 }
             }
-            XMLElement* models = group->FirstChildElement("models");
-            if (models) {
-                vector<string> *primitives = NULL;
+        }
 
-                this->figures = vector<vector<Triangle> *>();
-                this->points = vector<vector<Point> *>();
+        /*XMLElement* models = group->FirstChildElement("models");
+        if (models) {
+            vector<string> *primitives = NULL;
 
-                for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
+            this->figures = vector<vector<Triangle> *>();
+            this->points = vector<vector<Point> *>();
 
-                    primitives->emplace_back(model->Attribute("file"));
+            for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
-                    int size = primitives->size();
-                    for (int i = 0; i < size; i++) {
-                        this->figures.emplace_back(new vector<Triangle>());
-                        this->points.emplace_back(reader((*primitives)[i], (figures)[i]));
-                    }
+                primitives->emplace_back(model->Attribute("file"));
 
-                    primitives->clear();
-                    delete primitives;
+                int size = primitives->size();
+                for (int i = 0; i < size; i++) {
+                    this->figures.emplace_back(new vector<Triangle>());
+                    this->points.emplace_back(reader((*primitives)[i], (figures)[i]));
                 }
-            }
-            XMLElement* subGroup = group->FirstChildElement("group");
-            if (subGroup) {
-                readXML(subGroup);
+
+                primitives->clear();
+                delete primitives;
             }
         }
-    glPopMatrix();*/
+
+        XMLElement* subGroup = group->FirstChildElement("group");
+        if (subGroup) {
+            readXML(subGroup);
+        }*/
+    }
 }

@@ -1,17 +1,16 @@
+#include <GL/glut.h>
 #include "Rotation.h"
 
-Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z) {
-    this->angle = angle;
-}
+Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z), angle(angle) {}
 
-float Rotation::getAngle() const {
-    return angle;
-}
+void Rotation::applyTransformation() {
+        glRotatef(this->getAngle(), this->getX(), this->getY(), this->getZ());
+    }
 
-void Rotation::setAngle(float angle) {
-    Rotation::angle = angle;
-}
+    float Rotation::getAngle() {
+        return angle;
+    }
 
-string Rotation::toString(){
-    return "Rotation";
-}
+    void Rotation::setAngle(float angle) {
+        Rotation::angle = angle;
+    }

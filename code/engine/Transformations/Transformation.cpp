@@ -1,12 +1,16 @@
-#include "Transformation.h"
+#include "Transformation.hpp"
 
-     Transformation:: Transformation(float x, float y, float z) {
+    Transformation::Transformation(){
+        this->x = 0;
+    }
+
+    Transformation::Transformation(float x, float y, float z) {
         this->x = x;
         this->y = y;
         this->z = z;
     }
 
-    float Transformation::getX() const {
+    float Transformation::getX() {
         return x;
     }
 
@@ -14,7 +18,7 @@
         Transformation::x = x;
     }
 
-    float Transformation::getY() const {
+    float Transformation::getY() {
         return y;
     }
 
@@ -22,10 +26,17 @@
         Transformation::y = y;
     }
 
-    float Transformation::getZ() const {
+    float Transformation::getZ() {
         return z;
     }
 
     void Transformation::setZ(float z) {
         Transformation::z = z;
     }
+
+
+
+
+
+
+

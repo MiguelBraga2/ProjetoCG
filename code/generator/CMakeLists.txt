@@ -5,7 +5,7 @@ PROJECT(generator)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} generator.cpp ../shared/point.cpp ../shared/triangle.cpp ../shared/IO.cpp ../engine/engine.cpp ../engine/Group.cpp ../engine/Transformations/Rotation.cpp ../engine/Transformations/Transformation.cpp ../engine/Transformations/Scale.cpp ../engine/Transformations/Translation.cpp)
+add_executable(${PROJECT_NAME} generator.cpp ../shared/point.cpp ../shared/triangle.cpp ../shared/IO.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})

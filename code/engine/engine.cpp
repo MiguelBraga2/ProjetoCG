@@ -15,15 +15,14 @@
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
 #include "camera.hpp"
-#include "Transformations/Rotation.h"
-#include "Transformations/Scale.h"
-#include "Transformations/Translation.h"
-#include "Transformations/Transformation.h"
+#include "Group.h"
 
 float width, height;
 Camera* camera;
 vector<vector<Point> *> *points;
 vector<vector<Triangle> *> *figures;
+
+Group g;
 
 float angle=0;
 
@@ -51,6 +50,46 @@ void changeSize(int w, int h) {
 	gluPerspective(camera->getFov() ,ratio, camera->getNear() , camera->getFar());
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
+}
+
+/**
+ * Draw a triangle, using the order specified by the indexes
+ * @param t 3 indexes, specifying the positions of the triangle vertices in the points vector
+ * @param red red color setting
+ * @param green green color setting
+ * @param blue blue color setting
+ * @param points the set of all the points in the figure
+ */
+void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points){
+    int i1 = t.getIndP1();
+    int i2 = t.getIndP2();
+    int i3 = t.getIndP3();
+
+    Point p1 = points[i1];
+    Point p2 = points[i2];
+    Point p3 = points[i3];
+
+    glColor3f(red, green, blue);
+    glBegin(GL_TRIANGLES);
+    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
+    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
+    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
+    glEnd();
+}
+
+/**
+ * Draw a figure, given the vertices and all the triangles
+ * @param triangles list of triangles containing 3 indexes, specifying the positions of the triangle vertices in the points vector
+ * @param points the set of all the points in the figure
+ * @param red red color setting
+ * @param green green color setting
+ * @param blue blue color setting
+ */
+void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, float green, float blue){
+    int size = triangles->size();
+    for(int i=0; i < size; i++){
+        drawTriangle((*triangles)[i], red, green, blue, (*points));
+    }
 }
 
 void renderScene(void) {
@@ -96,16 +135,18 @@ void renderScene(void) {
 	
     // put the drawing instructions here
 
-    /*int size = figures->size();
+    int size = figures->size();
     for (int i=0; i< size; i++){
         drawFigure((*figures)[i], (*points)[i], 1,1,1);
     }
-    Point colors {1,1,0};
+
+    g.drawGroup(1,1,1);
+    /*Point colors {1,1,0};
     Point center {50,50,50};
     drawEllipticalOrbit(center, 20, 50, colors, angle);
-    angle += 0.1;
-	// End of frame*/
-    glutWireTeapot(5);
+    angle += 0.1;*/
+	// End of frame
+    //glutWireTeapot(5);
 	glutSwapBuffers();
 }
 
@@ -224,6 +265,9 @@ vector<string>* readXML(char* filePath){
             }
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
         }
+
+        g = Group();
+        g.readXML(world->FirstChildElement("group"));
     }
 
     delete doc;
@@ -234,7 +278,7 @@ vector<string>* readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2)
     {
-        /*vector<string> *primitives = readXML(argv[1]);
+        vector<string> *primitives = readXML(argv[1]);
 
         figures = new vector<vector<Triangle> *>();
         points = new vector<vector<Point> *>();
@@ -246,7 +290,7 @@ int main(int argc, char **argv) {
         }
 
         primitives->clear();
-        delete primitives;*/
+        delete primitives;
 
         // init GLUT and the window
         glutInit(&argc, argv);
@@ -259,6 +303,7 @@ int main(int argc, char **argv) {
 
         // Required callback registry 
         glutIdleFunc(renderScene);
+        glutDisplayFunc(renderScene);
         glutReshapeFunc(changeSize);
 
 

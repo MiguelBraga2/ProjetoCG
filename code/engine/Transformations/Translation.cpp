@@ -1,9 +1,13 @@
+#include <GL/glut.h>
 #include "Translation.h"
 
-Translation::Translation(float x1, float y1, float z1) : Transformation(x1, y1, z1) {
 
-}
+    Translation::Translation(float x, float y, float z) {
+        this->setX(x);
+        this->setX(y);
+        this->setX(z);
+    }
 
-string Translation::toString(){
-    return "Tranlation";
-}
+    void Translation::applyTransformation(){
+        glTranslatef(this->getX(), this->getY(), this->getZ());
+    }

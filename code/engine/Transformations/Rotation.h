@@ -1,19 +1,18 @@
 #ifndef ENGINE_ROTATION_H
 #define ENGINE_ROTATION_H
 
-#include "Translation.h"
+#include "Transformation.hpp"
+
 
 class Rotation : public Transformation{
+private:
     float angle;
-
 public:
     Rotation(float x, float y, float z, float angle);
-
-    float getAngle() const;
-
+    float getAngle();
     void setAngle(float angle);
 
-    string toString();
+    void applyTransformation() override;
 };
 
 
