@@ -1,12 +1,10 @@
 #include <GL/glut.h>
-#include "Scale.h"
+#include "scale.hpp"
 
-Scale::Scale(float x, float y, float z) {
-    this->setX(x);
-    this->setY(y);
-    this->setZ(z);
+Scale::Scale(float x, float y, float z) : Transformation(x,y,z) {
+
 }
 
 void Scale::applyTransformation(){
-        glScalef(this->getX(), this->getY(), this->getZ());
-    }
+    glScalef(this->getX(), this->getY(), this->getZ());
+}

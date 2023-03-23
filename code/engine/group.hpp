@@ -5,18 +5,17 @@
 #include "../shared/triangle.hpp"
 #include "../libraries/tinyxml2.h"
 #include "Transformations/Transformation.hpp"
-#include "Transformations/Scale.h"
-#include "Transformations/Translation.h"
-#include "Transformations/Rotation.h"
+#include "Transformations/scale.hpp"
+#include "Transformations/translation.hpp"
+#include "Transformations/rotation.hpp"
 
-using namespace std;
 using namespace tinyxml2;
 
 class Group {
 private:
-    vector<Transformation*> transformations;
-    vector<vector<Point> *> points;
-    vector<vector<Triangle> *> figures;
+    vector<Transformation> transformations;
+    vector<vector<float>> vertices;
+    vector<vector<unsigned int>> indexes;
     vector<Group> subgroups;
 
 public:

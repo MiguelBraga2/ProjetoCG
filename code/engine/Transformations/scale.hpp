@@ -3,10 +3,9 @@
 
 #include "Transformation.hpp"
 
-class Scale : public Transformation{
+class Scale : public Transformation {
 public:
     Scale(float x, float y, float z);
-
     void applyTransformation() override;
 };
 

@@ -1,33 +1,34 @@
+#include <stdio.h>
 #include <stdlib.h>
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#define __GLUT__
-#else
-#include <GL/glut.h>
-#endif
-
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <vector>
 #include <list>
 #include <iostream>
 #include <string>
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
 #include "../libraries/tinyxml2.h"
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
 #include "camera.hpp"
-#include "Group.h"
+#include "group.hpp"
 
-float width, height;
-Camera* camera;
-vector<vector<Point> *> *points;
-vector<vector<Triangle> *> *figures;
-
-Group g;
-
-float angle=0;
 
 using namespace tinyxml2;
 using namespace std;
+
+float width, height;
+float angle = 0;
+Camera* camera;
+Group* group;
+
 
 void changeSize(int w, int h) {
 	// Prevent a divide by zero, when window is too short
@@ -135,12 +136,7 @@ void renderScene(void) {
 	
     // put the drawing instructions here
 
-    int size = figures->size();
-    for (int i=0; i< size; i++){
-        drawFigure((*figures)[i], (*points)[i], 1,1,1);
-    }
-
-    g.drawGroup(1,1,1);
+    //g.drawGroup(1,1,1);
     /*Point colors {1,1,0};
     Point center {50,50,50};
     drawEllipticalOrbit(center, 20, 50, colors, angle);
@@ -224,82 +220,72 @@ void processSpecialKeys(int key, int xx, int yy) {
     glutPostRedisplay();
 }
 
-vector<string>* readXML(char* filePath){
-    vector<string>* primitives = new vector<string>();
+void readXML(char* filePath){
     XMLDocument *doc = new XMLDocument();
-    XMLError result = doc->LoadFile(filePath);
+    doc->LoadFile(filePath);
     XMLNode* world = doc->FirstChildElement("world");
     float fov, far, near;
-    Point* cameraPosition, *cameraLookAt, *cameraUpVector;
+    Point* cameraPosition = NULL, *cameraLookAt = NULL, *cameraUpVector = NULL;
   
     if (world) {
-        // window
-        XMLElement* window = world->FirstChildElement("window");
-        if (window) {
-            width =  stof(window->Attribute("width"));
-            height = stof(window->Attribute("height"));
+        /* window */
+        XMLElement* windowElem = world->FirstChildElement("window");
+        if (windowElem) {
+            width =  stoi(windowElem->Attribute("width"));
+            height = stoi(windowElem->Attribute("height"));
         }
         
-        // camera
-        XMLElement* cameraAtt = world->FirstChildElement("camera");
-        if (cameraAtt) {
-            XMLElement* position = cameraAtt->FirstChildElement("position");
+        /* camera */
+        XMLElement* cameraElem = world->FirstChildElement("camera");
+        if (cameraElem) {
+            
+            /* camera position */
+            XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
-                cameraPosition = new Point(stof(position->Attribute("x")),
-                                             stof(position->Attribute("y")),
-                                             stof(position->Attribute("z")));
+                cameraPosition = new Point(stof(position->Attribute("x")), stof(position->Attribute("y")), stof(position->Attribute("z")));
             }
-            XMLElement* lookAt = cameraAtt->FirstChildElement("lookAt");
+
+            /* camera lookAt */
+            XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
                 cameraLookAt = new Point (stof(lookAt->Attribute("x")), stof(lookAt->Attribute("y")), stof(lookAt->Attribute("z")));
             }
-            XMLElement* up = cameraAtt->FirstChildElement("up");
+
+            /* camera up */
+            XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
                 cameraUpVector = new Point (stof(up->Attribute("x")), stof(up->Attribute("y")), stof(up->Attribute("z")));
             }
-            XMLElement* projection = cameraAtt->FirstChildElement("projection");
+            
+            /* camera projection */
+            XMLElement* projection = cameraElem->FirstChildElement("projection");
             if (projection) {
                 fov = stof(projection->Attribute("fov"));
                 near = stof(projection->Attribute("near"));
                 far = stof(projection->Attribute("far"));
             }
+          
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
         }
 
-        g = Group();
-        g.readXML(world->FirstChildElement("group"));
+        group = new Group();
+        group->readXML(world->FirstChildElement("group"));
     }
 
     delete doc;
-
-    return primitives;
 }
 
 int main(int argc, char **argv) {
-    if (argc == 2)
-    {
-        vector<string> *primitives = readXML(argv[1]);
+    if (argc == 2) {
 
-        figures = new vector<vector<Triangle> *>();
-        points = new vector<vector<Point> *>();
-        
-        int size = primitives->size();
-        for (int i = 0; i < size; i++) {
-            figures->emplace_back(new vector<Triangle>());
-            points->emplace_back(reader((*primitives)[i], (*figures)[i]));
-        }
-
-        primitives->clear();
-        delete primitives;
+        readXML(argv[1]);
 
         // init GLUT and the window
         glutInit(&argc, argv);
-        //cout << betaAngle*180/M_PI << endl;
         glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
         glutInitWindowPosition(100, 100);
         glutInitWindowSize(width, height);
         glutCreateWindow("ProjetoCG");
-        //glPolygonMode(GL_FRONT, GL_LINE);
 
         // Required callback registry 
         glutIdleFunc(renderScene);
@@ -319,23 +305,9 @@ int main(int argc, char **argv) {
         // enter GLUT's main cycle
         glutMainLoop();
 
-        size = figures->size();
-        for (int i = 0; i < size; i++) {
-            vector<Triangle>* fig = (*figures)[i];
-            delete fig;
-        }
-        delete figures;
-
-        size = points->size();
-        for (int i = 0; i < size; i++) {
-            vector<Point>* pts = (*points)[i];
-            delete pts;
-        }
-        delete points;
     }
-    else 
-    {
-        cout << "Número incorreto de argumentos" << endl;
+    else {
+        cout << "Número incorreto de argumentos." << endl;
     }
 	
 	return 1;

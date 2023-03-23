@@ -45,19 +45,20 @@ void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float 
     cross_P[2] = vectAX * vectBY - vectAY * vectBX;
 }
 
-// Devolve os pontos
-vector<Point>* reader(string fileName, vector<Triangle>* triangles){
+/*
+* Read the primitives files
+*/
+vector<float> reader(string fileName, vector<unsigned int>* indexes) {
     ifstream file("../../figures/" + fileName);
-    vector<Point> *points = new vector<Point>();
+    vector<float> vertices = vector<float>();
+    
     vector<Point> normals {};
     vector<int> normal_indexes {};
 
-    if (!file)
-    {
+    if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
-    else
-    {
+    else {
         string line;
         while (getline(file, line, '\n')) {
             // [vf] \d+ \d+ \d+
@@ -70,25 +71,20 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
 
             if (strings[0] == "v") { // Vertice
                 // FORMAT: v x y z
+                vertices.push_back(stof(strings[1]));
+                vertices.push_back(stof(strings[2]));
+                vertices.push_back(stof(strings[3]));
 
-                Point p(stof(strings[1]), stof(strings[2]), stof(strings[3]));
-                points->push_back(p);
-            }
-            else if (strings[0] == "f") {
-                // FORMAT: f pointIndex1(/normalIndex1) pointIndex2(/normalIndex2) pointIndex1(/normalIndex2)
+            } else if (strings[0] == "f") {
+                // FORMAT: f vericeIndex1(/normalIndex1) verticeIndex2(/normalIndex2) verticeIndex3(/normalIndex2)
 
                 if (strings[1].find("/") == string::npos) {
-
-                    // Get the point indexes
-                    int pointInd1 = stoi(strings[1]);
-                    int pointInd2 = stoi(strings[2]);
-                    int pointInd3 = stoi(strings[3]);
-                    Triangle t(pointInd1, pointInd2, pointInd3);
-                    triangles->push_back(t);
+                    // FORMAT : f i1 i2 i3
+                    indexes->push_back(stoi(strings[1]));
+                    indexes->push_back(stoi(strings[2]));
+                    indexes->push_back(stoi(strings[3]));
                 }
                 else {
-                    Triangle* t;
-
                     size_t f1 = strings[1].find("/");
                     size_t f2 = strings[2].find("/");
                     size_t f3 = strings[3].find("/");
@@ -98,9 +94,9 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
                     int pointInd3 = stoi(strings[3].substr(0, f3));    
                     
                     // Get the points
-                    Point p1 = (*points)[pointInd1 - 1];
-                    Point p2 = (*points)[pointInd2 - 1];
-                    Point p3 = (*points)[pointInd3 - 1];
+                    Point p1(vertices[pointInd1 - 1], vertices[pointInd1], vertices[pointInd1 + 1]);
+                    Point p2(vertices[pointInd2 - 1], vertices[pointInd2], vertices[pointInd2 + 1]);
+                    Point p3(vertices[pointInd3 - 1], vertices[pointInd3], vertices[pointInd3 + 1]);
 
                     int normalIndex = stoi(strings[1].substr(f1+1, strings[1].length()-f1)); // Assume all normal indexes are the same
                     Point normalVector = normals[normalIndex - 1];
@@ -120,23 +116,25 @@ vector<Point>* reader(string fileName, vector<Triangle>* triangles){
                     perpendicular.setY(perpendicular.getY() / norma);
                     perpendicular.setZ(perpendicular.getZ() / norma);
 
-                    // Iguais
                     if (abs(perpendicular.getX() - normalVector.getX()) < 0.1 && abs(perpendicular.getY() - normalVector.getY()) < 0.1 && abs(perpendicular.getZ() - normalVector.getZ()) < 0.1) {
-                        t = new Triangle(pointInd1 - 1, pointInd3 - 1, pointInd2 - 1);
-                    } // Simétricos
-                    else if (abs(perpendicular.getX() + normalVector.getX()) < 0.1 && abs(perpendicular.getY() + normalVector.getY()) < 0.1 && abs(perpendicular.getZ() + normalVector.getZ()) < 0.1) {
-                        t = new Triangle(pointInd1 - 1, pointInd2 - 1, pointInd3 - 1);
+                        // Iguais
+                        indexes->push_back(pointInd1 - 1);
+                        indexes->push_back(pointInd3 - 1);
+                        indexes->push_back(pointInd2 - 1);
+
+                    } else if (abs(perpendicular.getX() + normalVector.getX()) < 0.1 && abs(perpendicular.getY() + normalVector.getY()) < 0.1 && abs(perpendicular.getZ() + normalVector.getZ()) < 0.1) {
+                        // Simétricos
+                        indexes->push_back(pointInd1 - 1);
+                        indexes->push_back(pointInd2 - 1);
+                        indexes->push_back(pointInd3 - 1);
                     }
-                    
-                    triangles->push_back(*t);
+            
                 }
-            }
-            else if (strings[0] == "vn"){
+            } else if (strings[0] == "vn"){
                 Point p(stof(strings[1]), stof(strings[2]), stof(strings[3]));
                 normals.push_back(p);
             }
         }
-        return points;
     }
-    return NULL;
+    return vertices;
 }

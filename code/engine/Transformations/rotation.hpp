@@ -4,14 +4,13 @@
 #include "Transformation.hpp"
 
 
-class Rotation : public Transformation{
+class Rotation : public Transformation {
 private:
     float angle;
 public:
     Rotation(float x, float y, float z, float angle);
     float getAngle();
     void setAngle(float angle);
-
     void applyTransformation() override;
 };
 

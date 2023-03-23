@@ -6,8 +6,7 @@ private:
     float x, y, z;
 
 public:
-    virtual void applyTransformation() = 0;
-    Transformation();
+    virtual void applyTransformation();
     Transformation(float x, float y, float z);
     float getX();
     void setX(float x);

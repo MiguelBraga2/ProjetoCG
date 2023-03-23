@@ -1,18 +1,20 @@
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#define __GLUT__
 #else
+#include <GL/glew.h>
 #include <GL/glut.h>
 #endif
 
-#include "Group.h"
-#include "Transformations/Transformation.hpp"
+#include "Transformations/transformation.hpp"
 #include "../libraries/tinyxml2.h"
-#include "camera.hpp"
 #include "../shared/IO.hpp"
-#include <iostream>
-#include <utility>
-#include <stdlib.h>
+#include "camera.hpp"
+#include "group.hpp"
+
 
 /*float width, height;
 Camera* camera;*/
@@ -103,12 +105,10 @@ void Group::drawGroup(float red, float green, float blue) {
     glPushMatrix();
 
     // Apply the transformations
-    for (int i=0; i<this->transformations.size(); i++) {
-        Transformation* t = this->transformations[i];
-        t->applyTransformation();
+    for (int i=0; i < this->transformations.size(); i++) {
+        this->transformations[i].applyTransformation();
     }
 
-    glutWireTeapot(2);
     /*
     for (int i=0; i<this->points.size(); i++) {
         this->drawFigure(this->figures[i], this->points[i], red, green, blue);
@@ -123,12 +123,12 @@ void Group::drawGroup(float red, float green, float blue) {
 }
 
 void Group::readXML(XMLElement *group) {
-    // group
     if (group) {
-        this->transformations = vector<Transformation*>();
+
+        /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
         if (transformationsElem) {
-            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
+            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement("transform")) {
                 string tagName = transform->Value();
 
                 float x = stof(transform->Attribute("x"));
@@ -136,46 +136,38 @@ void Group::readXML(XMLElement *group) {
                 float z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0){
-                    Translation* t = new Translation(x, y, z);
+                    Translation t(x, y, z);
                     this->transformations.push_back(t);
                 }
                 else if (tagName.compare("rotate") == 0){
                     float angle = stof(transform->Attribute("angle"));
-                    Rotation* t = new Rotation(x, y, z,angle);
-                    this->transformations.push_back(t);
+                    Rotation r(x, y, z,angle);
+                    this->transformations.push_back(r);
                 }
                 else if (tagName.compare("scale") == 0){
-                    Scale* t = new Scale(x, y, z);
-                    this->transformations.push_back(t);
+                    Scale s(x, y, z);
+                    this->transformations.push_back(s);
                 }
             }
         }
 
-        /*XMLElement* models = group->FirstChildElement("models");
+        /* Models */
+        XMLElement* models = group->FirstChildElement("models");
         if (models) {
-            vector<string> *primitives = NULL;
-
-            this->figures = vector<vector<Triangle> *>();
-            this->points = vector<vector<Point> *>();
-
+            int i = 0;
             for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
-
-                primitives->emplace_back(model->Attribute("file"));
-
-                int size = primitives->size();
-                for (int i = 0; i < size; i++) {
-                    this->figures.emplace_back(new vector<Triangle>());
-                    this->points.emplace_back(reader((*primitives)[i], (figures)[i]));
-                }
-
-                primitives->clear();
-                delete primitives;
+                this->indexes.push_back(vector<unsigned int>());
+                this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
+                i++;
             }
         }
 
-        XMLElement* subGroup = group->FirstChildElement("group");
-        if (subGroup) {
-            readXML(subGroup);
-        }*/
+        /* Groups */
+      
+        int i = 0;
+        for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = group->NextSiblingElement("group")) {
+            this->subgroups.push_back(Group());
+            this->subgroups[i].readXML(gr);
+        }
     }
 }
