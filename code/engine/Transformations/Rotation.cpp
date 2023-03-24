@@ -1,4 +1,9 @@
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
+
 #include "rotation.hpp"
 
 Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z), angle(angle) {

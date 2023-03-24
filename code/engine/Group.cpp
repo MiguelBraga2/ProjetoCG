@@ -106,7 +106,7 @@ void Group::drawGroup(float red, float green, float blue) {
 
     // Apply the transformations
     for (int i=0; i < this->transformations.size(); i++) {
-        this->transformations[i].applyTransformation();
+        this->transformations[i]->applyTransformation();
     }
 
     for (int i = 0; i < this->vertices.size(); i++) {
@@ -154,16 +154,16 @@ void Group::readXML(XMLElement *group) {
                 float z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0){
-                    Translation t(x, y, z);
+                    Translation *t = new Translation(x, y, z);
                     this->transformations.push_back(t);
                 }
                 else if (tagName.compare("rotate") == 0){
                     float angle = stof(transform->Attribute("angle"));
-                    Rotation r(x, y, z,angle);
+                    Rotation *r = new Rotation(x, y, z,angle);
                     this->transformations.push_back(r);
                 }
                 else if (tagName.compare("scale") == 0){
-                    Scale s(x, y, z);
+                    Scale *s = new Scale(x, y, z);
                     this->transformations.push_back(s);
                 }
             }

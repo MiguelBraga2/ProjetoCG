@@ -1,7 +1,7 @@
 #ifndef ENGINE_SCALE_H
 #define ENGINE_SCALE_H
 
-#include "Transformation.hpp"
+#include "transformation.hpp"
 
 class Scale : public Transformation {
 public:
