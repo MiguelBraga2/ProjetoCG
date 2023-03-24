@@ -1,10 +1,11 @@
 .vscode/
 *.swp
 demo.xml
+demo2.xml
 code/figures/*.3d
 *.out
 .idea/
 cmake-build-debug/
 code/engine/build
-code/generator/build/
+code/generator/build
 code/figures/*.obj
