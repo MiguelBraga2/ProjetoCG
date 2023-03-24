@@ -175,14 +175,15 @@ void processSpecialKeys(int key, int xx, int yy) {
     glutPostRedisplay();
 }
 
-void readXML(char* filePath){
+int readXML(char* filePath){
     XMLDocument *doc = new XMLDocument();
-    doc->LoadFile(filePath);
+    XMLError error = doc->LoadFile(filePath);
     XMLNode* world = doc->FirstChildElement("world");
+
     float fov = 0, far = 0, near = 0;
     Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
   
-    if (world) {
+    if (!error && world) {
         /* window */
         XMLElement* windowElem = world->FirstChildElement("window");
         if (windowElem) {
@@ -234,45 +235,52 @@ void readXML(char* filePath){
     }
 
     delete doc;
+    
+    return (int) error;
 }
 
 int main(int argc, char **argv) {
     if (argc == 2) {
 
-        readXML(argv[1]);
+        int error = readXML(argv[1]);
 
-        // init GLUT and the window
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-        glutInitWindowPosition(100, 100);
-        glutInitWindowSize(width, height);
-        glutCreateWindow("ProjetoCG");
+        if (!error) {
 
-        // Required callback registry 
-        glutIdleFunc(renderScene);
-        glutDisplayFunc(renderScene);
-        glutReshapeFunc(changeSize);
+            // init GLUT and the window
+            glutInit(&argc, argv);
+            glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+            glutInitWindowPosition(100, 100);
+            glutInitWindowSize(width, height);
+            glutCreateWindow("ProjetoCG");
+
+            // Required callback registry 
+            glutIdleFunc(renderScene);
+            glutDisplayFunc(renderScene);
+            glutReshapeFunc(changeSize);
 
 
-        // put here the registration of the keyboard callbacks
-        glutSpecialFunc(processSpecialKeys);
-        glutKeyboardFunc(keyboard_events);
-        //glutPassiveMotionFunc(mouse_function);
+            // put here the registration of the keyboard callbacks
+            glutSpecialFunc(processSpecialKeys);
+            glutKeyboardFunc(keyboard_events);
+            //glutPassiveMotionFunc(mouse_function);
 
-        // Required for VBOs 
-        glewInit();
-        glEnableClientState(GL_VERTEX_ARRAY);
+            // Required for VBOs 
+            glewInit();
+            glEnableClientState(GL_VERTEX_ARRAY);
 
-        group->prepareBuffers();
+            group->prepareBuffers();
 
-        // 	OpenGL settings
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glPolygonMode(GL_FRONT, GL_LINE);
+            // 	OpenGL settings
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glPolygonMode(GL_FRONT, GL_LINE);
 
-        // enter GLUT's main cycle
-        glutMainLoop();
-
+            // enter GLUT's main cycle
+            glutMainLoop();
+        }
+        else {
+            cout << "Ficheiro não encontrado ou erro na sua leitura." << endl;
+        }
     }
     else {
         cout << "Número incorreto de argumentos." << endl;
