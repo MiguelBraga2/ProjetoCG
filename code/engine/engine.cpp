@@ -179,8 +179,8 @@ void readXML(char* filePath){
     XMLDocument *doc = new XMLDocument();
     doc->LoadFile(filePath);
     XMLNode* world = doc->FirstChildElement("world");
-    float fov, far, near;
-    Point* cameraPosition = NULL, *cameraLookAt = NULL, *cameraUpVector = NULL;
+    float fov = 0, far = 0, near = 0;
+    Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
   
     if (world) {
         /* window */
@@ -197,19 +197,25 @@ void readXML(char* filePath){
             /* camera position */
             XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
-                cameraPosition = new Point(stof(position->Attribute("x")), stof(position->Attribute("y")), stof(position->Attribute("z")));
+                cameraPosition->setX(stof(position->Attribute("x")));
+                cameraPosition->setY(stof(position->Attribute("y")));
+                cameraPosition->setZ(stof(position->Attribute("z")));
             }
 
             /* camera lookAt */
             XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
-                cameraLookAt = new Point (stof(lookAt->Attribute("x")), stof(lookAt->Attribute("y")), stof(lookAt->Attribute("z")));
+                cameraLookAt->setX(stof(lookAt->Attribute("x")));
+                cameraLookAt->setY(stof(lookAt->Attribute("y")));
+                cameraLookAt->setZ(stof(lookAt->Attribute("z")));
             }
 
             /* camera up */
             XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
-                cameraUpVector = new Point (stof(up->Attribute("x")), stof(up->Attribute("y")), stof(up->Attribute("z")));
+                cameraUpVector->setX(stof(up->Attribute("x")));
+                cameraUpVector->setY(stof(up->Attribute("y")));
+                cameraUpVector->setZ(stof(up->Attribute("z")));
             }
             
             /* camera projection */
