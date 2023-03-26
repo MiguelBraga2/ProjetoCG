@@ -25,9 +25,12 @@ using namespace tinyxml2;
 using namespace std;
 
 float width, height;
-float angle = 0;
 Camera* camera;
 Group* group;
+
+// For FPS count
+int timebase;
+float frames;
 
 
 void changeSize(int w, int h) {
@@ -96,7 +99,20 @@ void renderScene(void) {
      
     // transformation and drawing instructions here
     group->drawGroup(1, 1, 1);
-    
+
+    frames++;
+    int time = glutGet(GLUT_ELAPSED_TIME);
+    int fps;
+    if(time-timebase > 1000){
+        fps = frames * 1000.0/(time-timebase);
+        timebase = time;
+        frames = 0;
+        char* s = (char*)malloc(4);
+        std::sprintf(s, "%d", fps);
+        glutSetWindowTitle(s);
+    }
+
+
     // End of frame
     glutSwapBuffers();
 }
@@ -252,6 +268,8 @@ int main(int argc, char **argv) {
             glutInitWindowPosition(100, 100);
             glutInitWindowSize(width, height);
             glutCreateWindow("ProjetoCG");
+
+            timebase = glutGet(GLUT_ELAPSED_TIME);
 
             // Required callback registry 
             glutIdleFunc(renderScene);
