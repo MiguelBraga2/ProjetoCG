@@ -32,6 +32,8 @@ Group* group;
 int timebase;
 float frames;
 
+int startX, startY, tracking = 0;
+
 
 void changeSize(int w, int h) {
 	// Prevent a divide by zero, when window is too short
@@ -63,7 +65,7 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-    if (camera->getMode() == 0){
+    if (camera->getMode() == 0 || camera->getMode() == 2){
         gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
                   camera->getLookAtPosition().getX() ,camera->getLookAtPosition().getY(),camera->getLookAtPosition().getZ(),
                   camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
@@ -108,13 +110,112 @@ void renderScene(void) {
         timebase = time;
         frames = 0;
         char* s = (char*)malloc(4);
-        std::sprintf(s, "%d", fps);
+        std::sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
     }
 
-
     // End of frame
     glutSwapBuffers();
+}
+
+void menu(int id)
+{
+    switch(id)
+    {
+        case 1:
+            // code for menu item 1
+            break;
+        case 2:
+            // code for menu item 2
+            break;
+        case 3:
+            // code for menu item 3
+            break;
+        default:
+            break;
+    }
+}
+
+void createMenu(void)
+{
+    int submenu;
+    submenu = glutCreateMenu(menu);
+    glutAddMenuEntry("Submenu Item 1", 1);
+    glutAddMenuEntry("Submenu Item 2", 2);
+    glutCreateMenu(menu);
+    glutAddMenuEntry("Menu Item 1", 1);
+    glutAddSubMenu("Submenu", submenu);
+    glutAddMenuEntry("Menu Item 2", 2);
+    glutAddMenuEntry("Menu Item 3", 3);
+    glutAttachMenu(GLUT_MIDDLE_BUTTON);
+}
+
+void processMouseButtons(int button, int state, int xx, int yy) {
+    if (camera->getMode() == 2){
+        if (state == GLUT_DOWN)  {
+            startX = xx;
+            startY = yy;
+            if (button == GLUT_LEFT_BUTTON)
+                tracking = 1;
+            else if (button == GLUT_RIGHT_BUTTON)
+                tracking = 2;
+            else
+                tracking = 0;
+        }
+        else if (state == GLUT_UP) {
+            if (tracking == 1) {
+                camera->setAlfa(camera->getAlfa() + (xx - startX));
+                camera->setBeta(camera->getBeta() + (yy - startY));
+            }
+            else if (tracking == 2) {
+                camera->setCameraRadius(camera->getCameraRadius() - yy - startY);
+                if(camera->getCameraRadius() < 3){
+                    camera->setCameraRadius(3);
+                }
+            }
+            tracking = 0;
+        }
+    }
+}
+
+
+void processMouseMotion(int xx, int yy) {
+    if (camera->getMode() == 2){
+        int deltaX, deltaY;
+        int alphaAux, betaAux;
+        int rAux;
+
+        if (!tracking)
+            return;
+
+        deltaX = xx - startX;
+        deltaY = yy - startY;
+
+        if (tracking == 1) {
+
+
+            alphaAux = camera->getAlfa() + deltaX;
+            betaAux = camera->getBeta() + deltaY;
+
+            if (betaAux > 85.0)
+                betaAux = 85.0;
+            else if (betaAux < -85.0)
+                betaAux = -85.0;
+
+            rAux = camera->getCameraRadius();
+        }
+        else if (tracking == 2) {
+
+            alphaAux = camera->getAlfa();
+            betaAux = camera->getBeta();
+            rAux = camera->getCameraRadius() - deltaY;
+            if (rAux < 3)
+                rAux = 3;
+        }
+        camera->setPosition(Point(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
+                                  rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
+                                  rAux * 							     sin(betaAux * 3.14 / 180.0)));
+    }
 }
 
 // write function to process keyboard events
@@ -268,6 +369,7 @@ int main(int argc, char **argv) {
             glutInitWindowPosition(100, 100);
             glutInitWindowSize(width, height);
             glutCreateWindow("ProjetoCG");
+            createMenu();
 
             timebase = glutGet(GLUT_ELAPSED_TIME);
 
@@ -280,6 +382,8 @@ int main(int argc, char **argv) {
             // put here the registration of the keyboard callbacks
             glutSpecialFunc(processSpecialKeys);
             glutKeyboardFunc(keyboard_events);
+            glutMouseFunc(processMouseButtons);
+            glutMotionFunc(processMouseMotion);
             //glutPassiveMotionFunc(mouse_function);
 
             // Required for VBOs 

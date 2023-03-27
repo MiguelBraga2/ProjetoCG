@@ -8,87 +8,87 @@
     </camera>
     <group>
         <models> <!-- SOL -->
-            <model file="sphere.3d" />
+            <model file="sphere_1_8_8.3d" />
         </models>
         <group> <!-- Mercúrio -->
             <transform>
-                <rotate angle="30" x="1" y="0" z="0"/>
+                <rotate angle="30" x="0" y="1" z="0"/>
                 <translate x="5" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d"/>
             </models>
         </group>
         <group> <!-- Vénus -->
             <transform>
-                <rotate angle="270" x="1" y="0" z="0"/>
+                <rotate angle="270" x="0" y="1" z="0"/>
                 <translate x="10" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
         <group> <!-- Terra -->
             <transform>
-                <rotate angle="0" x="1" y="0" z="0"/>
+                <rotate angle="0" x="0" y="1" z="0"/>
                 <translate x="15" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
             <group> <!-- Lua -->
                 <transform>
-                    <rotate angle="45" x="1" y="0" z="0"/>
+                    <rotate angle="45" x="0" y="1" z="0"/>
                     <translate x="2" y="0" z="0"/>
                 </transform>
                 <models>
-                    <model file="sphere.3d" />
+                    <model file="sphere_1_8_8.3d" />
                 </models>
             </group>
         </group>
         <group> <!-- Marte -->
             <transform>
-                <rotate angle="160" x="1" y="0" z="0"/>
+                <rotate angle="160" x="0" y="1" z="0"/>
                 <translate x="20" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <rotate angle="320" x="1" y="0" z="0"/>
+                <rotate angle="320" x="0" y="1" z="0"/>
                 <translate x="30" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <rotate angle="145" x="1" y="0" z="0"/>
+                <rotate angle="145" x="0" y="1" z="0"/>
                 <translate x="40" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
         <group> <!-- Uráno -->
             <transform>
-                <rotate angle="225" x="1" y="0" z="0"/>
+                <rotate angle="225" x="0" y="1" z="0"/>
                 <translate x="45" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
         <group> <!-- Neptuno -->
             <transform>
-                <rotate angle="15" x="1" y="0" z="0"/>
+                <rotate angle="15" x="0" y="1" z="0"/>
                 <translate x="55" y="0" z="0"/>
             </transform>
             <models>
-                <model file="sphere.3d" />
+                <model file="sphere_1_8_8.3d" />
             </models>
         </group>
     </group>

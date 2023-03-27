@@ -33,7 +33,6 @@ void Camera::incrementAlfa(){
     else if (this->mode == 1){
         this->calculateDirection();
     }
-
 }
 
 void Camera::decrementAlfa(){
@@ -44,8 +43,8 @@ void Camera::decrementAlfa(){
     else if (this->mode == 1){
         this->calculateDirection();
     }
-
 }
+
 
 void Camera::incrementBeta(){
     this->beta += this->increment;
@@ -122,6 +121,13 @@ void Camera::changeMode(){
         this->calculateDirection();
     }
     else if (this->mode = 1){
+        this->alfa = 0;
+        this->beta = 45;
+        this->cameraRadius = 50;
+        this->mode = 2;
+        this->spherical2Cartesian();
+    }
+    else if (this->mode == 2){
         this->mode = 0;
     }
 }
@@ -184,6 +190,34 @@ float Camera::getFar() {
 
 Point Camera::getD() {
     return d;
+}
+
+float Camera::getAlfa() {
+    return alfa;
+}
+
+void Camera::setAlfa(float alfa) {
+    Camera::alfa = alfa;
+}
+
+float Camera::getBeta() {
+    return beta;
+}
+
+void Camera::setBeta(float beta) {
+    Camera::beta = beta;
+}
+
+float Camera::getCameraRadius() {
+    return cameraRadius;
+}
+
+void Camera::setCameraRadius(float cameraRadius) {
+    Camera::cameraRadius = cameraRadius;
+}
+
+void Camera::setPosition(Point position) {
+    Camera::position = position;
 }
 
 

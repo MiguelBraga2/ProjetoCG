@@ -146,7 +146,7 @@ void Group::readXML(XMLElement *group) {
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
         if (transformationsElem) {
-            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement("transform")) {
+            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
 
                 float x = stof(transform->Attribute("x"));
@@ -186,9 +186,10 @@ void Group::readXML(XMLElement *group) {
         /* Groups */
       
         int i = 0;
-        for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = group->NextSiblingElement("group")) {
+        for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
             this->subgroups.push_back(Group());
             this->subgroups[i].readXML(gr);
+            i++;
         }
     }
 }
