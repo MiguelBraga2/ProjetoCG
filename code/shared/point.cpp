@@ -1,6 +1,7 @@
 #include<iostream>
 #include "point.hpp"
 #include <string>
+#include "math.h"
 using namespace std;
 
 Point::Point()
@@ -50,6 +51,25 @@ void Point::setPoint(float x, float y, float z) {
     this->y = y;
     this->z = z;
 
+}
+
+Point Point::crossProduct(Point v1, Point v2) {
+    Point p;
+    p.x = v1.getY()*v2.getZ() - v1.getZ()*v2.getY();
+    p.y = v1.getZ()*v2.getX() - v1.getX()*v2.getZ();
+    p.z = v1.getX()*v2.getY() - v1.getY()*v2.getX();
+    return p;
+}
+
+float Point::getSize(){
+    return abs(sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)));
+}
+
+float Point::normalize(){
+    float size = this->getSize();
+    this->x = this->x/size;
+    this->y = this->y/size;
+    this->z = this->z/size;
 }
 
 string Point::toString()

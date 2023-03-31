@@ -12,6 +12,7 @@
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <GL/freeglut.h>
 #endif
 
 #include "../libraries/tinyxml2.h"
@@ -72,15 +73,27 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-    if (camera->getMode() == 0 || camera->getMode() == 2){
-        gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
-                  camera->getLookAtPosition().getX() ,camera->getLookAtPosition().getY(),camera->getLookAtPosition().getZ(),
-                  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
-    } else if (camera->getMode() == 1){
-        gluLookAt(camera->getPosition().getX(),camera->getPosition().getY(),camera->getPosition().getZ(),
-                  camera->getPosition().getX() + camera->getD().getX(),camera->getPosition().getY() + camera->getD().getY(),camera->getPosition().getZ() + camera->getD().getZ(),
-                  camera->getUpVector().getX(),camera->getUpVector().getY(),camera->getUpVector().getZ());
-    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, width, 0, height);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glRasterPos2i(0, 1);
+
+    glColor3f(0, 0, 1.0f);
+    const unsigned char* s = camera->toString();
+    glutBitmapString(GLUT_BITMAP_HELVETICA_10, s);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    camera->placeCamera();
 
     if (axis){
         // put axis drawing in here
@@ -146,80 +159,43 @@ void menu(int id)
  * Creates a menu with options of:
  * - toggling axis
  */
-void createMenu(void)
-{
-    int submenu;
-    submenu = glutCreateMenu(menu);
+void createMenu(void){
     glutAddMenuEntry("Add axes", 1);
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
+/**
+ * Processing callback to handle mouse events
+ * @param button
+ * @param state
+ * @param xx
+ * @param yy
+ */
 void processMouseButtons(int button, int state, int xx, int yy) {
-    if (camera->getMode() == 2){
-        if (state == GLUT_DOWN)  {
-            startX = xx;
-            startY = yy;
-            if (button == GLUT_LEFT_BUTTON)
-                tracking = 1;
-            else if (button == GLUT_RIGHT_BUTTON)
-                tracking = 2;
-            else
-                tracking = 0;
-        }
-        else if (state == GLUT_UP) {
-            if (tracking == 1) {
-                camera->setAlfa(camera->getAlfa() + (xx - startX));
-                camera->setBeta(camera->getBeta() + (yy - startY));
-            }
-            else if (tracking == 2) {
-                camera->setCameraRadius(camera->getCameraRadius() - yy - startY);
-                if(camera->getCameraRadius() < 3){
-                    camera->setCameraRadius(3);
-                }
-            }
-            tracking = 0;
-        }
+    if (state == GLUT_DOWN)  {
+        startX = xx;
+        startY = yy;
+        if (button == GLUT_LEFT_BUTTON)
+            tracking = 1;
+        else if (button == GLUT_RIGHT_BUTTON)
+            tracking = 2;
+        else tracking = 0;
+    }
+    else if (state == GLUT_UP) {
+        camera->updateMouseAngles(tracking, (xx - startX), (yy - startY));
+        tracking = 0;
     }
 }
 
-
+/**
+ * To be called when the mouse moves
+ * @param xx horizontal position of the mouse
+ * @param yy vertical position of the mouse
+ */
 void processMouseMotion(int xx, int yy) {
-    if (camera->getMode() == 2){
-        int deltaX, deltaY;
-        int alphaAux, betaAux;
-        int rAux;
-
-        if (!tracking)
-            return;
-
-        deltaX = xx - startX;
-        deltaY = yy - startY;
-
-        if (tracking == 1) {
-
-
-            alphaAux = camera->getAlfa() + deltaX;
-            betaAux = camera->getBeta() + deltaY;
-
-            if (betaAux > 85.0)
-                betaAux = 85.0;
-            else if (betaAux < -85.0)
-                betaAux = -85.0;
-
-            rAux = camera->getCameraRadius();
-        }
-        else if (tracking == 2) {
-
-            alphaAux = camera->getAlfa();
-            betaAux = camera->getBeta();
-            rAux = camera->getCameraRadius() - deltaY;
-            if (rAux < 3)
-                rAux = 3;
-        }
-        camera->setPosition(Point(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
-                                  rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
-                                  rAux * 							     sin(betaAux * 3.14 / 180.0)));
-    }
+    int deltaX = xx - startX;
+    int deltaY = yy - startY;
+    camera->processMouseMotion(tracking, deltaX, deltaY);
 }
 
 /**

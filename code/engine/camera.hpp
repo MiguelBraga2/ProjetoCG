@@ -26,43 +26,33 @@ public:
     void decrementBeta();
     void incrementRadius();
     void decrementRadius();
+    void incrementIncrement();
+    void decrementIncrement();
+    void moveForwards();
+    void moveBackwards();
+    void moveLeft();
+    void moveRight();
+    void changeMode();
+    void placeCamera();
+    void updateMouseAngles(int tracking, int horizDisp, int vertDisp);
+    void processMouseMotion(int tracking, int horizDisp, int vertDisp);
+    const unsigned char* toString();
     Point getPosition();
     Point getLookAtPosition();
     Point getUpVector();
     float getFov();
     float getNear();
     float getFar();
-    float getAlfa();
-    void setAlfa(float alfa);
-    float getBeta();
-    void setBeta(float beta);
-    float getCameraRadius();
-    void setCameraRadius(float cameraRadius);
-    void incrementIncrement();
-    void decrementIncrement();
-    void moveForwards();
-    void moveBackwards();
-    void setPosition(Point position);
-    void moveLeft();
-    void moveRight();
-    void changeMode();
-    void placeCamera();
 
 private:
     /**
      * Convert spherical coordenates (alpha and beta) into x, y, z coordinates
      */
     void spherical2Cartesian();
-
-public:
-    Point getD();
-
-    int getMode();
-
-private:
-    void calculateBeta();
-    void calculateAlpha();
     void calculateDirection();
+    void calculateAlfa();
+    void calculateBeta();
+    void calculateSpherical();
 };
 
 #endif
