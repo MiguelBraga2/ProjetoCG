@@ -1,5 +1,11 @@
 #define _USE_MATH_DEFINES
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include "camera.hpp"
 #include <math.h>
 
@@ -115,6 +121,14 @@ void Camera::moveBackwards() {
     }
 }
 
+void Camera::moveLeft() {
+    // TODO
+}
+
+void Camera::moveRight() {
+    // TODO
+}
+
 void Camera::changeMode(){
     if (this->mode == 0){
         this->mode = 1;
@@ -220,4 +234,7 @@ void Camera::setPosition(Point position) {
     Camera::position = position;
 }
 
+void placeCamera(){
+
+}
 

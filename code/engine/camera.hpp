@@ -32,29 +32,21 @@ public:
     float getFov();
     float getNear();
     float getFar();
-
     float getAlfa();
-
     void setAlfa(float alfa);
-
     float getBeta();
-
     void setBeta(float beta);
-
     float getCameraRadius();
-
     void setCameraRadius(float cameraRadius);
-
     void incrementIncrement();
     void decrementIncrement();
     void moveForwards();
     void moveBackwards();
-
     void setPosition(Point position);
-
     void moveLeft();
     void moveRight();
     void changeMode();
+    void placeCamera();
 
 private:
     /**

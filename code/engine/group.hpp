@@ -23,6 +23,7 @@ private:
     vector<Transformation *> transformations;
     vector<vector<float>> vertices;
     vector<vector<unsigned int>> indexes;
+    //vector<tuple> colors;
     GLuint* buffers;
     GLuint* indexs;
     vector<Group> subgroups;
