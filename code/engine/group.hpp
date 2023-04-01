@@ -20,7 +20,7 @@ using namespace tinyxml2;
 
 class Group {
 private:
-    vector<Transformation *> transformations;
+    vector<Transformation*> transformations;
     vector<vector<float>> vertices;
     vector<vector<unsigned int>> indexes;
     //vector<tuple> colors;

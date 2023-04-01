@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -168,15 +169,53 @@ void Group::readXML(XMLElement *group) {
                 }
             }
         }
-
+        int g = 0; // subgroups count
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
         if (models) {
             int i = 0;
-            for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
-                this->indexes.push_back(vector<unsigned int>());
-                this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
-                i++;
+            srand(1);
+            for (XMLElement* model = models->FirstChildElement(); model != NULL; model = model->NextSiblingElement()) {
+                string tagName = model->Value();
+                if (tagName.compare("ring") == 0){
+                    string fileName = model->Attribute("file");
+                    float inner = stof(model->Attribute("inner"));
+                    float outer = stof(model->Attribute("outer"));
+                    int n = stoi(model->Attribute("n"));
+                    float minScale = stof(model->Attribute("minScale"));
+                    float maxScale = stof(model->Attribute("maxScale"));
+
+                    while (g<n){
+                        Group newGroup = Group();
+                        newGroup.indexes.push_back(vector<unsigned int>());
+                        newGroup.vertices.push_back(reader(fileName, &newGroup.indexes[i]));
+
+                        float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
+                        Rotation* rotation = new Rotation(0, 1, 0, angle);
+                        newGroup.transformations.push_back(rotation);
+
+                        float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
+                        Translation* translation = new Translation(distance, 0, 0);
+                        newGroup.transformations.push_back(translation);
+
+                        float scaleF = ((double)rand() / (double)RAND_MAX) * (maxScale - minScale) + minScale;
+                        Scale* scale = new Scale(scaleF, scaleF, scaleF);
+                        newGroup.transformations.push_back(scale);
+
+                        newGroup.buffers = new GLuint(i);
+                        newGroup.indexs = new GLuint(i);
+
+                        this->subgroups.push_back(newGroup);
+
+                        g++;
+                    }
+                }
+                else if(tagName.compare("model") == 0){
+                    this->indexes.push_back(vector<unsigned int>());
+                    this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
+                    i++;
+                }
+
             }
 
             this->buffers = new GLuint(i);
@@ -184,12 +223,10 @@ void Group::readXML(XMLElement *group) {
         }
 
         /* Groups */
-      
-        int i = 0;
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
             this->subgroups.push_back(Group());
-            this->subgroups[i].readXML(gr);
-            i++;
+            this->subgroups[g].readXML(gr);
+            g++;
         }
     }
 }
