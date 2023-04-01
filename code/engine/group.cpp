@@ -184,6 +184,8 @@ void Group::readXML(XMLElement *group) {
                     int n = stoi(model->Attribute("n"));
                     float minScale = stof(model->Attribute("minScale"));
                     float maxScale = stof(model->Attribute("maxScale"));
+                    float minVAngle = stof(model->Attribute("minVAngle"));
+                    float maxVAngle = stof(model->Attribute("maxVAngle"));
 
                     while (g<n){
                         Group newGroup = Group();
@@ -193,6 +195,10 @@ void Group::readXML(XMLElement *group) {
                         float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
                         Rotation* rotation = new Rotation(0, 1, 0, angle);
                         newGroup.transformations.push_back(rotation);
+
+                        float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
+                        Rotation* verticalRotation = new Rotation(0, 0, 1, verticalAngle);
+                        newGroup.transformations.push_back(verticalRotation);
 
                         float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
                         Translation* translation = new Translation(distance, 0, 0);

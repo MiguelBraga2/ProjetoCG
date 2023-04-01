@@ -255,6 +255,12 @@ void processSpecialKeys(int key, int xx, int yy) {
 
         case GLUT_KEY_PAGE_UP:
             camera->incrementRadius(); break;
+
+        case GLUT_KEY_HOME:
+            camera->moveUp(); break;
+
+        case GLUT_KEY_END:
+            camera->moveDown(); break;
     }
 
     glutPostRedisplay();

@@ -32,6 +32,8 @@ public:
     void moveBackwards();
     void moveLeft();
     void moveRight();
+    void moveUp();
+    void moveDown();
     void changeMode();
     void placeCamera();
     void updateMouseAngles(int tracking, int horizDisp, int vertDisp);

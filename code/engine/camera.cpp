@@ -202,6 +202,22 @@ void Camera::moveRight() {
     }
 }
 
+void Camera::moveUp() {
+    if (mode == 1){ // Modo FPS
+        this->position.setX(this->position.getX() + upVector.getX());
+        this->position.setY(this->position.getY() + upVector.getY());
+        this->position.setZ(this->position.getZ() + upVector.getZ());
+    }
+}
+
+void Camera::moveDown() {
+    if (mode == 1){ // Modo FPS
+        this->position.setX(this->position.getX() - upVector.getX());
+        this->position.setY(this->position.getY() - upVector.getY());
+        this->position.setZ(this->position.getZ() - upVector.getZ());
+    }
+}
+
 /**
  * Changes the camera mode
  */
