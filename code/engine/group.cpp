@@ -8,6 +8,8 @@
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <tuple>
+
 #endif
 
 #include "Transformations/transformation.hpp"
@@ -111,6 +113,8 @@ void Group::drawGroup(float red, float green, float blue) {
     }
 
     for (int i = 0; i < this->vertices.size(); i++) {
+        tuple<float, float, float> rgb = this->colors[i];
+        glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb));
         glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
@@ -187,6 +191,8 @@ void Group::readXML(XMLElement *group) {
                     float minVAngle = stof(model->Attribute("minVAngle"));
                     float maxVAngle = stof(model->Attribute("maxVAngle"));
 
+                    tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
+
                     while (g<n){
                         Group newGroup = Group();
                         newGroup.indexes.push_back(vector<unsigned int>());
@@ -208,6 +214,8 @@ void Group::readXML(XMLElement *group) {
                         Scale* scale = new Scale(scaleF, scaleF, scaleF);
                         newGroup.transformations.push_back(scale);
 
+                        newGroup.colors.push_back(tup);
+
                         newGroup.buffers = new GLuint(i);
                         newGroup.indexs = new GLuint(i);
 
@@ -219,6 +227,8 @@ void Group::readXML(XMLElement *group) {
                 else if(tagName.compare("model") == 0){
                     this->indexes.push_back(vector<unsigned int>());
                     this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
+                    tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
+                    this->colors.push_back(tup);
                     i++;
                 }
 

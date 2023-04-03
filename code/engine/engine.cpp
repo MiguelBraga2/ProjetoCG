@@ -147,6 +147,24 @@ void menu(int id)
     switch(id)
     {
         case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        case 9:
+            break;
+        case 10:
             if (axis == false) axis = true;
             else if (axis == true) axis = false;
             break;
@@ -158,9 +176,23 @@ void menu(int id)
 /**
  * Creates a menu with options of:
  * - toggling axis
+ * - travelling to planet locations
  */
 void createMenu(void){
-    glutAddMenuEntry("Add axes", 1);
+    int submenu;
+    submenu = glutCreateMenu(menu);
+    glutAddMenuEntry("Sun", 1);
+    glutAddMenuEntry("Mercury", 2);
+    glutAddMenuEntry("Venus", 3);
+    glutAddMenuEntry("Earth", 4);
+    glutAddMenuEntry("Mars", 5);
+    glutAddMenuEntry("Jupiter", 6);
+    glutAddMenuEntry("Saturn", 7);
+    glutAddMenuEntry("Uranos", 8);
+    glutAddMenuEntry("Neptune", 9);
+    glutCreateMenu(menu);
+    glutAddSubMenu("Travel To", submenu);
+    glutAddMenuEntry("Add axes", 10);
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
@@ -375,7 +407,7 @@ int main(int argc, char **argv) {
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
-            glPolygonMode(GL_FRONT, GL_LINE);
+            glPolygonMode(GL_FRONT, GL_FILL);
 
             // enter GLUT's main cycle
             glutMainLoop();
