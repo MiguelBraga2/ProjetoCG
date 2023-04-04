@@ -93,7 +93,7 @@ void renderScene(void) {
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 
-    camera->placeCamera();
+    //camera->placeCamera();
 
     if (axis){
         // put axis drawing in here
@@ -120,7 +120,14 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup(1, 1, 1);
+    //group->drawGroup(1, 1, 1);
+
+    float px=0, py=0, pz=0;
+    // TESTE
+    glTranslatef(0, 0, 3);
+    glutWireSphere(1, 100, 100);
+    gluLookAt(px, py, pz, 0, 0, 1, 0, 1, 0);
+
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -371,7 +378,7 @@ int readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2) {
 
-        int error = readXML(argv[1]);
+        int error=readXML(argv[1]);
 
         if (!error) {
 
