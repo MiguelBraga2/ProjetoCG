@@ -65,7 +65,7 @@ float Point::getSize(){
     return abs(sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)));
 }
 
-float Point::normalize(){
+void Point::normalize(){
     float size = this->getSize();
     this->x = this->x/size;
     this->y = this->y/size;

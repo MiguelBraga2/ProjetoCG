@@ -21,7 +21,7 @@ public:
     void setPoint(float x, float y, float z);
     static Point crossProduct(Point v1, Point v2);
     float getSize();
-    float normalize();
+    void normalize();
     string toString();
 };
 
