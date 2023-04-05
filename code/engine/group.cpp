@@ -18,91 +18,11 @@
 #include "camera.hpp"
 #include "group.hpp"
 
-
-/*float width, height;
-Camera* camera;*/
-
 using namespace tinyxml2;
 
 Group::Group() {
 
 }
-// Radians
-/*
-void drawOrbit(float radius, float alpha, float red, float green, float blue, float equation, float radiusLua, float alphaLua, float redLua, float greenLua, float blueLua, float equationLua){
-    float posX = radius * cos(alpha);
-    float posZ = radius * sin(alpha);
-    glPushMatrix();
-    glTranslatef(posX, equation*posX, posZ);
-    glColor3f(red,green,blue);
-    glutSolidSphere(3, 100, 100);
-    glPopMatrix();
-    glPushMatrix();
-    glTranslatef(posX, equation*posX, posZ);
-    float luaX = radiusLua * cos(alphaLua);
-    float luaZ = radiusLua * sin(alphaLua);
-    glTranslatef(luaX, equationLua*luaX, luaZ);
-    glColor3f(redLua, greenLua, blueLua);
-    glutSolidSphere(1, 100, 100);
-    glPopMatrix();
-
-}
-
-void drawEllipticalOrbit(Point center, float a, float b, Point rgb, float alpha){
-    // Ellipse equation: (x,y) = (a * cos(alpha), b * sin(alpha))
-    // https://en.wikipedia.org/wiki/Ellipse#Standard_parametric_representation
-    float posX = a * cos(alpha);
-    float posZ = b * sin(alpha);
-    glPushMatrix();
-    glTranslatef(center.getX(), center.getY(), center.getZ());
-    glTranslatef(posX, 0, posZ);
-    glColor3f(rgb.getX(), rgb.getY(), rgb.getZ());
-    glutSolidSphere(3, 100, 100);
-    glPopMatrix();
-}*/
-
-/**
- * Draw a triangle, using the order specified by the indexes
- * @param t 3 indexes, specifying the positions of the triangle vertices in the points vector
- * @param red red color setting
- * @param green green color setting
- * @param blue blue color setting
- * @param points the set of all the points in the figure
- */
- /*
-void drawTriangle(Triangle t, float red, float green, float blue, vector<Point> points){
-    int i1 = t.getIndP1();
-    int i2 = t.getIndP2();
-    int i3 = t.getIndP3();
-
-    Point p1 = points[i1];
-    Point p2 = points[i2];
-    Point p3 = points[i3];
-
-    glColor3f(red, green, blue);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-    glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-    glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-    glEnd();
-}*/
-
-/**
- * Draw a figure, given the vertices and all the triangles
- * @param triangles list of triangles containing 3 indexes, specifying the positions of the triangle vertices in the points vector
- * @param points the set of all the points in the figure
- * @param red red color setting
- * @param green green color setting
- * @param blue blue color setting
- */
-/*
-void drawFigure(vector<Triangle> *triangles, vector<Point> *points, float red, float green, float blue){
-    int size = triangles->size();
-    for(int i=0; i < size; i++){
-        drawTriangle((*triangles)[i], red, green, blue, (*points));
-    }
-}
-*/
 
 void Group::drawGroup(float red, float green, float blue) {
     glPushMatrix();
@@ -151,28 +71,28 @@ void Group::readXML(XMLElement *group) {
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
         if (transformationsElem) {
-            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
-                string tagName = transform->Value();
+            XMLElement* translate = transformationsElem->FirstChildElement("translate");
+            if(translate) {
+                Translation *t = new Translation(stof(translate->Attribute("x")), stof(translate->Attribute("y")),
+                                                 stof(translate->Attribute("z")));
+                this->transformations.push_back(t);
+            }
 
-                float x = stof(transform->Attribute("x"));
-                float y = stof(transform->Attribute("y"));
-                float z = stof(transform->Attribute("z"));
+            XMLElement* rotate = transformationsElem->FirstChildElement("rotate");
+            if(rotate) {
+                Rotation *r = new Rotation(stof(rotate->Attribute("x")), stof(rotate->Attribute("y")),
+                                           stof(rotate->Attribute("z")), stof(rotate->Attribute("angle")));
+                this->transformations.push_back(r);
+            }
 
-                if (tagName.compare("translate") == 0){
-                    Translation *t = new Translation(x, y, z);
-                    this->transformations.push_back(t);
-                }
-                else if (tagName.compare("rotate") == 0){
-                    float angle = stof(transform->Attribute("angle"));
-                    Rotation *r = new Rotation(x, y, z,angle);
-                    this->transformations.push_back(r);
-                }
-                else if (tagName.compare("scale") == 0){
-                    Scale *s = new Scale(x, y, z);
-                    this->transformations.push_back(s);
-                }
+            XMLElement* scale = transformationsElem->FirstChildElement("scale");
+            if (scale) {
+                Scale *s = new Scale(stof(scale->Attribute("x")), stof(scale->Attribute("y")),
+                                           stof(scale->Attribute("z")));
+                this->transformations.push_back(s);
             }
         }
+
         int g = 0; // subgroups count
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
@@ -231,7 +151,6 @@ void Group::readXML(XMLElement *group) {
                     this->colors.push_back(tup);
                     i++;
                 }
-
             }
 
             this->buffers = new GLuint(i);
