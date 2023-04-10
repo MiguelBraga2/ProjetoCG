@@ -37,6 +37,8 @@ int startX, startY, tracking = 0;
 bool axis = false; // Is axis shown
 int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
+vector<Point> teleports;
+
 /**
  * Callback called when the window is resized
  * @param w width of the window
@@ -122,7 +124,7 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup(1, 1, 1);
+    group->drawGroup();
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -180,6 +182,7 @@ void menu(int id)
             polygonMode = GL_POINT;
             break;
         default:
+            camera->setPosition(teleports.at(id-14));
             break;
     }
 }
@@ -190,23 +193,19 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu, submenu2;
-    submenu = glutCreateMenu(menu);
-    glutAddMenuEntry("Sun", 1);
-    glutAddMenuEntry("Mercury", 2);
-    glutAddMenuEntry("Venus", 3);
-    glutAddMenuEntry("Earth", 4);
-    glutAddMenuEntry("Mars", 5);
-    glutAddMenuEntry("Jupiter", 6);
-    glutAddMenuEntry("Saturn", 7);
-    glutAddMenuEntry("Uranos", 8);
-    glutAddMenuEntry("Neptune", 9);
+    int submenu, submenu2, submenu3;
     submenu2 = glutCreateMenu(menu);
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
     glutAddMenuEntry("GL_POINT", 13);
+    submenu3 = glutCreateMenu(menu);
+    for(int i=0; i<teleports.size(); i++){
+        char label[20];
+        sprintf(label, "Objeto %d", i+1);
+        glutAddMenuEntry(label, 14+i);
+    }
     glutCreateMenu(menu);
-    glutAddSubMenu("Travel To", submenu);
+    glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
 
@@ -378,6 +377,12 @@ int readXML(char* filePath){
 
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
+        vector<Transformation> transf;
+        group->initializeTeleporter(&transf, &teleports);
+
+        for(Point p: teleports){
+            cout << p.toString() << endl;
+        }
     }
 
     delete doc;

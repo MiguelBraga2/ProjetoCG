@@ -258,7 +258,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
  * @param stacks horizontal divisions of the sphere
  * @return
  */
-vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes) {
+vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes, int vboMode) {
     vector<float> vertices;
     
     float sliceStep = 2 * M_PI / slices; 
@@ -378,7 +378,7 @@ int main(int argc, char** argv) {
         if (strcmp(argv[1], "sphere") == 0) {
             if (argc == 6) {
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes);
+                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, stoi(argv[5]));
                 writer(argv[5], indexes, vertices);
             }
             else {

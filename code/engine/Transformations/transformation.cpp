@@ -4,6 +4,10 @@ void Transformation::applyTransformation()
 {
 }
 
+void Transformation::calculateExternalPoint(Point *base)
+{
+}
+
 Transformation::Transformation(float x, float y, float z) {
     this->x = x;
     this->y = y;

@@ -31,8 +31,12 @@ private:
 public:
     Group();
     void prepareBuffers();
-    void drawGroup(float red, float green, float blue);
+    void initializeTeleporter(vector<Transformation> *appliedTransfs, vector<Point>* teleports);
+    void drawGroup();
     void readXML(XMLElement* group);
+
+private:
+    Point* calculateCameraTeleport(vector<Transformation> appliedTransfs);
 };
 
 

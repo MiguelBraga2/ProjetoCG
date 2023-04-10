@@ -399,3 +399,7 @@ void Camera::calculateBeta(){
         beta = atan(sqrt(pow(this->d.getX(), 2) + pow(this->d.getY(), 2))/this->d.getZ());
     }
 }
+
+void Camera::setPosition(Point position) {
+    this->position = position;
+}

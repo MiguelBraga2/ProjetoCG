@@ -13,6 +13,7 @@
 #endif
 
 #include "Transformations/transformation.hpp"
+#include "Transformations/translation.hpp"
 #include "../libraries/tinyxml2.h"
 #include "../shared/IO.hpp"
 #include "camera.hpp"
@@ -24,7 +25,42 @@ Group::Group() {
 
 }
 
-void Group::drawGroup(float red, float green, float blue) {
+Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs){
+    Point* base = new Point(0,0,4);
+
+    for (int i=0; i < this->transformations.size(); i++) {
+        this->transformations[i]->calculateExternalPoint(base);
+    }
+
+    return base;
+}
+
+void Group::initializeTeleporter(vector<Transformation> *appliedTransfs, vector<Point>* teleports){
+    for (int i=0; i < this->transformations.size(); i++) {
+        if (appliedTransfs != NULL)
+            appliedTransfs->push_back(*this->transformations[i]);
+    }
+
+    for (int i = 0; i < this->vertices.size(); i++) {
+        if (appliedTransfs != NULL){
+            Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs);
+            teleports->push_back(*cameraTeleport);
+        }
+    }
+
+    for (int i = 0; i < this->subgroups.size(); i++) {
+        this->subgroups[i].initializeTeleporter(appliedTransfs, teleports);
+        appliedTransfs->clear();
+        for (int i=0; i < this->transformations.size(); i++) {
+            if (appliedTransfs != NULL)
+                appliedTransfs->push_back(*this->transformations[i]);
+        }
+    }
+
+
+}
+
+void Group::drawGroup() {
     glPushMatrix();
 
     // Apply the transformations
@@ -42,7 +78,7 @@ void Group::drawGroup(float red, float green, float blue) {
     }
 
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup(red, green, blue);
+        this->subgroups[i].drawGroup();
     }
 
     glPopMatrix();

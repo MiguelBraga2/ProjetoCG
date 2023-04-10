@@ -20,6 +20,9 @@ private:
 public:
     Camera();
     Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float near, float far);
+
+    void setPosition(Point position);
+
     void incrementAlfa();
     void decrementAlfa();
     void incrementBeta();

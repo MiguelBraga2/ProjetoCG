@@ -20,3 +20,7 @@ float Rotation::getAngle() {
 void Rotation::setAngle(float angle) {
     this->angle = angle;
 }
+
+void Rotation::calculateExternalPoint(Point* base){
+
+}
