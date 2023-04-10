@@ -71,18 +71,18 @@ void Group::readXML(XMLElement *group) {
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
         if (transformationsElem) {
-            XMLElement* translate = transformationsElem->FirstChildElement("translate");
-            if(translate) {
-                Translation *t = new Translation(stof(translate->Attribute("x")), stof(translate->Attribute("y")),
-                                                 stof(translate->Attribute("z")));
-                this->transformations.push_back(t);
-            }
-
             XMLElement* rotate = transformationsElem->FirstChildElement("rotate");
             if(rotate) {
                 Rotation *r = new Rotation(stof(rotate->Attribute("x")), stof(rotate->Attribute("y")),
                                            stof(rotate->Attribute("z")), stof(rotate->Attribute("angle")));
                 this->transformations.push_back(r);
+            }
+
+            XMLElement* translate = transformationsElem->FirstChildElement("translate");
+            if(translate) {
+                Translation *t = new Translation(stof(translate->Attribute("x")), stof(translate->Attribute("y")),
+                                                 stof(translate->Attribute("z")));
+                this->transformations.push_back(t);
             }
 
             XMLElement* scale = transformationsElem->FirstChildElement("scale");
@@ -147,7 +147,26 @@ void Group::readXML(XMLElement *group) {
                 else if(tagName.compare("model") == 0){
                     this->indexes.push_back(vector<unsigned int>());
                     this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
-                    tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
+                    float red, green, blue;
+                    if (model->Attribute("red") == NULL){
+                        red = 1;
+                    }
+                    else {
+                        red = stof(model->Attribute("red"));
+                    }
+                    if (model->Attribute("green") == NULL){
+                        green = 1;
+                    }
+                    else {
+                        green = stof(model->Attribute("green"));
+                    }
+                    if (model->Attribute("blue") == NULL){
+                        blue = 1;
+                    }
+                    else {
+                        blue = stof(model->Attribute("blue"));
+                    }
+                    tuple <float, float, float> tup = make_tuple(red, green, blue);
                     this->colors.push_back(tup);
                     i++;
                 }

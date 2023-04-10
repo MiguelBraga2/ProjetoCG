@@ -13,6 +13,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
+#include <GL/glx.h>
 #endif
 
 #include "../libraries/tinyxml2.h"
@@ -34,6 +35,7 @@ float frames;
 int startX, startY, tracking = 0;
 
 bool axis = false; // Is axis shown
+int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
 /**
  * Callback called when the window is resized
@@ -133,7 +135,7 @@ void renderScene(void) {
         std::sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
     }
-
+    glPolygonMode(GL_FRONT, polygonMode);
     // End of frame
     glutSwapBuffers();
 }
@@ -168,6 +170,15 @@ void menu(int id)
             if (axis == false) axis = true;
             else if (axis == true) axis = false;
             break;
+        case 11:
+            polygonMode = GL_FILL;
+            break;
+        case 12:
+            polygonMode = GL_LINE;
+            break;
+        case 13:
+            polygonMode = GL_POINT;
+            break;
         default:
             break;
     }
@@ -179,7 +190,7 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu;
+    int submenu, submenu2;
     submenu = glutCreateMenu(menu);
     glutAddMenuEntry("Sun", 1);
     glutAddMenuEntry("Mercury", 2);
@@ -190,9 +201,16 @@ void createMenu(void){
     glutAddMenuEntry("Saturn", 7);
     glutAddMenuEntry("Uranos", 8);
     glutAddMenuEntry("Neptune", 9);
+    submenu2 = glutCreateMenu(menu);
+    glutAddMenuEntry("GL_FILL", 11);
+    glutAddMenuEntry("GL_LINE", 12);
+    glutAddMenuEntry("GL_POINT", 13);
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu);
+    glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
+
+
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
@@ -407,7 +425,7 @@ int main(int argc, char **argv) {
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
-            glPolygonMode(GL_FRONT, GL_FILL);
+            glPolygonMode(GL_FRONT, polygonMode);
 
             // enter GLUT's main cycle
             glutMainLoop();
