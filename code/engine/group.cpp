@@ -67,29 +67,33 @@ void Group::prepareBuffers() {
 
 void Group::readXML(XMLElement *group) {
     if (group) {
-
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
+        int numTranslates=0, numScales=0, numRotates=0;
         if (transformationsElem) {
-            XMLElement* rotate = transformationsElem->FirstChildElement("rotate");
-            if(rotate) {
-                Rotation *r = new Rotation(stof(rotate->Attribute("x")), stof(rotate->Attribute("y")),
-                                           stof(rotate->Attribute("z")), stof(rotate->Attribute("angle")));
-                this->transformations.push_back(r);
-            }
+            for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
+                string tagName = transform->Value();
 
-            XMLElement* translate = transformationsElem->FirstChildElement("translate");
-            if(translate) {
-                Translation *t = new Translation(stof(translate->Attribute("x")), stof(translate->Attribute("y")),
-                                                 stof(translate->Attribute("z")));
-                this->transformations.push_back(t);
-            }
+                float x = stof(transform->Attribute("x"));
+                float y = stof(transform->Attribute("y"));
+                float z = stof(transform->Attribute("z"));
 
-            XMLElement* scale = transformationsElem->FirstChildElement("scale");
-            if (scale) {
-                Scale *s = new Scale(stof(scale->Attribute("x")), stof(scale->Attribute("y")),
-                                           stof(scale->Attribute("z")));
-                this->transformations.push_back(s);
+                if (tagName.compare("translate") == 0 && numTranslates == 0){
+                    Translation *t = new Translation(x, y, z);
+                    this->transformations.push_back(t);
+                    numTranslates++;
+                }
+                else if (tagName.compare("rotate") == 0 && numRotates == 0){
+                    float angle = stof(transform->Attribute("angle"));
+                    Rotation *r = new Rotation(x, y, z,angle);
+                    this->transformations.push_back(r);
+                    numRotates++;
+                }
+                else if (tagName.compare("scale") == 0 && numScales == 0){
+                    Scale *s = new Scale(x, y, z);
+                    this->transformations.push_back(s);
+                    numScales++;
+                }
             }
         }
 
