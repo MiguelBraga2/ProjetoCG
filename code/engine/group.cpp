@@ -132,7 +132,6 @@ void Group::readXML(XMLElement *group) {
                 }
             }
         }
-
         int g = 0; // subgroups count
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
@@ -152,8 +151,8 @@ void Group::readXML(XMLElement *group) {
                     float maxVAngle = stof(model->Attribute("maxVAngle"));
 
                     tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
-
-                    while (g<n){
+                    int j=0;
+                    while (j<n){
                         Group newGroup = Group();
                         newGroup.indexes.push_back(vector<unsigned int>());
                         newGroup.vertices.push_back(reader(fileName, &newGroup.indexes[i]));
@@ -180,9 +179,10 @@ void Group::readXML(XMLElement *group) {
                         newGroup.indexs = new GLuint(i);
 
                         this->subgroups.push_back(newGroup);
+                        j++;
 
-                        g++;
                     }
+                    g+=n;
                 }
                 else if(tagName.compare("model") == 0){
                     this->indexes.push_back(vector<unsigned int>());

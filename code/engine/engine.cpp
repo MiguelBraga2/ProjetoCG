@@ -198,14 +198,14 @@ void createMenu(void){
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
     glutAddMenuEntry("GL_POINT", 13);
-    submenu3 = glutCreateMenu(menu);
+    /*submenu3 = glutCreateMenu(menu);
     for(int i=0; i<teleports.size(); i++){
         char label[20];
         sprintf(label, "Objeto %d", i+1);
         glutAddMenuEntry(label, 14+i);
-    }
+    }*/
     glutCreateMenu(menu);
-    glutAddSubMenu("Travel To", submenu3);
+    //glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
 

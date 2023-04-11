@@ -8,7 +8,8 @@
     </camera>
     <group>
         <models> <!-- Asteroides -->
-            <ring file="sphere_1_8_8.3d" outer="600" inner="300" n="10000" minScale="0.4" maxScale="0.8" minVAngle="-10" maxVAngle="10" red="0.545" green="0.27" blue="0.07"></ring> -->
+            <ring file="sphere_1_8_8.3d" outer="600" inner="300" n="10000" minScale="0.4" maxScale="0.8" minVAngle="-10" maxVAngle="10" red="0.545" green="0.27" blue="0.07"></ring>
+            <ring file="sphere_1_8_8.3d" outer="7000" inner="5000" n="10000" minScale="40" maxScale="80" minVAngle="-10" maxVAngle="10" red="0.545" green="0.27" blue="0.07"></ring>
         </models>
         <group> <!-- Sol -->
             <transform>
