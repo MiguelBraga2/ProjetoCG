@@ -8,21 +8,29 @@
     </camera>
     <group>
         <models> <!-- Asteroides -->
-            <ring file="sphere_1_8_8.3d" outer="600" inner="300" n="10000" minScale="0.4" maxScale="0.8" minVAngle="-10" maxVAngle="10" red="0.545" green="0.27" blue="0.07"></ring>
-            <ring file="sphere_1_8_8.3d" outer="7000" inner="5000" n="10000" minScale="40" maxScale="80" minVAngle="-10" maxVAngle="10" red="0.545" green="0.27" blue="0.07"></ring>
+            <ring file="sphere_1_8_8.3d" outer="600" inner="400" n="1000" minScale="2" maxScale="4" minVAngle="-10" maxVAngle="10" red="0.6" green="0.6" blue="0.6"></ring>
+            <ring file="sphere_1_8_8.3d" outer="5000" inner="3500" n="10000" minScale="2" maxScale="8" minVAngle="-1" maxVAngle="1" red="0.6" green="0.6" blue="0.6"></ring>
+            <model file="torus_239_100_30.3d"></model>
+            <model file="torus_272_100_30.3d"></model>
+            <model file="torus_300_100_30.3d"></model>
+            <model file="torus_352_100_30.3d"></model>
+            <model file="torus_720_100_30.3d"></model>
+            <model file="torus_1158_100_30.3d"></model>
+            <model file="torus_2118_100_30.3d"></model>
+            <model file="torus_3207_100_30.3d"></model>
         </models>
         <group> <!-- Sol -->
             <transform>
-                <scale x="34" y="34" z="34"/>
+                <scale x="200" y="200" z="200"/>
             </transform>
             <models> <!-- SOL -->
-                <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                <model file="sphere_1_100_100.3d" red="0.88" blue="0.27" green="0.11"/>
             </models>
         </group>
         <group> <!-- Mercúrio -->
             <transform>
-                <translate x="57.9" y="0" z="0"/>
-                <scale x="0.4" y="0.4" z="0.4"/>
+                <translate x="239" y="0" z="0"/>
+                <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="1" green="0"/>
@@ -30,8 +38,8 @@
         </group>
         <group> <!-- Vénus -->
             <transform>
-                <translate x="108.2" y="0" z="0"/>
-                <scale x="0.6" y="0.6" z="0.6"/>
+                <translate x="272" y="0" z="0"/>
+                <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="0" blue="1" green="0"/>
@@ -39,17 +47,18 @@
         </group>
         <group> <!-- Terra -->
             <transform>
-                <translate x="149.6" y="0" z="0"/>
-                <scale x="0.6" y="0.6" z="0.6"/>
+                <translate x="300" y="0" z="0"/>
+                <scale x="10" y="10" z="10"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="0" blue="0" green="1"/>
             </models>
+
         </group>
         <group> <!-- Marte -->
             <transform>
-                <translate x="228.0" y="0" z="0"/>
-                <scale x="0.3" y="0.3" z="0.3"/>
+                <translate x="352" y="0" z="0"/>
+                <scale x="5.3" y="5.3" z="5.3"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
@@ -57,8 +66,8 @@
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <translate x="778.5" y="0" z="0"/>
-                <scale x="7" y="7" z="7"/>
+                <translate x="720" y="0" z="0"/>
+                <scale x="112" y="112" z="112"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
@@ -66,18 +75,19 @@
         </group>
         <group> <!-- Saturno -->
             <transform>
-                <translate x="1432" y="0" z="0"/>
-                <scale x="6" y="6" z="6"/>
+                <translate x="1158" y="0" z="0"/>
+                <scale x="94" y="94" z="94"/>
+                <rotate angle="45" x="1" y="0" z="1"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
-                <model file="torus_8_9_100_100.3d" red="1" blue="0.5" green="1"/>
+                <model file="torus_1.2_2_100_0.3d" red="1" blue="0.5" green="1"/>
             </models>
         </group>
         <group> <!-- Urano -->
             <transform>
-                <translate x="2867" y="0" z="0"/>
-                <scale x="2.5" y="2.5" z="2.5"/>
+                <translate x="2118" y="0" z="0"/>
+                <scale x="40" y="40" z="40  "/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
@@ -85,8 +95,8 @@
         </group>
         <group> <!-- Neptuno -->
             <transform>
-                <translate x="4515" y="0" z="0"/>
-                <scale x="2.5" y="2.5" z="2.5"/>
+                <translate x="3207" y="0" z="0"/>
+                <scale x="38" y="38" z="38"/>
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" red="0" blue="1" green="0"/>

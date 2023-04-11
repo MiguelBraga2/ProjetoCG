@@ -380,9 +380,6 @@ int readXML(char* filePath){
         vector<Transformation> transf;
         group->initializeTeleporter(&transf, &teleports);
 
-        for(Point p: teleports){
-            cout << p.toString() << endl;
-        }
     }
 
     delete doc;
