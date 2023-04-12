@@ -6,6 +6,7 @@
 #include <list>
 #include <iostream>
 #include <string>
+#include <map>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -37,7 +38,7 @@ int startX, startY, tracking = 0;
 bool axis = false; // Is axis shown
 int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
-vector<Point> teleports;
+map<string, Point> teleports;
 
 /**
  * Callback called when the window is resized
@@ -181,9 +182,9 @@ void menu(int id)
         case 13:
             polygonMode = GL_POINT;
             break;
-        default:
-            camera->setPosition(teleports.at(id-14));
-            break;
+        /*default:
+            camera->setPosition(teleports[id-14));
+            break;*/
     }
 }
 
@@ -378,8 +379,11 @@ int readXML(char* filePath){
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
         vector<Transformation> transf;
-        group->initializeTeleporter(&transf, &teleports);
+        teleports = group->initializeTeleporter(&transf);
 
+        for (auto it = teleports.begin(); it != teleports.end(); ++it) {
+            std::cout << it->first << " : " << it->second.toString() << std::endl;
+        }
     }
 
     delete doc;

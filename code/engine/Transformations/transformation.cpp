@@ -4,8 +4,7 @@ void Transformation::applyTransformation()
 {
 }
 
-void Transformation::calculateExternalPoint(Point *base)
-{
+void Transformation::applyTransformationToPoint(Point *base, float *radius) {
 }
 
 Transformation::Transformation(float x, float y, float z) {

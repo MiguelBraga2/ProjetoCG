@@ -12,7 +12,7 @@ public:
     float getAngle();
     void setAngle(float angle);
     void applyTransformation() override;
-    void calculateExternalPoint(Point* base) override;
+    void applyTransformationToPoint(Point* base, float* radius) override;
 };
 
 

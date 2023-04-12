@@ -18,6 +18,7 @@
 #include "../shared/IO.hpp"
 #include "camera.hpp"
 #include "group.hpp"
+#include <map>
 
 using namespace tinyxml2;
 
@@ -26,38 +27,44 @@ Group::Group() {
 }
 
 Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs){
-    Point* base = new Point(0,0,4);
+    Point* base = new Point(0,0,0);
+    float radius = 1;
 
-    for (int i=0; i < this->transformations.size(); i++) {
-        this->transformations[i]->calculateExternalPoint(base);
+    for (int i=this->transformations.size()-1 ; i>=0; i--) {
+        this->transformations[i]->applyTransformationToPoint(base, &radius);
     }
 
     return base;
 }
 
-void Group::initializeTeleporter(vector<Transformation> *appliedTransfs, vector<Point>* teleports){
+map<string, Point> Group::initializeTeleporter(vector<Transformation> *appliedTransfs){
+    map<string, Point> teleports;
     for (int i=0; i < this->transformations.size(); i++) {
         if (appliedTransfs != NULL)
             appliedTransfs->push_back(*this->transformations[i]);
     }
 
-    for (int i = 0; i < this->vertices.size(); i++) {
+    for (int i = 0; i < this->models.size(); i++) {
         if (appliedTransfs != NULL){
             Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs);
-            teleports->push_back(*cameraTeleport);
+            teleports[this->models[i].getLabel()] = *cameraTeleport;
         }
     }
 
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].initializeTeleporter(appliedTransfs, teleports);
+        map<string, Point> newTeleports = this->subgroups[i].initializeTeleporter(appliedTransfs);
+
+        for (auto it = newTeleports.begin(); it != newTeleports.end(); ++it) {
+            teleports[it->first] = it->second;
+        }
+
         appliedTransfs->clear();
         for (int i=0; i < this->transformations.size(); i++) {
             if (appliedTransfs != NULL)
                 appliedTransfs->push_back(*this->transformations[i]);
         }
     }
-
-
+    return teleports;
 }
 
 void Group::drawGroup() {
@@ -68,13 +75,13 @@ void Group::drawGroup() {
         this->transformations[i]->applyTransformation();
     }
 
-    for (int i = 0; i < this->vertices.size(); i++) {
-        tuple<float, float, float> rgb = this->colors[i];
+    for (int i = 0; i < this->models.size(); i++) {
+        tuple<float, float, float> rgb = this->models[i].getRgb();
         glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb));
         glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glDrawElements(GL_TRIANGLES, this->indexes[i].size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
     }
 
     for (int i = 0; i < this->subgroups.size(); i++) {
@@ -85,14 +92,14 @@ void Group::drawGroup() {
 }
 
 void Group::prepareBuffers() {
-    glGenBuffers(this->vertices.size(), this->buffers);
-    glGenBuffers(this->indexes.size(), this->indexs);
+    glGenBuffers(this->models.size(), this->buffers);
+    glGenBuffers(this->models.size(), this->indexs);
 
-    for (int i = 0; i < this->vertices.size(); i++) {
+    for (int i = 0; i < this->models.size(); i++) {
         glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->vertices[i].size(), this->vertices[i].data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(), this->models[i].getVertices().data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->indexes[i].size(), this->indexes[i].data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(), this->models[i].getIndexes().data(), GL_STATIC_DRAW);
     }
      
     for (int i = 0; i < this->subgroups.size(); i++) {
@@ -154,8 +161,8 @@ void Group::readXML(XMLElement *group) {
                     int j=0;
                     while (j<n){
                         Group newGroup = Group();
-                        newGroup.indexes.push_back(vector<unsigned int>());
-                        newGroup.vertices.push_back(reader(fileName, &newGroup.indexes[i]));
+                        Model* m = new Model();
+                        m->readModel(fileName);
 
                         float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
                         Rotation* rotation = new Rotation(0, 1, 0, angle);
@@ -173,11 +180,12 @@ void Group::readXML(XMLElement *group) {
                         Scale* scale = new Scale(scaleF, scaleF, scaleF);
                         newGroup.transformations.push_back(scale);
 
-                        newGroup.colors.push_back(tup);
+                        m->setRgb(tup);
 
                         newGroup.buffers = new GLuint(i);
                         newGroup.indexs = new GLuint(i);
 
+                        newGroup.addModel(*m);
                         this->subgroups.push_back(newGroup);
                         j++;
 
@@ -185,8 +193,8 @@ void Group::readXML(XMLElement *group) {
                     g+=n;
                 }
                 else if(tagName.compare("model") == 0){
-                    this->indexes.push_back(vector<unsigned int>());
-                    this->vertices.push_back(reader(model->Attribute("file"), &this->indexes[i]));
+                    Model* m = new Model();
+                    m->readModel(model->Attribute("file"));
                     float red, green, blue;
                     if (model->Attribute("red") == NULL){
                         red = 1;
@@ -207,7 +215,12 @@ void Group::readXML(XMLElement *group) {
                         blue = stof(model->Attribute("blue"));
                     }
                     tuple <float, float, float> tup = make_tuple(red, green, blue);
-                    this->colors.push_back(tup);
+                    m->setRgb(tup);
+
+                    string label = model->Attribute("label");
+                    m->setLabel(label);
+
+                    this->models.push_back(*m);
                     i++;
                 }
             }
@@ -223,4 +236,8 @@ void Group::readXML(XMLElement *group) {
             g++;
         }
     }
+}
+
+void Group::addModel(Model m) {
+    this->models.push_back(m);
 }

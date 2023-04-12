@@ -15,15 +15,18 @@
 #include "Transformations/scale.hpp"
 #include "Transformations/translation.hpp"
 #include "Transformations/rotation.hpp"
+#include "Model.h"
+#include <map>
 
 using namespace tinyxml2;
 
 class Group {
 private:
     vector<Transformation*> transformations;
-    vector<vector<float>> vertices;
-    vector<vector<unsigned int>> indexes;
-    vector<tuple<float, float, float>> colors;
+    vector<Model> models;
+    //vector<vector<float>> vertices;
+    //vector<vector<unsigned int>> indexes;
+    //vector<tuple<float, float, float>> colors;
     GLuint* buffers;
     GLuint* indexs;
     vector<Group> subgroups;
@@ -31,9 +34,10 @@ private:
 public:
     Group();
     void prepareBuffers();
-    void initializeTeleporter(vector<Transformation> *appliedTransfs, vector<Point>* teleports);
+    map<string, Point> initializeTeleporter(vector<Transformation> *appliedTransfs);
     void drawGroup();
     void readXML(XMLElement* group);
+    void addModel(Model m);
 
 private:
     Point* calculateCameraTeleport(vector<Transformation> appliedTransfs);
