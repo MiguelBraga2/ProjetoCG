@@ -323,34 +323,39 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
     vector<float> vertices;
    
     float alpha = 2 * M_PI / slices; // Defines the position around the y axis
-    float beta = M_PI / stacks; // Defines the height
+    float beta = 2 * M_PI / stacks; // Defines the height
     float radius = (outerRadius - innerRadius) / 2;
     float distanceToOrigin = innerRadius + radius;
     int index = 0;
 
     for(int i=0; i < slices; i++){ // Percorrer as slices
-        if (stacks == 0){
-            Point c1(distanceToOrigin * sin(i * alpha), 0, distanceToOrigin * cos(i * alpha));
-            Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
 
-            Point c3(innerRadius * sin(i * alpha), 0, innerRadius * cos(i * alpha));
-            Point c4(innerRadius * sin((i + 1) * alpha), 0, innerRadius * cos((i + 1) * alpha));
+        Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
+        Point c1(distanceToOrigin * sin(i * alpha), 0, distanceToOrigin * cos(i * alpha));
 
-            vertices.push_back(c1.getX());
-            vertices.push_back(c1.getY());
-            vertices.push_back(c1.getZ());
+        vertices.push_back(c1.getX());
+        vertices.push_back(-radius);
+        vertices.push_back(c1.getZ());
 
-            vertices.push_back(c2.getX());
-            vertices.push_back(c2.getY());
-            vertices.push_back(c2.getZ());
+        vertices.push_back(c2.getX());
+        vertices.push_back(-radius);
+        vertices.push_back(c2.getZ());
 
-            vertices.push_back(c3.getX());
-            vertices.push_back(c3.getY());
-            vertices.push_back(c3.getZ());
+        for (int j = 0; j < 2 * stacks; j++) { // Percorrer as stacks
+            Point p1(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin(i * alpha),
+                     radius * sin(-M_PI / 2 + (j + 1) * beta),
+                     radius * cos(-M_PI / 2 + (j + 1) * beta) * cos(i * alpha));
+            Point p2(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin((i + 1) * alpha),
+                     radius * sin(-M_PI / 2 + (j + 1) * beta),
+                     radius * cos(-M_PI / 2 + (j + 1) * beta) * cos((i + 1) * alpha));
 
-            vertices.push_back(c4.getX());
-            vertices.push_back(c4.getY());
-            vertices.push_back(c4.getZ());
+            vertices.push_back(c1.getX() + p1.getX());
+            vertices.push_back(c1.getY() + p1.getY());
+            vertices.push_back(c1.getZ() + p1.getZ());
+
+            vertices.push_back(c2.getX() + p2.getX());
+            vertices.push_back(c2.getY() + p2.getY());
+            vertices.push_back(c2.getZ() + p2.getZ());
 
             indexes->push_back(index);
             indexes->push_back(index + 1);
@@ -360,46 +365,6 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
             indexes->push_back(index + 3);
             indexes->push_back(index + 2);
 
-            index += 4;
-        }
-        else {
-            Point c1(distanceToOrigin * sin(i * alpha), 0, distanceToOrigin * cos(i * alpha));
-            Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
-
-            vertices.push_back(c1.getX());
-            vertices.push_back(-radius);
-            vertices.push_back(c1.getZ());
-
-            vertices.push_back(c2.getX());
-            vertices.push_back(-radius);
-            vertices.push_back(c2.getZ());
-
-            for (int j = 0; j < 2 * stacks; j++) { // Percorrer as stacks
-                Point p1(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin(i * alpha),
-                         radius * sin(-M_PI / 2 + (j + 1) * beta),
-                         radius * cos(-M_PI / 2 + (j + 1) * beta) * cos(i * alpha));
-                Point p2(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin((i + 1) * alpha),
-                         radius * sin(-M_PI / 2 + (j + 1) * beta),
-                         radius * cos(-M_PI / 2 + (j + 1) * beta) * cos((i + 1) * alpha));
-
-                vertices.push_back(c1.getX() + p1.getX());
-                vertices.push_back(c1.getY() + p1.getY());
-                vertices.push_back(c1.getZ() + p1.getZ());
-
-                vertices.push_back(c2.getX() + p2.getX());
-                vertices.push_back(c2.getY() + p2.getY());
-                vertices.push_back(c2.getZ() + p2.getZ());
-
-                indexes->push_back(index);
-                indexes->push_back(index + 1);
-                indexes->push_back(index + 2);
-
-                indexes->push_back(index + 1);
-                indexes->push_back(index + 3);
-                indexes->push_back(index + 2);
-
-                index += 2;
-            }
             index += 2;
         }
 
