@@ -53,7 +53,15 @@
             <models>
                 <model file="sphere_1_100_100.3d" red="0" blue="0" green="1"/>
             </models>
-
+            <group>
+                <transform>
+                    <translate x="0" y="1.257" z="1.257"/>
+                    <scale x="0.273" y="0.273" z="0.273"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0" blue="0" green="1"/>
+                </models>
+            </group>
         </group>
         <group> <!-- Marte -->
             <transform>
@@ -63,6 +71,24 @@
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
             </models>
+            <group>
+                <transform>
+                    <translate x="0" y="0" z="1.001"/>
+                    <scale x="0.00057" y="0.00057" z="0.00057"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="1.002" z="0"/>
+                    <scale x="0.00028" y="0.00028" z="0.00028"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
         </group>
         <group> <!-- Júpiter -->
             <transform>
@@ -72,6 +98,42 @@
             <models>
                 <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
             </models>
+            <group>
+                <transform>
+                    <translate x="0" y="1.282" z="1.282"/>
+                    <scale x="0.286" y="0.286" z="0.286"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.448" y="1.448" z="0"/>
+                    <scale x="0.245" y="0.245" z="0.245"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.715" y="0" z="1.715"/>
+                    <scale x="0.413" y="0.413" z="0.413"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="2.257" z="0"/>
+                    <scale x="0.378" y="0.378" z="0.378"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="0" green="0"/>
+                </models>
+            </group>
         </group>
         <group> <!-- Saturno -->
             <transform>
@@ -83,6 +145,42 @@
                 <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
                 <model file="torus_1.2_2_100_0.3d" red="1" blue="0.5" green="1"/>
             </models>
+            <group>
+                <transform>
+                    <translate x="0" y="1.252" z="1.252"/>
+                    <scale x="0.071" y="0.071" z="0.071"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.352" y="1.352" z="0"/>
+                    <scale x="0.123" y="0.123" z="0.123"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.817" y="0" z="1.817"/>
+                    <scale x="0.404" y="0.404" z="0.404"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="3.335" z="0"/>
+                    <scale x="0.115" y="0.115" z="0.115"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="1" blue="1" green="1"/>
+                </models>
+            </group>
         </group>
         <group> <!-- Urano -->
             <transform>
@@ -92,6 +190,42 @@
             <models>
                 <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
             </models>
+            <group>
+                <transform>
+                    <translate x="0" y="1.019" z="1.019"/>
+                    <scale x="0.042" y="0.042" z="0.042"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.027" y="1.027" z="0"/>
+                    <scale x="0.038" y="0.038" z="0.038"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="1.043" y="0" z="1.043"/>
+                    <scale x="0.124" y="0.124" z="0.124"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
+                </models>
+            </group>
+            <group>
+                <transform>
+                    <translate x="0" y="1.057" z="0"/>
+                    <scale x="0.119" y="0.119" z="0.119"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0.5" blue="1" green="0.5"/>
+                </models>
+            </group>
         </group>
         <group> <!-- Neptuno -->
             <transform>
@@ -101,6 +235,15 @@
             <models>
                 <model file="sphere_1_100_100.3d" red="0" blue="1" green="0"/>
             </models>
+            <group>
+                <transform>
+                    <translate x="0" y="1.237" z="1.237"/>
+                    <scale x="0.212" y="0.212" z="0.212"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" red="0" blue="1" green="0"/>
+                </models>
+            </group>
         </group>
     </group>
 </world>
