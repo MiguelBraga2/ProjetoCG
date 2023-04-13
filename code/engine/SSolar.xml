@@ -21,40 +21,40 @@
         </models>
         <group> <!-- Sol -->
             <transform>
-                <scale x="200" y="200" z="200"/>
+                <scale x="400" y="400" z="400"/>
             </transform>
             <models> <!-- SOL -->
-                <model label="Sol" file="sphere_1_100_100.3d" red="0.88" blue="0.27" green="0.11"/>
+                <model label="Sol" file="sphere_1_100_100.3d" red="1" green="0.85" blue="0.1"/>
             </models>
         </group>
         <group> <!-- Mercúrio -->
             <transform>
-                <translate x="239" y="0" z="0"/>
+                <translate x="242.8" y="0" z="0"/>
                 <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
             <models>
-                <model label="Mercúrio" file="sphere_1_100_100.3d" red="1" blue="1" green="0"/>
+                <model label="Mercúrio" file="sphere_1_100_100.3d" red="1" green="0.93" blue="0.8" />
             </models>
         </group>
         <group> <!-- Vénus -->
             <transform>
-                <translate x="272" y="0" z="0"/>
+                <translate x="281.5" y="0" z="0"/>
                 <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
             <models>
-                <model label="Vénus" file="sphere_1_100_100.3d" red="0" blue="1" green="0"/>
+                <model label="Vénus" file="sphere_1_100_100.3d" red="1" green="0.83" blue="0.5" />
             </models>
         </group>
         <group> <!-- Terra -->
             <transform>
-                <translate x="300" y="0" z="0"/>
+                <translate x="310" y="0" z="0"/>
             </transform>
             <group>
                 <transform>
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
-                    <model label="Terra" file="sphere_1_100_100.3d" red="0" blue="0" green="1"/>
+                    <model label="Terra" file="sphere_1_100_100.3d" red="0" green="0.6" blue="0.5"/>
                 </models>
             </group>
             <group>
@@ -63,7 +63,7 @@
                     <scale x="2.73" y="2.73" z="2.73"/>
                 </transform>
                 <models>
-                    <model label="Lua" file="sphere_1_100_100.3d" red="0" blue="0" green="1"/>
+                    <model label="Lua" file="sphere_1_100_100.3d" red="0.94" green="0.97" blue="1" />
                 </models>
             </group>
         </group>
@@ -81,7 +81,7 @@
             </group>
             <group>
                 <transform>
-                    <translate x="0" y="0" z="5.301"/>
+                    <translate x="0" y="5.301" z="5.301"/>
                     <scale x="0.0054" y="0.0054" z="0.0054"/>
                 </transform>
                 <models>

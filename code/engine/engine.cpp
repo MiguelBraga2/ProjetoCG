@@ -13,8 +13,6 @@
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <GL/freeglut.h>
-#include <GL/glx.h>
 #endif
 
 #include "../libraries/tinyxml2.h"
@@ -36,6 +34,7 @@ float frames;
 int startX, startY, tracking = 0;
 
 bool axis = true; // Is axis shown
+bool cameraInfo = true;
 int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
 // For each label, store the center and the radius
@@ -71,6 +70,35 @@ void changeSize(int w, int h) {
 }
 
 /**
+ * Function to render text
+ */
+void renderText() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    // set projection so that coordinates match window pixels
+    gluOrtho2D(0, width, 0, height);
+    glMatrixMode(GL_MODELVIEW);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2d(0, 0); // text position in pixels
+
+    for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
+}
+
+/**
  * Function to display the scene elements:
  * Calls the drawGroup function from the group class
  */
@@ -81,26 +109,9 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, width, 0, height);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glRasterPos2i(0, 1);
-
-    glColor3f(0, 0, 1.0f);
-    const unsigned char* s = camera->toString();
-    glutBitmapString(GLUT_BITMAP_HELVETICA_10, s);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-
     camera->placeCamera();
+    if (cameraInfo)
+        renderText();
 
     if (axis){
         // put axis drawing in here
@@ -170,6 +181,8 @@ void menu(int id)
         case 8:
             break;
         case 9:
+            if (cameraInfo == true) cameraInfo = false;
+            else if (cameraInfo == false) cameraInfo = true;
             break;
         case 10:
             if (axis == false) axis = true;
@@ -193,10 +206,6 @@ void menu(int id)
             camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
             camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
             camera->changeMode(0);
-            cout << " //// TELEPORT TO: " << keys[id-15] <<  "////" << endl;
-            cout << "Look at" << camera->getLookAtPosition().toString() << endl;
-            cout << "Radius" << camera->getCameraRadius() << endl;
-            cout << "Position" << camera->getPosition().toString() << endl;
             break;
     }
 }
@@ -222,6 +231,8 @@ void createMenu(void){
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
+    glutAddMenuEntry("Show camera info", 9);
+
 
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
@@ -392,12 +403,11 @@ int readXML(char* filePath){
         int labelCount = 0;
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
-        vector<Transformation> transf;
+        vector<Transformation*> transf;
         teleports = group->initializeTeleporter(&transf);
 
         for (auto it = teleports.begin(); it != teleports.end(); ++it) {
             keys.push_back(it->first);
-            std::cout << it->first << " : " << get<0>(it->second).toString() << " , " << get<1>(it->second) << std::endl;
         }
     }
 

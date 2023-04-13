@@ -38,9 +38,9 @@ void Camera::calculateSpherical(){
  * Given the cameraRadius, alfa and beta, calculate the camera position
  */
 void Camera::spherical2Cartesian() {
-    this->position.setX(this->cameraRadius * cos(this->beta) * sin(this->alfa));
-    this->position.setY(this->cameraRadius * sin(this->beta));
-    this->position.setZ(this->cameraRadius * cos(this->beta) * cos(this->alfa));
+    this->position.setX(this->cameraRadius * cos(this->beta) * sin(this->alfa) + this->lookAtPosition.getX());
+    this->position.setY(this->cameraRadius * sin(this->beta) + this->lookAtPosition.getY());
+    this->position.setZ(this->cameraRadius * cos(this->beta) * cos(this->alfa) + this->lookAtPosition.getZ());
 }
 
 /**
@@ -143,7 +143,13 @@ void Camera::decrementRadius(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementIncrement() {
-    this->increment += 0.01;
+    if (this->mode == 0 || this->mode == 2){
+        this->increment += 0.01;
+    }
+    else if (this->mode == 1){
+        this->step += 1;
+    }
+
 }
 
 /**
@@ -152,10 +158,18 @@ void Camera::incrementIncrement() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementIncrement() {
-    this->increment -= 0.01;
-    if (this->increment <= 0){
-        this->increment = 0.01;
+    if (this->mode == 0 || this->mode == 2){
+        this->increment -= 0.01;
+        if (this->increment <= 0){
+            this->increment = 0.01;
+        }
     }
+    else if (this->mode == 1){
+        this->step -= 1;
+        if (this->step < 1)
+            this->step = 1;
+    }
+
 }
 
 /**
@@ -173,9 +187,9 @@ void Camera::calculateDirection() {
  */
 void Camera::moveForwards() {
     if (mode == 1){ // Modo FPS
-        this->position.setX(this->position.getX() + this->d.getX());
-        this->position.setY(this->position.getY() + this->d.getY());
-        this->position.setZ(this->position.getZ() + this->d.getZ());
+        this->position.setX(this->position.getX() + this->step*this->d.getX());
+        this->position.setY(this->position.getY() + this->step*this->d.getY());
+        this->position.setZ(this->position.getZ() + this->step*this->d.getZ());
     }
 }
 
@@ -184,9 +198,9 @@ void Camera::moveForwards() {
  */
 void Camera::moveBackwards() {
     if (mode == 1){ // Modo FPS
-        this->position.setX(this->position.getX() - this->d.getX());
-        this->position.setY(this->position.getY() - this->d.getY());
-        this->position.setZ(this->position.getZ() - this->d.getZ());
+        this->position.setX(this->position.getX() - this->step*this->d.getX());
+        this->position.setY(this->position.getY() - this->step*this->d.getY());
+        this->position.setZ(this->position.getZ() - this->step*this->d.getZ());
     }
 }
 
@@ -194,9 +208,9 @@ void Camera::moveLeft() {
     if (mode == 1){ // Modo FPS
         Point perp = Point::crossProduct(upVector, d);
         perp.normalize();
-        this->position.setX(this->position.getX() + perp.getX());
-        this->position.setY(this->position.getY() + perp.getY());
-        this->position.setZ(this->position.getZ() + perp.getZ());
+        this->position.setX(this->position.getX() + this->step*perp.getX());
+        this->position.setY(this->position.getY() + this->step*perp.getY());
+        this->position.setZ(this->position.getZ() + this->step*perp.getZ());
     }
 }
 
@@ -204,25 +218,25 @@ void Camera::moveRight() {
     if (mode == 1){ // Modo FPS
         Point perp = Point::crossProduct(upVector, d);
         perp.normalize();
-        this->position.setX(this->position.getX() - perp.getX());
-        this->position.setY(this->position.getY() - perp.getY());
-        this->position.setZ(this->position.getZ() - perp.getZ());
+        this->position.setX(this->position.getX() - this->step*perp.getX());
+        this->position.setY(this->position.getY() - this->step*perp.getY());
+        this->position.setZ(this->position.getZ() - this->step*perp.getZ());
     }
 }
 
 void Camera::moveUp() {
     if (mode == 1){ // Modo FPS
-        this->position.setX(this->position.getX() + upVector.getX());
-        this->position.setY(this->position.getY() + upVector.getY());
-        this->position.setZ(this->position.getZ() + upVector.getZ());
+        this->position.setX(this->position.getX() + this->step*upVector.getX());
+        this->position.setY(this->position.getY() + this->step*upVector.getY());
+        this->position.setZ(this->position.getZ() + this->step*upVector.getZ());
     }
 }
 
 void Camera::moveDown() {
     if (mode == 1){ // Modo FPS
-        this->position.setX(this->position.getX() - upVector.getX());
-        this->position.setY(this->position.getY() - upVector.getY());
-        this->position.setZ(this->position.getZ() - upVector.getZ());
+        this->position.setX(this->position.getX() - this->step*upVector.getX());
+        this->position.setY(this->position.getY() - this->step*upVector.getY());
+        this->position.setZ(this->position.getZ() - this->step*upVector.getZ());
     }
 }
 
@@ -239,6 +253,7 @@ void Camera::changeMode(int desiredMode){
             this->d.normalize();
             this->calculateAlfa();
             this->calculateBeta();
+            this->step = 1;
         }
         else if (this->mode == 1){
             this->mode = 2;
@@ -332,12 +347,12 @@ void Camera::processMouseMotion(int tracking, int horizDisp, int vertDisp) {
             alphaAux = alfa;
             betaAux = beta;
             rAux = cameraRadius - vertDisp;
-            if (rAux < 3)
-                rAux = 3;
+            if (rAux < 0.5)
+                rAux = 0.5;
         }
-        this->position = Point(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
-                               rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0),
-                               rAux * 							      sin(betaAux * 3.14 / 180.0));
+        this->position = Point(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getX(),
+                               rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getY(),
+                               rAux * 							      sin(betaAux * 3.14 / 180.0) + lookAtPosition.getZ());
     }
 }
 
@@ -361,8 +376,8 @@ void Camera::placeCamera(){
  * @return
  */
 const unsigned char *Camera::toString() {
-    const unsigned char* s = (const unsigned char*)malloc(100);
-    sprintf((char *) s, "MODE: %d    ALFA: %f      BETA: %f", mode, alfa * 180/M_PI, beta * 180/M_PI);
+    const unsigned char* s = (const unsigned char*)malloc(200);
+    sprintf((char *) s, "MODE: %d    ALFA: %f      BETA: %f      POSITION: %s      RADIUS: %f      LOOK AT: %s", mode, alfa * 180/M_PI, beta * 180/M_PI, this->position.toString().c_str(), this->cameraRadius, this->lookAtPosition.toString().c_str());
     return s;
 }
 

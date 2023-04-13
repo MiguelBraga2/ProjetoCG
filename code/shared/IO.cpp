@@ -55,6 +55,10 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
     vector<Point> normals {};
     vector<int> normal_indexes {};
 
+    if (fileName.compare("cube.obj") == 0) {
+        cout << "ola";
+    }
+
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
@@ -86,6 +90,7 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
                 }
                 else {
                     size_t f1 = strings[1].find("/");
+                    f1 = strings[1].find("/", f1+1);
                     size_t f2 = strings[2].find("/");
                     size_t f3 = strings[3].find("/");
 
@@ -94,9 +99,9 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
                     int pointInd3 = stoi(strings[3].substr(0, f3));    
                     
                     // Get the points
-                    Point p1(vertices[pointInd1 - 1], vertices[pointInd1], vertices[pointInd1 + 1]);
-                    Point p2(vertices[pointInd2 - 1], vertices[pointInd2], vertices[pointInd2 + 1]);
-                    Point p3(vertices[pointInd3 - 1], vertices[pointInd3], vertices[pointInd3 + 1]);
+                    Point p1(vertices[pointInd1*3 - 3], vertices[pointInd1*3-2], vertices[pointInd1*3-1]);
+                    Point p2(vertices[pointInd2*3 - 3], vertices[pointInd2*3-2], vertices[pointInd2*3-1]);
+                    Point p3(vertices[pointInd3*3 - 3], vertices[pointInd3*3-2], vertices[pointInd3*3-1]);
 
                     int normalIndex = stoi(strings[1].substr(f1+1, strings[1].length()-f1)); // Assume all normal indexes are the same
                     Point normalVector = normals[normalIndex - 1];
@@ -110,18 +115,13 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
                     crossProduct(v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ(), cross_P);
 
                     Point perpendicular(cross_P[0], cross_P[1], cross_P[2]);
-
-                    double norma = sqrt(pow(cross_P[0], 2) + pow(cross_P[1], 2) + pow(cross_P[2], 2)); // Normalization
-                    perpendicular.setX(perpendicular.getX() / norma);
-                    perpendicular.setY(perpendicular.getY() / norma);
-                    perpendicular.setZ(perpendicular.getZ() / norma);
+                    perpendicular.normalize();
 
                     if (abs(perpendicular.getX() - normalVector.getX()) < 0.1 && abs(perpendicular.getY() - normalVector.getY()) < 0.1 && abs(perpendicular.getZ() - normalVector.getZ()) < 0.1) {
                         // Iguais
                         indexes->push_back(pointInd1 - 1);
                         indexes->push_back(pointInd3 - 1);
                         indexes->push_back(pointInd2 - 1);
-
                     } else if (abs(perpendicular.getX() + normalVector.getX()) < 0.1 && abs(perpendicular.getY() + normalVector.getY()) < 0.1 && abs(perpendicular.getZ() + normalVector.getZ()) < 0.1) {
                         // Simétricos
                         indexes->push_back(pointInd1 - 1);

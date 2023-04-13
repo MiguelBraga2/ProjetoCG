@@ -321,7 +321,7 @@ vector<float> generateSphere(float radius, int slices, int stacks, vector<unsign
 
 vector<float> generateTorus(float innerRadius, float outerRadius, float slices, float stacks, vector<unsigned int>* indexes){
     vector<float> vertices;
-   
+
     float alpha = 2 * M_PI / slices; // Defines the position around the y axis
     float beta = 2 * M_PI / stacks; // Defines the height
     float radius = (outerRadius - innerRadius) / 2;
@@ -330,24 +330,24 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
 
     for(int i=0; i < slices; i++){ // Percorrer as slices
 
-        Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
         Point c1(distanceToOrigin * sin(i * alpha), 0, distanceToOrigin * cos(i * alpha));
+        Point c2(distanceToOrigin * sin((i + 1) * alpha), 0, distanceToOrigin * cos((i + 1) * alpha));
 
-        vertices.push_back(c1.getX());
-        vertices.push_back(-radius);
-        vertices.push_back(c1.getZ());
+        Point p3 (radius * sin(i * alpha), 0, radius * cos(i * alpha));
+        Point p4 (radius * sin((i + 1) * alpha), 0, radius * cos((i + 1) * alpha));
 
-        vertices.push_back(c2.getX());
-        vertices.push_back(-radius);
-        vertices.push_back(c2.getZ());
+        vertices.push_back(c1.getX() + p3.getX());
+        vertices.push_back(c1.getY() + p3.getY());
+        vertices.push_back(c1.getZ() + p3.getZ());
 
-        for (int j = 0; j < 2 * stacks; j++) { // Percorrer as stacks
-            Point p1(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin(i * alpha),
-                     radius * sin(-M_PI / 2 + (j + 1) * beta),
-                     radius * cos(-M_PI / 2 + (j + 1) * beta) * cos(i * alpha));
-            Point p2(radius * cos(-M_PI / 2 + (j + 1) * beta) * sin((i + 1) * alpha),
-                     radius * sin(-M_PI / 2 + (j + 1) * beta),
-                     radius * cos(-M_PI / 2 + (j + 1) * beta) * cos((i + 1) * alpha));
+        vertices.push_back(c2.getX() + p4.getX());
+        vertices.push_back(c2.getY() + p4.getY());
+        vertices.push_back(c2.getZ() + p4.getZ());
+
+        for(int j = 0; j < stacks; j++){ // Percorrer as stacks
+
+            Point p1 (radius * cos((j + 1) * beta) * sin(i * alpha), radius * sin((j + 1) * beta), radius * cos((j + 1) * beta) * cos(i * alpha));
+            Point p2 (radius * cos((j + 1) * beta) * sin((i + 1) * alpha), radius * sin((j + 1) * beta), radius * cos((j + 1) * beta) * cos((i + 1) * alpha));
 
             vertices.push_back(c1.getX() + p1.getX());
             vertices.push_back(c1.getY() + p1.getY());
@@ -368,6 +368,7 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
             index += 2;
         }
 
+        index += 2;
     }
 
     return vertices;

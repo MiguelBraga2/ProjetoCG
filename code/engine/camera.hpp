@@ -15,6 +15,7 @@ private:
     float increment;
     int mode; // 0 - Explorer mode, 1 - FPS mode
     float alfa, beta, cameraRadius;
+    float step;
     Point d {};
 
 public:

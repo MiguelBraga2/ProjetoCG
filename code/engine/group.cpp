@@ -26,11 +26,11 @@ using namespace tinyxml2;
  * @param radius pointer to the radius we want to calculate
  * @return the center we calculated
  */
-Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs, float* radius){
+Point* Group::calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius){
     Point* base = new Point(0,0,0);
 
     for (int i=appliedTransfs.size()-1 ; i>=0; i--) {
-        this->transformations[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
+        appliedTransfs[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
     }
 
     return base;
@@ -41,11 +41,13 @@ Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs, flo
  * @param appliedTransfs all the transformations these models are subject to
  * @return a map with a label as a key and a tuple containing the center and the radius of the model related of the label
  */
-map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformation> *appliedTransfs){
+map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformation*> *appliedTransfs){
     map<string, tuple<Point, float>> teleports;
+
+
     for (int i=0; i < this->transformations.size(); i++) {
         if (appliedTransfs != NULL)
-            appliedTransfs->push_back(*this->transformations[i]);
+            appliedTransfs->push_back(this->transformations[i]);
     }
 
     for (int i = 0; i < this->models.size(); i++) {
@@ -66,7 +68,7 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
         appliedTransfs->clear();
         for (int i=0; i < this->transformations.size(); i++) {
             if (appliedTransfs != NULL)
-                appliedTransfs->push_back(*this->transformations[i]);
+                appliedTransfs->push_back(this->transformations[i]);
         }
     }
     return teleports;
@@ -187,6 +189,7 @@ void Group::readXML(XMLElement *group) {
                         newGroup.transformations.push_back(new Scale(scaleF, scaleF, scaleF));
 
                         m->setRgb(tup);
+                        m->setLabel("undefined");
 
                         newGroup.buffers = new GLuint(i);
                         newGroup.indexs = new GLuint(i);
