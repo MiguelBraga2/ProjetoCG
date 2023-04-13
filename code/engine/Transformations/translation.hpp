@@ -7,7 +7,7 @@ class Translation : public Transformation {
 public:
     Translation(float x, float y, float z);
     void applyTransformation() override;
-    void calculateExternalPoint(Point* base) override;
+    void applyTransformationToPoint(Point* base, float* radius) override;
 };
 
 #endif //ENGINE_TRANSLATION_H

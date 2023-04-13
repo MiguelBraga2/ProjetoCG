@@ -9,7 +9,7 @@ private:
 
 public:
     virtual void applyTransformation();
-    virtual void calculateExternalPoint(Point* base);
+    virtual void applyTransformationToPoint(Point* base, float* radius);
     Transformation(float x, float y, float z);
     float getX();
     void setX(float x);

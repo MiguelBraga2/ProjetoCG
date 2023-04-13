@@ -14,6 +14,6 @@ void Scale::applyTransformation(){
     glScalef(this->getX(), this->getY(), this->getZ());
 }
 
-void Scale::calculateExternalPoint(Point* base){
-
+void Scale::applyTransformationToPoint(Point* base, float* radius) {
+    *radius *= this->getX(); // Assumir que x=y=z (da escala)
 }

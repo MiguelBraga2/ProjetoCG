@@ -398,3 +398,16 @@ void Camera::calculateBeta(){
 void Camera::setPosition(Point position) {
     this->position = position;
 }
+
+void Camera::setLookAtPosition(Point lookAtPosition) {
+    Camera::lookAtPosition = lookAtPosition;
+}
+
+void Camera::setCameraRadius(float cameraRadius) {
+    Camera::cameraRadius = cameraRadius;
+    this->spherical2Cartesian();
+}
+
+float Camera::getCameraRadius() {
+    return cameraRadius;
+}

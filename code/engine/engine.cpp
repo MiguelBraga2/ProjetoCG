@@ -6,6 +6,7 @@
 #include <list>
 #include <iostream>
 #include <string>
+#include <map>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -37,7 +38,9 @@ int startX, startY, tracking = 0;
 bool axis = false; // Is axis shown
 int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
-vector<Point> teleports;
+// For each label, store the center and the radius
+map<string, tuple<Point, float>> teleports;
+vector<string> keys; // To make mapping from number to label easier
 
 /**
  * Callback called when the window is resized
@@ -182,7 +185,11 @@ void menu(int id)
             polygonMode = GL_POINT;
             break;
         default:
-            camera->setPosition(teleports.at(id-14));
+            camera->setLookAtPosition(get<0>(teleports[keys[id-14]]));
+            camera->setCameraRadius(get<1>(teleports[keys[id-14]]));
+            cout << camera->getLookAtPosition().toString() << endl;
+            cout << camera->getCameraRadius() << endl;
+            cout << camera->getPosition().toString() << endl;
             break;
     }
 }
@@ -198,14 +205,13 @@ void createMenu(void){
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
     glutAddMenuEntry("GL_POINT", 13);
-    /*submenu3 = glutCreateMenu(menu);
-    for(int i=0; i<teleports.size(); i++){
-        char label[20];
-        sprintf(label, "Objeto %d", i+1);
-        glutAddMenuEntry(label, 14+i);
-    }*/
+    submenu3 = glutCreateMenu(menu);
+    int i=0;
+    for (auto it = teleports.begin(); it != teleports.end(); ++it, i++) {
+        glutAddMenuEntry(it->first.c_str(), 14+i);
+    }
     glutCreateMenu(menu);
-    //glutAddSubMenu("Travel To", submenu3);
+    glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
 
@@ -378,8 +384,12 @@ int readXML(char* filePath){
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
         vector<Transformation> transf;
-        group->initializeTeleporter(&transf, &teleports);
+        teleports = group->initializeTeleporter(&transf);
 
+        for (auto it = teleports.begin(); it != teleports.end(); ++it) {
+            keys.push_back(it->first);
+            std::cout << it->first << " : " << get<0>(it->second).toString() << " , " << get<1>(it->second) << std::endl;
+        }
     }
 
     delete doc;

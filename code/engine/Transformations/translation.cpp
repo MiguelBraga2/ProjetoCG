@@ -14,7 +14,7 @@ void Translation::applyTransformation(){
     glTranslatef(this->getX(), this->getY(), this->getZ());
 }
 
-void Translation::calculateExternalPoint(Point* base){
+void Translation::applyTransformationToPoint(Point* base, float* radius) {
     base->setX(base->getX() + this->getX());
     base->setY(base->getY() + this->getY());
     base->setZ(base->getZ() + this->getZ());
