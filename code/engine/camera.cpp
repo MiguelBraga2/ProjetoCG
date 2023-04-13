@@ -50,13 +50,12 @@ void Camera::spherical2Cartesian() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementAlfa(){
-    if (this->mode != 2) {
-        this->alfa += this->increment;
-    }
     if (this->mode == 0){
+        this->alfa += this->increment;
         this->spherical2Cartesian();
     }
     else if (this->mode == 1){
+        this->alfa -= this->increment;
         this->calculateDirection();
     }
 }
@@ -67,13 +66,12 @@ void Camera::incrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementAlfa(){
-    if (this->mode != 2) {
-        this->alfa -= this->increment;
-    }
     if (this->mode == 0){
+        this->alfa -= this->increment;
         this->spherical2Cartesian();
     }
     else if (this->mode == 1){
+        this->alfa += this->increment;
         this->calculateDirection();
     }
 }
@@ -84,9 +82,8 @@ void Camera::decrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementBeta(){
-    if (this->mode != 2) {
-        this->beta += this->increment;
-    }
+    this->beta += this->increment;
+
     if (beta > M_PI/2)
         beta = M_PI/2-0.1;
     if (this->mode == 0){
@@ -103,9 +100,8 @@ void Camera::incrementBeta(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementBeta(){
-    if (this->mode != 2) {
-        this->beta -= this->increment;
-    }
+    this->beta -= this->increment;
+
     if (beta < -M_PI/2)
         beta = -M_PI/2+0.01;
     if (this->mode == 0){
@@ -144,7 +140,7 @@ void Camera::decrementRadius(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementIncrement() {
-    if (this->mode == 0 || this->mode == 2){
+    if (this->mode == 0){
         this->increment += 0.01;
     }
     else if (this->mode == 1){
@@ -159,7 +155,7 @@ void Camera::incrementIncrement() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementIncrement() {
-    if (this->mode == 0 || this->mode == 2){
+    if (this->mode == 0){
         this->increment -= 0.01;
         if (this->increment <= 0){
             this->increment = 0.01;
@@ -257,13 +253,10 @@ void Camera::changeMode(int desiredMode){
             this->step = 1;
         }
         else if (this->mode == 1){
-            this->mode = 2;
+            this->mode = 0;
             this->d = Point(0,0,0);
             this->calculateSpherical();
             this->spherical2Cartesian();
-        }
-        else if (this->mode == 2){
-            this->mode = 0;
         }
     }
     else if (desiredMode == 0){
@@ -272,9 +265,6 @@ void Camera::changeMode(int desiredMode){
             this->d = Point(0,0,0);
             this->calculateSpherical();
             this->spherical2Cartesian();
-        }
-        else if (this->mode == 2){
-            this->mode = 0;
         }
     }
 }
@@ -303,38 +293,49 @@ float Camera::getFar() {
     return far;
 }
 
-/**
- * Updates camera angles based on motion of the mouse
- * @param tracking type of motion
- * @param horizDisp displacement of the mouse horizontally
- * @param vertDisp displacement of the mouse vertically
- */
-void Camera::updateMouseAngles(int tracking, int horizDisp, int vertDisp){
-    if (mode == 2) {
-        if (tracking == 1) {
-            alfa += horizDisp;
-            beta += vertDisp;
+void Camera::updateMouseAngles(int button, int state, int xx, int yy){
+    if (mode == 0){
+        if (state == GLUT_DOWN)  {
+            startX = xx;
+            startY = yy;
+            if (button == GLUT_LEFT_BUTTON)
+                tracking = 1;
+            else if (button == GLUT_RIGHT_BUTTON)
+                tracking = 2;
+            else
+                tracking = 0;
         }
-        else if (tracking == 2) {
-            cameraRadius -= vertDisp;
-            if(cameraRadius < 3){
-                cameraRadius = 3;
+        else if (state == GLUT_UP) {
+            if (tracking == 1) {
+                alfa += (xx - startX);
+                beta += (yy - startY);
             }
+            else if (tracking == 2) {
+
+                cameraRadius -= yy - startY;
+                if (cameraRadius < 3)
+                    cameraRadius = 3.0;
+            }
+            tracking = 0;
         }
     }
 }
 
-void Camera::processMouseMotion(int tracking, int horizDisp, int vertDisp) {
-    if (mode == 2){
+void Camera::processMouseMotion(int xx, int yy) {
+    if (mode == 0){
+        int deltaX, deltaY;
         int alphaAux, betaAux;
         int rAux;
 
         if (!tracking)
             return;
 
+        deltaX = xx - startX;
+        deltaY = yy - startY;
+
         if (tracking == 1) {
-            alphaAux = alfa + horizDisp;
-            betaAux = beta + vertDisp;
+            alphaAux = alfa + deltaX;
+            betaAux = beta + deltaY;
 
             if (betaAux > 85.0)
                 betaAux = 85.0;
@@ -344,16 +345,15 @@ void Camera::processMouseMotion(int tracking, int horizDisp, int vertDisp) {
             rAux = cameraRadius;
         }
         else if (tracking == 2) {
-
             alphaAux = alfa;
             betaAux = beta;
-            rAux = cameraRadius - vertDisp;
-            if (rAux < 0.5)
-                rAux = 0.5;
+            rAux = cameraRadius - deltaY;
+            if (rAux < 3)
+                rAux = 3;
         }
-        this->position = Point(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getX(),
-                               rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getY(),
-                               rAux * 							      sin(betaAux * 3.14 / 180.0) + lookAtPosition.getZ());
+        position.setX(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getX());
+        position.setZ(rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getY()) ;
+        position.setY(rAux * 							     sin(betaAux * 3.14 / 180.0) + lookAtPosition.getZ());
     }
 }
 
@@ -361,7 +361,7 @@ void Camera::processMouseMotion(int tracking, int horizDisp, int vertDisp) {
  * Places the camera in the world, using the glut gluLookAt function
  */
 void Camera::placeCamera(){
-    if (mode == 0 || mode == 2){
+    if (mode == 0){
         gluLookAt(this->getPosition().getX(),this->getPosition().getY(),this->getPosition().getZ(),
                   this->getLookAtPosition().getX() ,this->getLookAtPosition().getY(),this->getLookAtPosition().getZ(),
                   this->getUpVector().getX(),this->getUpVector().getY(),this->getUpVector().getZ());

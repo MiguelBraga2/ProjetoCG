@@ -31,7 +31,12 @@ Group* group; // Outer collection of transformations, models and subgroups
 int timebase;
 float frames;
 
+float camX = 00, camY = 300, camZ = 400; //
+int alpha = 0, myBeta = 45, r = 50; //
 int startX, startY, tracking = 0;
+
+
+
 
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
@@ -109,6 +114,9 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 
+    /*gluLookAt(camX, camY, camZ,
+              0.0,0.0,0.0,
+              0.0f,1.0f,0.0f); //*/
     camera->placeCamera();
     if (cameraInfo)
         renderText();
@@ -233,8 +241,6 @@ void createMenu(void){
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Show camera info", 9);
 
-
-
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
@@ -246,19 +252,7 @@ void createMenu(void){
  * @param yy
  */
 void processMouseButtons(int button, int state, int xx, int yy) {
-    if (state == GLUT_DOWN)  {
-        startX = xx;
-        startY = yy;
-        if (button == GLUT_LEFT_BUTTON)
-            tracking = 1;
-        else if (button == GLUT_RIGHT_BUTTON)
-            tracking = 2;
-        else tracking = 0;
-    }
-    else if (state == GLUT_UP) {
-        camera->updateMouseAngles(tracking, (xx - startX), (yy - startY));
-        tracking = 0;
-    }
+    camera->updateMouseAngles(button, state, xx, yy);
 }
 
 /**
@@ -267,9 +261,7 @@ void processMouseButtons(int button, int state, int xx, int yy) {
  * @param yy vertical position of the mouse
  */
 void processMouseMotion(int xx, int yy) {
-    int deltaX = xx - startX;
-    int deltaY = yy - startY;
-    camera->processMouseMotion(tracking, deltaX, deltaY);
+    camera->processMouseMotion(xx, yy);
 }
 
 /**

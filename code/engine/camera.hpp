@@ -17,6 +17,8 @@ private:
     float alfa, beta, cameraRadius;
     float step;
     Point d {};
+    int tracking = 0;
+    int startX, startY;
 
 public:
     Camera();
@@ -43,8 +45,8 @@ public:
     void moveDown();
     void changeMode(int mode); // -1 goes to the next
     void placeCamera();
-    void updateMouseAngles(int tracking, int horizDisp, int vertDisp);
-    void processMouseMotion(int tracking, int horizDisp, int vertDisp);
+    void updateMouseAngles(int button, int state, int xx, int yy);
+    void processMouseMotion(int xx, int yy);
     const unsigned char* toString();
     Point getPosition();
     Point getLookAtPosition();
