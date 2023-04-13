@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -5,6 +6,7 @@
 #endif
 
 #include "rotation.hpp"
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z), angle(angle) {

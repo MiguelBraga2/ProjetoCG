@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+#include <stdlib.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -7,6 +7,7 @@
 #endif
 
 #include "camera.hpp"
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include "stdio.h"
 
