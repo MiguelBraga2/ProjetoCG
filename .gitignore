@@ -2,7 +2,6 @@
 *.swp
 demo.xml
 demo2.xml
-code/figures/*.3d
 *.out
 .idea/
 cmake-build-debug/
