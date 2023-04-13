@@ -40,7 +40,7 @@ public:
     void moveRight();
     void moveUp();
     void moveDown();
-    void changeMode();
+    void changeMode(int mode); // -1 goes to the next
     void placeCamera();
     void updateMouseAngles(int tracking, int horizDisp, int vertDisp);
     void processMouseMotion(int tracking, int horizDisp, int vertDisp);

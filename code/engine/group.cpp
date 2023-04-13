@@ -49,7 +49,7 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        if (appliedTransfs != NULL){
+        if (appliedTransfs != NULL && this->models[i].getLabel().compare("undefined") != 0){
             float radius = 4;
             Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs, &radius);
             teleports[this->models[i].getLabel()] = make_tuple(*cameraTeleport, radius);
@@ -221,8 +221,14 @@ void Group::readXML(XMLElement *group) {
                     tuple <float, float, float> tup = make_tuple(red, green, blue);
                     m->setRgb(tup);
 
-                    string label = model->Attribute("label");
-                    m->setLabel(label);
+                    string label;
+                    if (model->Attribute("label")){
+                        label = model->Attribute("label");
+                        m->setLabel(label);
+                    }
+                    else {
+                        m->setLabel("undefined");
+                    }
 
                     this->models.push_back(*m);
                     i++;

@@ -87,7 +87,7 @@ void Camera::incrementBeta(){
         this->beta += this->increment;
     }
     if (beta > M_PI/2)
-        beta = M_PI/2;
+        beta = M_PI/2-0.1;
     if (this->mode == 0){
         this->spherical2Cartesian();
     }
@@ -106,7 +106,7 @@ void Camera::decrementBeta(){
         this->beta -= this->increment;
     }
     if (beta < -M_PI/2)
-        beta = -M_PI/2;
+        beta = -M_PI/2+0.01;
     if (this->mode == 0){
         this->spherical2Cartesian();
     }
@@ -229,24 +229,37 @@ void Camera::moveDown() {
 /**
  * Changes the camera mode
  */
-void Camera::changeMode(){
-    if (this->mode == 0){
-        this->mode = 1;
-        this->d = Point((this->lookAtPosition.getX() - this->position.getX()),
-                        (this->lookAtPosition.getY() - this->position.getY()),
-                        (this->lookAtPosition.getZ() - this->position.getZ()));
-        this->d.normalize();
-        this->calculateAlfa();
-        this->calculateBeta();
+void Camera::changeMode(int desiredMode){
+    if (desiredMode == -1){
+        if (this->mode == 0){
+            this->mode = 1;
+            this->d = Point((this->lookAtPosition.getX() - this->position.getX()),
+                            (this->lookAtPosition.getY() - this->position.getY()),
+                            (this->lookAtPosition.getZ() - this->position.getZ()));
+            this->d.normalize();
+            this->calculateAlfa();
+            this->calculateBeta();
+        }
+        else if (this->mode == 1){
+            this->mode = 2;
+            this->d = Point(0,0,0);
+            this->calculateSpherical();
+            this->spherical2Cartesian();
+        }
+        else if (this->mode == 2){
+            this->mode = 0;
+        }
     }
-    else if (this->mode == 1){
-        this->mode = 2;
-        this->d = Point(0,0,0);
-        this->calculateSpherical();
-        this->spherical2Cartesian();
-    }
-    else if (this->mode == 2){
-        this->mode = 0;
+    else if (desiredMode == 0){
+        if (this->mode == 1){
+            this->mode = 0;
+            this->d = Point(0,0,0);
+            this->calculateSpherical();
+            this->spherical2Cartesian();
+        }
+        else if (this->mode == 2){
+            this->mode = 0;
+        }
     }
 }
 

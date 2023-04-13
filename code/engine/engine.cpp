@@ -35,7 +35,7 @@ float frames;
 
 int startX, startY, tracking = 0;
 
-bool axis = false; // Is axis shown
+bool axis = true; // Is axis shown
 int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
 
 // For each label, store the center and the radius
@@ -184,12 +184,19 @@ void menu(int id)
         case 13:
             polygonMode = GL_POINT;
             break;
+        case 14:
+            camera->setLookAtPosition(Point(0,0,0));
+            camera->setCameraRadius(2);
+            camera->changeMode(0);
+            break;
         default:
-            camera->setLookAtPosition(get<0>(teleports[keys[id-14]]));
-            camera->setCameraRadius(get<1>(teleports[keys[id-14]]));
-            cout << camera->getLookAtPosition().toString() << endl;
-            cout << camera->getCameraRadius() << endl;
-            cout << camera->getPosition().toString() << endl;
+            camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
+            camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
+            camera->changeMode(0);
+            cout << " //// TELEPORT TO: " << keys[id-15] <<  "////" << endl;
+            cout << "Look at" << camera->getLookAtPosition().toString() << endl;
+            cout << "Radius" << camera->getCameraRadius() << endl;
+            cout << "Position" << camera->getPosition().toString() << endl;
             break;
     }
 }
@@ -207,8 +214,9 @@ void createMenu(void){
     glutAddMenuEntry("GL_POINT", 13);
     submenu3 = glutCreateMenu(menu);
     int i=0;
+    glutAddMenuEntry("Origin", 14);
     for (auto it = teleports.begin(); it != teleports.end(); ++it, i++) {
-        glutAddMenuEntry(it->first.c_str(), 14+i);
+        glutAddMenuEntry(it->first.c_str(), 15+i);
     }
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu3);
@@ -279,7 +287,7 @@ void keyboard_events(unsigned char key, int x, int y) {
         camera->incrementIncrement();
     }
     else if (key == 'm'){
-        camera->changeMode();
+        camera->changeMode(-1);
     }
 
     glutPostRedisplay();
@@ -381,6 +389,7 @@ int readXML(char* filePath){
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
         }
 
+        int labelCount = 0;
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
         vector<Transformation> transf;
