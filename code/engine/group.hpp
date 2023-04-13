@@ -34,13 +34,13 @@ private:
 public:
     Group();
     void prepareBuffers();
-    map<string, Point> initializeTeleporter(vector<Transformation> *appliedTransfs);
+    map<string, tuple<Point, float>> initializeTeleporter(vector<Transformation> *appliedTransfs);
     void drawGroup();
     void readXML(XMLElement* group);
     void addModel(Model m);
 
 private:
-    Point* calculateCameraTeleport(vector<Transformation> appliedTransfs);
+    Point* calculateCameraTeleport(vector<Transformation> appliedTransfs, float* radius);
 };
 
 

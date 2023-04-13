@@ -27,6 +27,9 @@ public:
     void decrementAlfa();
     void incrementBeta();
     void decrementBeta();
+
+    float getCameraRadius();
+
     void incrementRadius();
     void decrementRadius();
     void incrementIncrement();
@@ -54,6 +57,13 @@ private:
      * Convert spherical coordenates (alpha and beta) into x, y, z coordinates
      */
     void spherical2Cartesian();
+
+public:
+    void setLookAtPosition(Point lookAtPosition);
+
+    void setCameraRadius(float cameraRadius);
+
+private:
     void calculateDirection();
     void calculateAlfa();
     void calculateBeta();

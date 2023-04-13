@@ -231,7 +231,7 @@ void Camera::changeMode(){
         this->d.normalize();
         this->calculateAlfa();
         this->calculateBeta();
-        this->calculateDirection();
+        //this->calculateDirection();
     }
     else if (this->mode == 1){
         this->mode = 2;
@@ -396,10 +396,23 @@ void Camera::calculateBeta(){
         if (this->d.getX() < 0){
             beta = atan(-this->d.getY()/this->d.getZ());
         }
-        beta = atan(sqrt(pow(this->d.getX(), 2) + pow(this->d.getY(), 2))/this->d.getZ());
+        else beta = atan(sqrt(pow(this->d.getX(), 2) + pow(this->d.getY(), 2))/this->d.getZ());
     }
 }
 
 void Camera::setPosition(Point position) {
     this->position = position;
+}
+
+void Camera::setLookAtPosition(Point lookAtPosition) {
+    Camera::lookAtPosition = lookAtPosition;
+}
+
+void Camera::setCameraRadius(float cameraRadius) {
+    Camera::cameraRadius = cameraRadius;
+    this->spherical2Cartesian();
+}
+
+float Camera::getCameraRadius() {
+    return cameraRadius;
 }

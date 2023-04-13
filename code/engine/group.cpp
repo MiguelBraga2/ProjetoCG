@@ -26,19 +26,18 @@ Group::Group() {
 
 }
 
-Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs){
+Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs, float* radius){
     Point* base = new Point(0,0,0);
-    float radius = 1;
 
     for (int i=this->transformations.size()-1 ; i>=0; i--) {
-        this->transformations[i]->applyTransformationToPoint(base, &radius);
+        this->transformations[i]->applyTransformationToPoint(base, radius);
     }
 
     return base;
 }
 
-map<string, Point> Group::initializeTeleporter(vector<Transformation> *appliedTransfs){
-    map<string, Point> teleports;
+map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformation> *appliedTransfs){
+    map<string, tuple<Point, float>> teleports;
     for (int i=0; i < this->transformations.size(); i++) {
         if (appliedTransfs != NULL)
             appliedTransfs->push_back(*this->transformations[i]);
@@ -46,13 +45,14 @@ map<string, Point> Group::initializeTeleporter(vector<Transformation> *appliedTr
 
     for (int i = 0; i < this->models.size(); i++) {
         if (appliedTransfs != NULL){
-            Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs);
-            teleports[this->models[i].getLabel()] = *cameraTeleport;
+            float radius = 4;
+            Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs, &radius);
+            teleports[this->models[i].getLabel()] = make_tuple(*cameraTeleport, radius);
         }
     }
 
     for (int i = 0; i < this->subgroups.size(); i++) {
-        map<string, Point> newTeleports = this->subgroups[i].initializeTeleporter(appliedTransfs);
+        map<string, tuple<Point, float>> newTeleports = this->subgroups[i].initializeTeleporter(appliedTransfs);
 
         for (auto it = newTeleports.begin(); it != newTeleports.end(); ++it) {
             teleports[it->first] = it->second;
