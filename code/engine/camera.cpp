@@ -29,7 +29,7 @@ void Camera::calculateSpherical(){
     this->cameraRadius = sqrt(pow(this->position.getX()-this->lookAtPosition.getX(), 2) +
                               pow(this->position.getY()-this->lookAtPosition.getY(), 2) +
                               pow(this->position.getZ()-this->lookAtPosition.getZ(), 2));
-    this->increment = 0.01;
+    this->increment = 0.1;
     calculateBeta();
     calculateAlfa();
 }
@@ -49,7 +49,9 @@ void Camera::spherical2Cartesian() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementAlfa(){
-    this->alfa += this->increment;
+    if (this->mode != 2) {
+        this->alfa += this->increment;
+    }
     if (this->mode == 0){
         this->spherical2Cartesian();
     }
@@ -64,7 +66,9 @@ void Camera::incrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementAlfa(){
-    this->alfa -= this->increment;
+    if (this->mode != 2) {
+        this->alfa -= this->increment;
+    }
     if (this->mode == 0){
         this->spherical2Cartesian();
     }
@@ -79,7 +83,9 @@ void Camera::decrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementBeta(){
-    this->beta += this->increment;
+    if (this->mode != 2) {
+        this->beta += this->increment;
+    }
     if (beta > M_PI/2)
         beta = M_PI/2;
     if (this->mode == 0){
@@ -96,7 +102,9 @@ void Camera::incrementBeta(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementBeta(){
-    this->beta -= this->increment;
+    if (this->mode != 2) {
+        this->beta -= this->increment;
+    }
     if (beta < -M_PI/2)
         beta = -M_PI/2;
     if (this->mode == 0){
@@ -224,18 +232,18 @@ void Camera::moveDown() {
 void Camera::changeMode(){
     if (this->mode == 0){
         this->mode = 1;
-
         this->d = Point((this->lookAtPosition.getX() - this->position.getX()),
                         (this->lookAtPosition.getY() - this->position.getY()),
                         (this->lookAtPosition.getZ() - this->position.getZ()));
         this->d.normalize();
         this->calculateAlfa();
         this->calculateBeta();
-        this->calculateDirection();
     }
     else if (this->mode == 1){
         this->mode = 2;
+        this->d = Point(0,0,0);
         this->calculateSpherical();
+        this->spherical2Cartesian();
     }
     else if (this->mode == 2){
         this->mode = 0;
@@ -340,8 +348,8 @@ void Camera::placeCamera(){
  * @return
  */
 const unsigned char *Camera::toString() {
-    const unsigned char* s = (const unsigned char*)malloc(10);
-    sprintf((char *) s, "MODE: %d", mode);
+    const unsigned char* s = (const unsigned char*)malloc(100);
+    sprintf((char *) s, "MODE: %d    ALFA: %f      BETA: %f", mode, alfa * 180/M_PI, beta * 180/M_PI);
     return s;
 }
 
@@ -350,32 +358,28 @@ const unsigned char *Camera::toString() {
  * - the position the camera is, if in explorer mode
  */
 void Camera::calculateAlfa(){
-    if (d.getX() == 0 && d.getY() == 0 && d.getZ() == 0){
-        if (position.getX() == 0 && position.getZ() == 0) {
-            position.setZ(0.01);
-        }
-        float camPositionY = this->lookAtPosition.getY(); // Projection in the same y-plane as the lookAtPoint
-        float zSide = this->position.getZ() -
-                      this->lookAtPosition.getZ(); // Length of the side of the triangle parallel to the z axis
-        float xSide = this->position.getX() -
-                      this->lookAtPosition.getX(); // Length of the side of the triangle parallel to the x axis
-        float hip = sqrt(pow(this->position.getX() - this->lookAtPosition.getX(), 2) +
-                         pow(this->position.getZ() - this->lookAtPosition.getZ(), 2)); // the hypotenuse
+    if (d.getX() == 0 && d.getY()==0 && d.getZ()==0) {
+        float vx = this->position.getX() - this->lookAtPosition.getX();
+        float vz = this->position.getZ() - this->lookAtPosition.getZ();
+        float norma = sqrt(pow(vx, 2) + pow(vz, 2));
+        alfa = acos(vz / norma);
 
-        float accos = acos(zSide / hip); // Angle of Beta (if in the 1st or 2nd quadrants)
+        if (vx < 0 && vz < 0) {
+            alfa += M_PI / 2;
+        } else if (vx < 0) {
+            alfa += 3 * M_PI / 2;
+        }
+    } else {
+        float vx = this->lookAtPosition.getX() - this->position.getX();
+        float vz = this->lookAtPosition.getZ() - this->position.getZ();
+        float norma = sqrt(pow(vx, 2) + pow(vz, 2));
+        alfa = acos(vz / norma);
 
-        if (xSide < 0) { // Adjust if the angle is in the 3rd or 4th quadrants
-            alfa = M_PI - accos + M_PI;
-        } else {
-            alfa = accos;
+        if (vx < 0 && vz < 0) {
+            alfa += M_PI / 2;
+        } else if (vx < 0) {
+            alfa += 3 * M_PI / 2;
         }
-    }
-    else {
-        float div = this->d.getX()/this->d.getZ();
-        if (this->d.getZ() < 0){
-            alfa = atan(this->d.getX()/this->d.getZ()) + M_PI;
-        }
-        else alfa = atan(this->d.getX()/this->d.getZ());
     }
 }
 
@@ -384,19 +388,10 @@ void Camera::calculateAlfa(){
  * - the position the camera is, if in explorer mode
  */
 void Camera::calculateBeta(){
-    // r * sin(beta) = y
-    // sin(beta) = y/r
-    // beta = arcsin(y/r)
-    if (d.getX() == 0 && d.getY() == 0 && d.getZ() == 0) {
-        float acsin = asin(this->position.getY() / this->cameraRadius);
-        beta = acsin; // By default between -PI/2 and PI/2 because of arcsin domain
-    }
-    else {
-        float div = this->d.getY()/this->d.getZ();
-        if (this->d.getX() < 0){
-            beta = atan(-this->d.getY()/this->d.getZ());
-        }
-        beta = atan(sqrt(pow(this->d.getX(), 2) + pow(this->d.getY(), 2))/this->d.getZ());
+    if(d.getX() == 0 && d.getY()==0 && d.getZ()==0) {
+        beta = asin((this->position.getY() - this->lookAtPosition.getY()) / this->cameraRadius); // By default, between -PI/2 and PI/2 because of arcsin domain
+    } else {
+        beta = asin((this->lookAtPosition.getY() - this->position.getY()) / this->cameraRadius);
     }
 }
 
