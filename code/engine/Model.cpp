@@ -1,15 +1,14 @@
-//
-// Created by mike on 12-04-2023.
-//
-
 #include "Model.h"
-#include "../shared/IO.hpp"
-#include <GL/glut.h>
+#include "../shared/IO.hpp" // reader function
 
 Model::Model() {
     this->indexes = vector<unsigned int>();
 }
 
+/**
+ * Reads the vertices and indexes from a file
+ * @param fileName name of the file
+ */
 void Model::readModel(string fileName) {
     this->vertices = (reader(fileName, &this->indexes));
 }
@@ -28,22 +27,6 @@ tuple<float, float, float> Model::getRgb(){
 
 void Model::setRgb(tuple<float, float, float> rgb) {
     Model::rgb = rgb;
-}
-
-Point Model::getCenter(){
-    return center;
-}
-
-void Model::setCenter(Point center) {
-    Model::center = center;
-}
-
-float Model::getRadius() {
-    return radius;
-}
-
-void Model::setRadius(float radius) {
-    Model::radius = radius;
 }
 
 vector<float> Model::getVertices() {

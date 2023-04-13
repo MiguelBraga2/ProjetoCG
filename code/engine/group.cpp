@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <iostream>
 #include <string>
 #include <cstdlib>
 
@@ -8,34 +6,41 @@
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <tuple>
-
 #endif
 
 #include "Transformations/transformation.hpp"
+#include "Transformations/scale.hpp"
 #include "Transformations/translation.hpp"
+#include "Transformations/rotation.hpp"
 #include "../libraries/tinyxml2.h"
 #include "../shared/IO.hpp"
-#include "camera.hpp"
 #include "group.hpp"
-#include <map>
+#include <tuple>
 
 using namespace tinyxml2;
 
-Group::Group() {
-
-}
-
+/**
+ * Calculate where the camera must me teleported in explorer mode (and with which radius) if we want to teleport
+ * to the center of this group
+ * @param appliedTransfs all the transformations these models are subject to
+ * @param radius pointer to the radius we want to calculate
+ * @return the center we calculated
+ */
 Point* Group::calculateCameraTeleport(vector<Transformation> appliedTransfs, float* radius){
     Point* base = new Point(0,0,0);
 
-    for (int i=this->transformations.size()-1 ; i>=0; i--) {
-        this->transformations[i]->applyTransformationToPoint(base, radius);
+    for (int i=appliedTransfs.size()-1 ; i>=0; i--) {
+        this->transformations[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
     }
 
     return base;
 }
 
+/**
+ * Calculate the teleport position for all the models present in the group
+ * @param appliedTransfs all the transformations these models are subject to
+ * @return a map with a label as a key and a tuple containing the center and the radius of the model related of the label
+ */
 map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformation> *appliedTransfs){
     map<string, tuple<Point, float>> teleports;
     for (int i=0; i < this->transformations.size(); i++) {
@@ -67,8 +72,11 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
     return teleports;
 }
 
+/**
+ * Draws all the models in a group, after being applied all the transformations
+ */
 void Group::drawGroup() {
-    glPushMatrix();
+    glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
     for (int i=0; i < this->transformations.size(); i++) {
@@ -77,18 +85,19 @@ void Group::drawGroup() {
 
     for (int i = 0; i < this->models.size(); i++) {
         tuple<float, float, float> rgb = this->models[i].getRgb();
-        glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb));
+        glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
         glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
         glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
     }
 
+    // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
         this->subgroups[i].drawGroup();
     }
 
-    glPopMatrix();
+    glPopMatrix(); // Restore the transformations
 }
 
 void Group::prepareBuffers() {
@@ -108,77 +117,74 @@ void Group::prepareBuffers() {
 
 }
 
+/**
+ * Read all the attributes of a group given a XMLElement of a group and its children
+ * Reads:
+ * - the transformations
+ * - the models/rings
+ * - the subgroups
+ * @param group XMLElement of a group and its children
+ */
 void Group::readXML(XMLElement *group) {
     if (group) {
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
-        int numTranslates=0, numScales=0, numRotates=0;
-        if (transformationsElem) {
+
+        if (transformationsElem) { // Optional: can have no transformations
+            int numTranslates=0, numScales=0, numRotates=0; // Control that only one transformation of each type is applied
+
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
-
-                float x = stof(transform->Attribute("x"));
-                float y = stof(transform->Attribute("y"));
-                float z = stof(transform->Attribute("z"));
+                float x = stof(transform->Attribute("x")), y = stof(transform->Attribute("y")), z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
-                    Translation *t = new Translation(x, y, z);
-                    this->transformations.push_back(t);
+                    this->transformations.push_back(new Translation(x, y, z));
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){
                     float angle = stof(transform->Attribute("angle"));
-                    Rotation *r = new Rotation(x, y, z,angle);
-                    this->transformations.push_back(r);
+                    this->transformations.push_back(new Rotation(x, y, z,angle));
                     numRotates++;
                 }
                 else if (tagName.compare("scale") == 0 && numScales == 0){
-                    Scale *s = new Scale(x, y, z);
-                    this->transformations.push_back(s);
+                    this->transformations.push_back(new Scale(x, y, z));
                     numScales++;
                 }
             }
         }
-        int g = 0; // subgroups count
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
+        int g = 0; // subgroups count - each element of a ring is also a subgroup
         if (models) {
-            int i = 0;
+            int i = 0; // number of models
             srand(1);
             for (XMLElement* model = models->FirstChildElement(); model != NULL; model = model->NextSiblingElement()) {
                 string tagName = model->Value();
                 if (tagName.compare("ring") == 0){
                     string fileName = model->Attribute("file");
-                    float inner = stof(model->Attribute("inner"));
-                    float outer = stof(model->Attribute("outer"));
+                    float inner = stof(model->Attribute("inner")), outer = stof(model->Attribute("outer"));
                     int n = stoi(model->Attribute("n"));
-                    float minScale = stof(model->Attribute("minScale"));
-                    float maxScale = stof(model->Attribute("maxScale"));
-                    float minVAngle = stof(model->Attribute("minVAngle"));
-                    float maxVAngle = stof(model->Attribute("maxVAngle"));
-
+                    float minScale = stof(model->Attribute("minScale")), maxScale = stof(model->Attribute("maxScale"));
+                    float minVAngle = stof(model->Attribute("minVAngle")), maxVAngle = stof(model->Attribute("maxVAngle"));
                     tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
-                    int j=0;
-                    while (j<n){
-                        Group newGroup = Group();
+
+                    // For each object to be generated in a ring
+                    for(int j=0; j<n; j++){
+                        Group newGroup = Group(); // Each object is in a different subgroup (because it has different transformations)
                         Model* m = new Model();
                         m->readModel(fileName);
 
                         float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
-                        Rotation* rotation = new Rotation(0, 1, 0, angle);
-                        newGroup.transformations.push_back(rotation);
+                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle));
 
                         float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
-                        Rotation* verticalRotation = new Rotation(0, 0, 1, verticalAngle);
-                        newGroup.transformations.push_back(verticalRotation);
+                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle));
 
                         float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
-                        Translation* translation = new Translation(distance, 0, 0);
-                        newGroup.transformations.push_back(translation);
+                        newGroup.transformations.push_back(new Translation(distance, 0, 0));
 
                         float scaleF = ((double)rand() / (double)RAND_MAX) * (maxScale - minScale) + minScale;
-                        Scale* scale = new Scale(scaleF, scaleF, scaleF);
-                        newGroup.transformations.push_back(scale);
+                        newGroup.transformations.push_back(new Scale(scaleF, scaleF, scaleF));
 
                         m->setRgb(tup);
 
@@ -187,8 +193,6 @@ void Group::readXML(XMLElement *group) {
 
                         newGroup.addModel(*m);
                         this->subgroups.push_back(newGroup);
-                        j++;
-
                     }
                     g+=n;
                 }
@@ -224,7 +228,6 @@ void Group::readXML(XMLElement *group) {
                     i++;
                 }
             }
-
             this->buffers = new GLuint(i);
             this->indexs = new GLuint(i);
         }
@@ -235,6 +238,9 @@ void Group::readXML(XMLElement *group) {
             this->subgroups[g].readXML(gr);
             g++;
         }
+    }
+    else{
+        cout << "Group is NULL";
     }
 }
 

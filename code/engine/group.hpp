@@ -1,3 +1,8 @@
+/*
+ * A group is a set of models and subgroups
+ * that will have the same set of transformations applied
+ */
+
 #ifndef ENGINE_GROUP_H
 #define ENGINE_GROUP_H
 
@@ -9,14 +14,12 @@
 #endif
 
 #include <vector>
+#include <map>
+
 #include "../shared/triangle.hpp"
 #include "../libraries/tinyxml2.h"
 #include "Transformations/transformation.hpp"
-#include "Transformations/scale.hpp"
-#include "Transformations/translation.hpp"
-#include "Transformations/rotation.hpp"
 #include "Model.h"
-#include <map>
 
 using namespace tinyxml2;
 
@@ -24,15 +27,11 @@ class Group {
 private:
     vector<Transformation*> transformations;
     vector<Model> models;
-    //vector<vector<float>> vertices;
-    //vector<vector<unsigned int>> indexes;
-    //vector<tuple<float, float, float>> colors;
     GLuint* buffers;
     GLuint* indexs;
     vector<Group> subgroups;
 
 public:
-    Group();
     void prepareBuffers();
     map<string, tuple<Point, float>> initializeTeleporter(vector<Transformation> *appliedTransfs);
     void drawGroup();
