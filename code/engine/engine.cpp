@@ -40,7 +40,7 @@ int startX, startY, tracking = 0;
 
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
-int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
+int polygonMode = GL_LINE;
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;

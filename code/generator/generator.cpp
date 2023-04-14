@@ -258,7 +258,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
  * @param stacks horizontal divisions of the sphere
  * @return
  */
-vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes, int vboMode) {
+vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes) {
     vector<float> vertices;
 
     float sliceStep = 2 * M_PI / slices;
@@ -381,7 +381,7 @@ int main(int argc, char** argv) {
         if (strcmp(argv[1], "sphere") == 0) {
             if (argc == 6) {
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, stoi(argv[5]));
+                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes);
                 writer(argv[5], indexes, vertices);
             }
             else {
@@ -413,9 +413,9 @@ int main(int argc, char** argv) {
                 vertices.insert(vertices.end(), aux.begin(), aux.end());
                 aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
                 vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, side / 2), false, &indexes, &index);
+                aux = generatePlane(side, grid, Point(-1, -1, 0), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
                 vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(1, -1, 0), Point(-side / 2, side / 2, -side / 2), true, &indexes, &index);
+                aux = generatePlane(side, grid, Point(-1, -1, 0), Point(side / 2, side / 2, -side / 2), false, &indexes, &index);
                 vertices.insert(vertices.end(), aux.begin(), aux.end());
                 writer(argv[4], indexes, vertices);
             }
