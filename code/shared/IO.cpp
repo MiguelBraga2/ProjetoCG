@@ -56,10 +56,6 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
     vector<Point> normals {};
     vector<int> normal_indexes {};
 
-    if (fileName.compare("cube.obj") == 0) {
-        cout << "ola";
-    }
-
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }

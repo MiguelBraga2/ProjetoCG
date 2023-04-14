@@ -27,11 +27,11 @@ using namespace std;
 vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index){
     vector<float> vertices;
     float step = length / grid; // side of each of the smaller squares
-     
+
     Point base (initial.getX(), initial.getY(), initial.getZ());
 
     for(int i=0; i<grid; i++) {
-        
+
         vertices.push_back(base.getX());
         vertices.push_back(base.getY());
         vertices.push_back(base.getZ());
@@ -72,8 +72,8 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
             vertices.push_back(base.getX() + step * direction.getX());
             vertices.push_back(base.getY() + step * direction.getY());
-            vertices.push_back(base.getZ() + step * direction.getZ());          
-            
+            vertices.push_back(base.getZ() + step * direction.getZ());
+
             if (clockWiseDir == false) {
                 indexes->push_back(*index);
                 indexes->push_back((*index) + 3);
@@ -94,7 +94,7 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
             // Move the base point
             if (direction.getX() == 0) {
-                base.setY(base.getY() + step * direction.getY()); 
+                base.setY(base.getY() + step * direction.getY());
             } else if (direction.getY() == 0) {
                 base.setZ(base.getZ() + step * direction.getZ());
             } else if (direction.getZ() == 0) {
@@ -133,7 +133,7 @@ vector<float> generateCylinder(float radius, float height, int slices,vector<uns
     float aux = height / 2;
     double sliceStep = (2 * M_PI) / slices;
     int index = 0;
- 
+
     for (int i = 0; i < slices; i++) {
         vertices.push_back(0);
         vertices.push_back(-aux);
@@ -201,7 +201,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
         vertices.push_back(0);
         vertices.push_back(0);
         vertices.push_back(0);
-        
+
         vertices.push_back(radius * sin(i * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos(i * sliceStep));
@@ -213,7 +213,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
         indexes->push_back(index);
         indexes->push_back(index + 2);
         indexes->push_back(index + 1);
-        
+
         index++;
 
         for (int j = 0; j < stacks - 1; j++) {
@@ -260,28 +260,28 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
  */
 vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes, int vboMode) {
     vector<float> vertices;
-    
-    float sliceStep = 2 * M_PI / slices; 
+
+    float sliceStep = 2 * M_PI / slices;
     float stackStep = M_PI / stacks;
     int index = 0;
-    
+
     for (int i = 0; i < slices; i++) {
         vertices.push_back(0);
         vertices.push_back(-radius);
         vertices.push_back(0);
 
-        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin(i * sliceStep));  
+        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin(i * sliceStep));
         vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
         vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos(i * sliceStep));
 
         vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin((i + 1) * sliceStep));
         vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
         vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos((i + 1) * sliceStep));
-        
+
         indexes->push_back(index);
         indexes->push_back(index + 2);
         indexes->push_back(index + 1);
-        
+
         index++;
 
         for (int j = 1; j < stacks - 1; j++) {
@@ -300,7 +300,7 @@ vector<float> generateSphere(float radius, int slices, int stacks, vector<unsign
             indexes->push_back(index + 1);
             indexes->push_back(index + 3);
             indexes->push_back(index + 2);
-            
+
             index += 2;
         }
 
@@ -459,7 +459,7 @@ int main(int argc, char** argv) {
         else {
             cout << "Figura desconhecida." << endl;
         }
-    } 
+    }
     else {
         cout << "Não existem argumentos a serem passados." << endl;
     }
