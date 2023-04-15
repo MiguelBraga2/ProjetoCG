@@ -34,7 +34,7 @@ private:
 public:
     void prepareBuffers();
     map<string, tuple<Point, float>> initializeTeleporter(vector<Transformation*> *appliedTransfs);
-    void drawGroup();
+    void drawGroup(int vboMode);
     void readXML(XMLElement* group);
     void addModel(Model m);
 

@@ -77,7 +77,7 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup() {
+void Group::drawGroup(int vboMode) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
@@ -86,17 +86,23 @@ void Group::drawGroup() {
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        tuple<float, float, float> rgb = this->models[i].getRgb();
-        glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
-        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
+        if (vboMode == 0) {
+            this->models[i].drawModel();
+        }
+        else if (vboMode == 1) {
+            tuple<float, float, float> rgb = this->models[i].getRgb();
+            glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
+            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+            glVertexPointer(3, GL_FLOAT, 0, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+            glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
+        }
+        
     }
 
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup();
+        this->subgroups[i].drawGroup(vboMode);
     }
 
     glPopMatrix(); // Restore the transformations

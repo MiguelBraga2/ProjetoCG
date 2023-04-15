@@ -27,6 +27,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
+    void drawModel();
 
     vector<float> getVertices();
     void setVertices(vector<float> vertices);

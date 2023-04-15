@@ -16,8 +16,8 @@
             <model file="saturno_orbita.3d"></model>
             <model file="urano_orbita.3d"></model>
             <model file="neptune_orbita.3d"></model>
-            <ring file="sphere_1_8_8.3d" outer="4300" inner="3300" n="1000" minScale="2" maxScale="4" minVAngle="-10" maxVAngle="10" red="0.6" green="0.6" blue="0.6"></ring>
-            <ring file="sphere_1_8_8.3d" outer="51100" inner="31100" n="10000" minScale="8" maxScale="18" minVAngle="-1" maxVAngle="1" red="0.6" green="0.6" blue="0.6"></ring>
+            <!--<ring file="sphere_1_8_8.3d" outer="4300" inner="3300" n="1000" minScale="2" maxScale="4" minVAngle="-10" maxVAngle="10" red="0.6" green="0.6" blue="0.6"></ring>
+            <ring file="sphere_1_8_8.3d" outer="51100" inner="31100" n="10000" minScale="8" maxScale="18" minVAngle="-1" maxVAngle="1" red="0.6" green="0.6" blue="0.6"></ring>-->
         </models>
         <group> <!-- Sol -->
             <transform>

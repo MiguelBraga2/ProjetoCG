@@ -41,6 +41,7 @@ int startX, startY, tracking = 0;
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
 int polygonMode = GL_LINE;
+int vboMode; // 0 - noVBOs , 1 - VBOs
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
@@ -95,6 +96,7 @@ void renderText() {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
     }
 
+
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -146,7 +148,7 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup();
+    group->drawGroup(vboMode);
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -173,8 +175,10 @@ void menu(int id)
     switch(id)
     {
         case 1:
+            vboMode = 0;
             break;
         case 2:
+            vboMode = 1;
             break;
         case 3:
             break;
@@ -224,7 +228,10 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu, submenu2, submenu3;
+    int submenu1, submenu2, submenu3;
+    submenu1 = glutCreateMenu(menu);
+    glutAddMenuEntry("NoVbos", 1);
+    glutAddMenuEntry("Vbos", 2);
     submenu2 = glutCreateMenu(menu);
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
@@ -236,6 +243,7 @@ void createMenu(void){
         glutAddMenuEntry(it->first.c_str(), 15+i);
     }
     glutCreateMenu(menu);
+    glutAddSubMenu("Change VBOs", submenu1);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
