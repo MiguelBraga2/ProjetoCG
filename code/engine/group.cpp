@@ -144,8 +144,23 @@ void Group::readXML(XMLElement *group) {
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){
-                    float angle = stof(transform->Attribute("angle"));
-                    this->transformations.push_back(new Rotation(x, y, z,angle));
+                    const char* strAngle = transform->Attribute("angle");
+                    const char* strTime = transform->Attribute("time");
+                    float angle, time;
+                    if (strAngle) {
+                        angle = stof(strAngle);
+                    }
+                    else {
+                        angle = 0;
+                    }
+                    if (strTime) {
+                        time = stof(strTime);
+                    }
+                    else {
+                        time = 0;
+                    }
+
+                    this->transformations.push_back(new Rotation(x, y, z,angle, 0, time));
                     numRotates++;
                 }
                 else if (tagName.compare("scale") == 0 && numScales == 0){
@@ -177,10 +192,10 @@ void Group::readXML(XMLElement *group) {
                         m->readModel(fileName);
 
                         float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle));
+                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle, 0, 0));
 
                         float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle));
+                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle, 0, 0));
 
                         float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
                         newGroup.transformations.push_back(new Translation(distance, 0, 0));

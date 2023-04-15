@@ -7,8 +7,10 @@
 class Rotation : public Transformation {
 private:
     float angle;
+    float startCounter;
+    float duration360;
 public:
-    Rotation(float x, float y, float z, float angle);
+    Rotation(float x, float y, float z, float angle, double startCounter, float duration360);
     float getAngle();
     void setAngle(float angle);
     void applyTransformation() override;
