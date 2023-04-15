@@ -16,8 +16,8 @@ Camera::Camera(const Point &position, const Point &lookAtPosition, const Point &
     this->lookAtPosition = lookAtPosition;
     this->upVector = upVector;
     this->fov = fov;
-    this->near = near;
-    this->far = far;
+    this->nearV = near;
+    this->farV = far;
     this->mode = 0;
     this->d = Point(0,0,0);
     this->calculateSpherical(); //  Enter spherical mode
@@ -286,11 +286,11 @@ float Camera::getFov() {
 }
 
 float Camera::getNear() {
-    return near;
+    return nearV;
 }
 
 float Camera::getFar() {
-    return far;
+    return farV;
 }
 
 void Camera::updateMouseAngles(int button, int state, int xx, int yy){

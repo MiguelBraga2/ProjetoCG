@@ -1,3 +1,7 @@
+#define MINIAUDIO_IMPLEMENTATION
+#define MA_DEBUG_OUTPUT
+#include "../libraries/miniaudio.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -20,8 +24,9 @@
 #include "group.hpp"
 
 
-using namespace tinyxml2;
+//using namespace tinyxml2;
 using namespace std;
+
 
 float width, height;
 Camera* camera;
@@ -73,6 +78,26 @@ void changeSize(int w, int h) {
 	gluPerspective(camera->getFov() ,ratio, camera->getNear() , camera->getFar());
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
+}
+
+void displaySound(const char* file) {
+    ma_result result;
+    ma_engine engine;
+
+
+    result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        printf("Failed to initialize audio engine.");
+    }
+
+    result = ma_engine_play_sound(&engine, file, NULL);
+
+    std::cout << result << std::endl;
+
+    printf("Press Enter to quit...");
+    getchar();
+
+    ma_engine_uninit(&engine);
 }
 
 /**
@@ -181,6 +206,7 @@ void menu(int id)
             vboMode = 1;
             break;
         case 3:
+            displaySound("../audio/turbinada.mp3");
             break;
         case 4:
             break;
@@ -247,6 +273,7 @@ void createMenu(void){
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
+    glutAddMenuEntry("Modo DJ", 3);
     glutAddMenuEntry("Show camera info", 9);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
@@ -346,27 +373,28 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
 int readXML(char* filePath){
-    XMLDocument *doc = new XMLDocument();
-    XMLError error = doc->LoadFile(filePath);
-    XMLNode* world = doc->FirstChildElement("world");
+    //XMLDocument* doc;
+    tinyxml2::XMLDocument *doc = new  tinyxml2::XMLDocument();
+    tinyxml2::XMLError error = doc->LoadFile(filePath);
+    tinyxml2::XMLNode* world = doc->FirstChildElement("world");
 
-    float fov = 0, far = 0, near = 0;
+    float fov = 0, farV = 0, nearV = 0;
     Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
   
     if (!error && world) {
         /* window */
-        XMLElement* windowElem = world->FirstChildElement("window");
+        tinyxml2::XMLElement* windowElem = world->FirstChildElement("window");
         if (windowElem) {
             width =  stoi(windowElem->Attribute("width"));
             height = stoi(windowElem->Attribute("height"));
         }
         
         /* camera */
-        XMLElement* cameraElem = world->FirstChildElement("camera");
+        tinyxml2::XMLElement* cameraElem = world->FirstChildElement("camera");
         if (cameraElem) {
             
             /* camera position */
-            XMLElement* position = cameraElem->FirstChildElement("position");
+            tinyxml2::XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
                 cameraPosition->setX(stof(position->Attribute("x")));
                 cameraPosition->setY(stof(position->Attribute("y")));
@@ -374,7 +402,7 @@ int readXML(char* filePath){
             }
 
             /* camera lookAt */
-            XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
+            tinyxml2::XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
                 cameraLookAt->setX(stof(lookAt->Attribute("x")));
                 cameraLookAt->setY(stof(lookAt->Attribute("y")));
@@ -382,7 +410,7 @@ int readXML(char* filePath){
             }
 
             /* camera up */
-            XMLElement* up = cameraElem->FirstChildElement("up");
+            tinyxml2::XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
                 cameraUpVector->setX(stof(up->Attribute("x")));
                 cameraUpVector->setY(stof(up->Attribute("y")));
@@ -390,14 +418,14 @@ int readXML(char* filePath){
             }
             
             /* camera projection */
-            XMLElement* projection = cameraElem->FirstChildElement("projection");
+            tinyxml2::XMLElement* projection = cameraElem->FirstChildElement("projection");
             if (projection) {
                 fov = stof(projection->Attribute("fov"));
-                near = stof(projection->Attribute("near"));
-                far = stof(projection->Attribute("far"));
+                nearV = stof(projection->Attribute("near"));
+                farV = stof(projection->Attribute("far"));
             }
           
-            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
+            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
         }
 
         int labelCount = 0;
