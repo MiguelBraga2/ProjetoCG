@@ -166,10 +166,42 @@ void Group::readXML(XMLElement *group) {
 
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
-                float x = stof(transform->Attribute("x")), y = stof(transform->Attribute("y")), z = stof(transform->Attribute("z"));
+                float x, y, z;
+                if (transform->Attribute("x"))
+                    x = stof(transform->Attribute("x"));
+                if (transform->Attribute("x"))
+                    y = stof(transform->Attribute("y"));
+                if (transform->Attribute("z"))
+                    y = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
-                    this->transformations.push_back(new Translation(x, y, z));
+                    float time;
+                    bool align;
+                    const char* strTime = transform->Attribute("time");
+                    const char* strAlign = transform->Attribute("align");
+                    vector<Point> controlPoints;
+                    if (strTime) {
+                        time = stof(strTime);
+
+                        if (std::strcmp(strAlign, "true") == 0) {
+                            align = true;
+                        }
+                        else if (std::strcmp(strAlign, "false") == 0) {
+                            align = false;
+                        }
+
+                        // Iterate over the control points
+                        for (XMLElement* point = transform->FirstChildElement(); point != NULL; point = point->NextSiblingElement()){
+                            float x = stof(point->Attribute("x")), y = stof(point->Attribute("y")), z = stof(point->Attribute("z"));
+                            Point p(x, y, z);
+                            controlPoints.push_back(p);
+                        }
+                        this->transformations.push_back(new Translation(0, 0, 0, time, align, controlPoints));
+                    }
+                    else {
+                        time = 0; align = false;
+                        this->transformations.push_back(new Translation(x, y, z, time, align, controlPoints));
+                    }
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){
@@ -226,8 +258,9 @@ void Group::readXML(XMLElement *group) {
                         float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
                         newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle, 0, 0));
 
+                        vector<Point> aux;
                         float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
-                        newGroup.transformations.push_back(new Translation(distance, 0, 0));
+                        newGroup.transformations.push_back(new Translation(distance, 0, 0, 0, false, aux));
 
                         float scaleF = ((double)rand() / (double)RAND_MAX) * (maxScale - minScale) + minScale;
                         newGroup.transformations.push_back(new Scale(scaleF, scaleF, scaleF));
