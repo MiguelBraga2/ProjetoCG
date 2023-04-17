@@ -8,11 +8,20 @@
 #include "translation.hpp"
 
 
-Translation::Translation(float x, float y, float z, float duration, bool align) : Transformation(x, y, z), duration(duration), align(align) {
+Translation::Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align) {
+    for(Point p: controlPoints){
+        this->controlPoints.push_back(p);
+    }
 }
 
 void Translation::applyTransformation(){
-    glTranslatef(this->getX(), this->getY(), this->getZ());
+    if (this->duration == 0){
+        glTranslatef(this->getX(), this->getY(), this->getZ());
+    }
+    else {
+
+    }
+
 }
 
 void Translation::applyTransformationToPoint(Point* base, float* radius) {
