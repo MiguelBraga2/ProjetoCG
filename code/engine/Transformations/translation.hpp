@@ -4,8 +4,11 @@
 #include "transformation.hpp"
 
 class Translation : public Transformation {
+private:
+    float duration;
+    bool align;
 public:
-    Translation(float x, float y, float z);
+    Translation(float x, float y, float z, float duration, bool align);
     void applyTransformation() override;
     void applyTransformationToPoint(Point* base, float* radius) override;
 };

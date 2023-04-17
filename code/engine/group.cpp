@@ -146,7 +146,28 @@ void Group::readXML(XMLElement *group) {
                 float x = stof(transform->Attribute("x")), y = stof(transform->Attribute("y")), z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
-                    this->transformations.push_back(new Translation(x, y, z));
+                    float time;
+                    bool align;
+                    const char* strTime = transform->Attribute("time");
+                    const char* strAlign = transform->Attribute("align");
+
+                    if (strTime) {
+                        time = stof(strTime);
+                    }
+                    else {
+                        time = 0;
+                    }
+
+                    if (strAlign) {
+                        if (std::strcmp(strAlign, "True") == 0) {
+                            align = true;
+                        }
+                        else if (std::strcmp(strAlign, "False") == 0) {
+                            align = false;
+                        }
+                    }
+                    else align = false;
+                    this->transformations.push_back(new Translation(x, y, z, time, align));
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){

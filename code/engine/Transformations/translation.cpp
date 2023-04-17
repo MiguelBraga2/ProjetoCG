@@ -8,7 +8,7 @@
 #include "translation.hpp"
 
 
-Translation::Translation(float x, float y, float z) : Transformation(x, y, z) {
+Translation::Translation(float x, float y, float z, float duration, bool align) : Transformation(x, y, z), duration(duration), align(align) {
 }
 
 void Translation::applyTransformation(){
