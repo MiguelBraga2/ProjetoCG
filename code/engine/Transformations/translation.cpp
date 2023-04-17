@@ -19,7 +19,17 @@ void Translation::applyTransformation(){
         glTranslatef(this->getX(), this->getY(), this->getZ());
     }
     else {
+        int numIterations = this->controlPoints.size()-3;
+        float iterationInterval = this->duration / numIterations;
 
+
+        for(int i=0; i<numIterations; i++){
+            // 4 pontos de controle
+            Point p1 = this->controlPoints[i];
+            Point p2 = this->controlPoints[i+1];
+            Point p3 = this->controlPoints[i+2];
+            Point p4 = this->controlPoints[i+3];
+        }
     }
 
 }
