@@ -40,6 +40,9 @@ Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, G
     {
         this->subgroups.emplace_back(subgroups[i]);
     }
+    this->buffers = new GLuint(1);
+    this->indexs = new GLuint(1);
+
 }
 
 /**
@@ -172,7 +175,7 @@ void Group::readXML(XMLElement *group) {
                 if (transform->Attribute("x"))
                     y = stof(transform->Attribute("y"));
                 if (transform->Attribute("z"))
-                    y = stof(transform->Attribute("z"));
+                    z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
                     float time;
