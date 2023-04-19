@@ -19,6 +19,32 @@
 
 using namespace tinyxml2;
 
+Group::Group() {
+
+}
+
+Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, GLuint* indexs, vector<Group> subgroups) {
+    for (size_t i = 0; i < t.size(); i++)
+    {
+        this->transformations.emplace_back(t[i]);
+    }
+
+    for (size_t i = 0; i < models.size(); i++)
+    {
+        this->models.emplace_back(models[i]);
+    }
+
+    // Falta inicializar buffers e indexes 
+
+    for (size_t i = 0; i < subgroups.size(); i++)
+    {
+        this->subgroups.emplace_back(subgroups[i]);
+    }
+    this->buffers = new GLuint(1);
+    this->indexs = new GLuint(1);
+
+}
+
 /**
  * Calculate where the camera must me teleported in explorer mode (and with which radius) if we want to teleport
  * to the center of this group
@@ -149,7 +175,7 @@ void Group::readXML(XMLElement *group) {
                 if (transform->Attribute("x"))
                     y = stof(transform->Attribute("y"));
                 if (transform->Attribute("z"))
-                    y = stof(transform->Attribute("z"));
+                    z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
                     float time;
@@ -309,4 +335,13 @@ void Group::readXML(XMLElement *group) {
 
 void Group::addModel(Model m) {
     this->models.push_back(m);
+}
+
+void Group::addTransformation(Transformation* t) {
+    this->transformations.push_back(t);
+}
+
+Group* Group::clone() {
+    Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
+    return g;
 }

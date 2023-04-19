@@ -22,6 +22,7 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
+#include "Creator.h"
 
 
 //using namespace tinyxml2;
@@ -51,6 +52,7 @@ int vboMode; // 0 - noVBOs , 1 - VBOs
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
+vector<Group> cubes;
 
 /**
  * Callback called when the window is resized
@@ -173,11 +175,17 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup(vboMode);
+    // group->drawGroup(vboMode);
+
+    for (Group g : cubes)
+    {
+        g.drawGroup(vboMode);
+    }
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
     int fps;
+
     if(time-timebase > 1000){
         fps = frames * 1000.0/(time-timebase);
         timebase = time;
@@ -451,6 +459,16 @@ int main(int argc, char **argv) {
         int error=readXML(argv[1]);
 
         if (!error) {
+
+            for (size_t i = 0; i < 10; i++)
+            {
+                for (size_t j = 0; j < 10; j++)
+                {
+                    Point p(i, 0, j);
+                    Group* newGroup = Creator::drawCube(*group, p);
+                    cubes.emplace_back(*newGroup);
+                }
+            }
 
             // init GLUT and the window
             glutInit(&argc, argv);
