@@ -490,9 +490,15 @@ int main(int argc, char** argv) {
         }
         else if (strcmp(argv[1], "ring") == 0) {
             if (argc > 10) {
-                vector<unsigned int> indexes;
-                vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &argv[10]);
-                writer(argv[9], indexes, vertices);
+                if (strcmp(argv[10],"sphere")!=0 && strcmp(argv[10],"box")!=0) {
+                    cout << "Primitiva inválida para ser usada como asteroide." << endl;
+                } else {
+                    vector<unsigned int> indexes;
+                    vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]),
+                                                          stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes,
+                                                          &argv[10]);
+                    writer(argv[9], indexes, vertices);
+                }
             }
             else {
                 cout << "Ring: número de argumentos inválido." << endl;
