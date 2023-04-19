@@ -11,8 +11,6 @@ Transformations/scale.cpp Transformations/translation.cpp Model.cpp)
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
-target_link_libraries(engine ${CMAKE_DL_LIBS})
-target_link_libraries(engine pthread)
 
 add_definitions(${OpenGL_DEFINITIONS})
 
@@ -71,7 +69,8 @@ else (WIN32) #Linux and Mac
 	link_libraries(${IL_LIBRARIES} )
 	include_directories(${IL_INCLUDE_DIR})
 
-	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${IL_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} pthread ${CMAKE_DL_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${IL_LIBRARIES})
+
 	if(NOT GLUT_FOUND)
 	   message(ERROR ": GLUT not found!")
 	endif(NOT GLUT_FOUND)
