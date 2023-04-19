@@ -27,11 +27,11 @@ using namespace std;
 vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index){
     vector<float> vertices;
     float step = length / grid; // side of each of the smaller squares
-     
+
     Point base (initial.getX(), initial.getY(), initial.getZ());
 
     for(int i=0; i<grid; i++) {
-        
+
         vertices.push_back(base.getX());
         vertices.push_back(base.getY());
         vertices.push_back(base.getZ());
@@ -72,8 +72,8 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
             vertices.push_back(base.getX() + step * direction.getX());
             vertices.push_back(base.getY() + step * direction.getY());
-            vertices.push_back(base.getZ() + step * direction.getZ());          
-            
+            vertices.push_back(base.getZ() + step * direction.getZ());
+
             if (clockWiseDir == false) {
                 indexes->push_back(*index);
                 indexes->push_back((*index) + 3);
@@ -94,7 +94,7 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
             // Move the base point
             if (direction.getX() == 0) {
-                base.setY(base.getY() + step * direction.getY()); 
+                base.setY(base.getY() + step * direction.getY());
             } else if (direction.getY() == 0) {
                 base.setZ(base.getZ() + step * direction.getZ());
             } else if (direction.getZ() == 0) {
@@ -133,7 +133,7 @@ vector<float> generateCylinder(float radius, float height, int slices,vector<uns
     float aux = height / 2;
     double sliceStep = (2 * M_PI) / slices;
     int index = 0;
- 
+
     for (int i = 0; i < slices; i++) {
         vertices.push_back(0);
         vertices.push_back(-aux);
@@ -201,7 +201,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
         vertices.push_back(0);
         vertices.push_back(0);
         vertices.push_back(0);
-        
+
         vertices.push_back(radius * sin(i * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos(i * sliceStep));
@@ -213,7 +213,7 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
         indexes->push_back(index);
         indexes->push_back(index + 2);
         indexes->push_back(index + 1);
-        
+
         index++;
 
         for (int j = 0; j < stacks - 1; j++) {
@@ -258,61 +258,60 @@ vector<float> generateCone(float radius, float height, int slices, int stacks, v
  * @param stacks horizontal divisions of the sphere
  * @return
  */
-vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *indexes, int vboMode) {
+vector<float> generateSphere(Point start, float radius, int slices, int stacks, vector<unsigned int> *indexes, int *index) {
     vector<float> vertices;
-    
-    float sliceStep = 2 * M_PI / slices; 
+
+    float sliceStep = 2 * M_PI / slices;
     float stackStep = M_PI / stacks;
-    int index = 0;
-    
+
     for (int i = 0; i < slices; i++) {
-        vertices.push_back(0);
-        vertices.push_back(-radius);
-        vertices.push_back(0);
+        vertices.push_back(start.getX());
+        vertices.push_back(start.getY()-radius);
+        vertices.push_back(start.getZ());
 
-        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin(i * sliceStep));  
-        vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
-        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos(i * sliceStep));
+        vertices.push_back(start.getX() + radius * cos(-M_PI / 2 + stackStep) * sin(i * sliceStep));
+        vertices.push_back(start.getY() + radius * sin(-M_PI / 2 + stackStep));
+        vertices.push_back(start.getZ() + radius * cos(-M_PI / 2 + stackStep) * cos(i * sliceStep));
 
-        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * sin((i + 1) * sliceStep));
-        vertices.push_back(radius * sin(-M_PI / 2 + stackStep));
-        vertices.push_back(radius * cos(-M_PI / 2 + stackStep) * cos((i + 1) * sliceStep));
-        
-        indexes->push_back(index);
-        indexes->push_back(index + 2);
-        indexes->push_back(index + 1);
-        
-        index++;
+        vertices.push_back(start.getX() + radius * cos(-M_PI / 2 + stackStep) * sin((i + 1) * sliceStep));
+        vertices.push_back(start.getY() + radius * sin(-M_PI / 2 + stackStep));
+        vertices.push_back(start.getZ() + radius * cos(-M_PI / 2 + stackStep) * cos((i + 1) * sliceStep));
+
+        indexes->push_back(*index);
+        indexes->push_back(*index + 2);
+        indexes->push_back(*index + 1);
+
+        (*index)++;
 
         for (int j = 1; j < stacks - 1; j++) {
-            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin(i * sliceStep));
-            vertices.push_back(radius * sin(-M_PI / 2 + (j + 1) * stackStep));
-            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos(i * sliceStep));
+            vertices.push_back(start.getX() + radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin(i * sliceStep));
+            vertices.push_back(start.getY() + radius * sin(-M_PI / 2 + (j + 1) * stackStep));
+            vertices.push_back(start.getZ() + radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos(i * sliceStep));
 
-            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin((i + 1) * sliceStep));
-            vertices.push_back(radius * sin(-M_PI / 2 + (j + 1) * stackStep));
-            vertices.push_back(radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos((i + 1) * sliceStep));
+            vertices.push_back(start.getX() + radius * cos(-M_PI / 2 + (j + 1) * stackStep) * sin((i + 1) * sliceStep));
+            vertices.push_back(start.getY() + radius * sin(-M_PI / 2 + (j + 1) * stackStep));
+            vertices.push_back(start.getZ() + radius * cos(-M_PI / 2 + (j + 1) * stackStep) * cos((i + 1) * sliceStep));
 
-            indexes->push_back(index);
-            indexes->push_back(index + 1);
-            indexes->push_back(index + 2);
+            indexes->push_back(*index);
+            indexes->push_back(*index + 1);
+            indexes->push_back(*index + 2);
 
-            indexes->push_back(index + 1);
-            indexes->push_back(index + 3);
-            indexes->push_back(index + 2);
-            
-            index += 2;
+            indexes->push_back(*index + 1);
+            indexes->push_back(*index + 3);
+            indexes->push_back(*index + 2);
+
+            (*index) += 2;
         }
 
-        vertices.push_back(0);
-        vertices.push_back(radius);
-        vertices.push_back(0);
+        vertices.push_back(start.getX());
+        vertices.push_back(start.getY() + radius);
+        vertices.push_back(start.getZ());
 
-        indexes->push_back(index);
-        indexes->push_back(index + 1);
-        indexes->push_back(index + 2);
+        indexes->push_back(*index);
+        indexes->push_back(*index + 1);
+        indexes->push_back(*index + 2);
 
-        index += 3;
+        (*index) += 3;
     }
 
     return vertices;
@@ -374,14 +373,37 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
     return vertices;
 }
 
+vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle,vector<unsigned int>* indexes){
+    vector<float> vertices;
+    int index = 0;
 
+    // For each object to be generated in a ring
+    for(int j = 0; j < n; j++) {
+
+        float angle = ((float) rand() / (float) RAND_MAX) * 2 * M_PI; // Pseudo-random angle between 0 and 360º
+        float verticalAngle = ((float) rand() / (float) RAND_MAX) * (maxAngle - minAngle) +
+                              minAngle; // Pseudo-random angle between 0 and 360º
+        verticalAngle = verticalAngle * M_PI / 180;
+        float distance = ((float) rand() / (float) RAND_MAX) * (outerRadius - innerRadius) + innerRadius;
+        float scaleF = ((float) rand() / (float) RAND_MAX) * (maxScale - minScale) + minScale;
+
+        Point start(distance * cos(verticalAngle) * sin(angle), distance * sin(verticalAngle), distance * cos(verticalAngle) * cos(angle));
+
+        vector<float> aux = generateSphere(start, scaleF, 30, 30, indexes, &index);
+        vertices.insert(vertices.end(), aux.begin(), aux.end());
+    }
+
+    return vertices;
+}
 
 int main(int argc, char** argv) {
     if (argc > 1) {
         if (strcmp(argv[1], "sphere") == 0) {
             if (argc == 6) {
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, stoi(argv[5]));
+                int index = 0;
+                Point p1(0,0,0);
+                vector<float> vertices = generateSphere(p1, stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &index);
                 writer(argv[5], indexes, vertices);
             }
             else {
@@ -456,10 +478,20 @@ int main(int argc, char** argv) {
                 cout << "Torus: número de argumentos inválido." << endl;
             }
         }
+        else if (strcmp(argv[1], "ring") == 0) {
+            if (argc == 10) {
+                vector<unsigned int> indexes;
+                vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes);
+                writer(argv[9], indexes, vertices);
+            }
+            else {
+                cout << "Ring: número de argumentos inválido." << endl;
+            }
+        }
         else {
             cout << "Figura desconhecida." << endl;
         }
-    } 
+    }
     else {
         cout << "Não existem argumentos a serem passados." << endl;
     }
