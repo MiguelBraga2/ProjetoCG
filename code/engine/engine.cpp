@@ -47,7 +47,7 @@ int startX, startY, tracking = 0;
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
 int polygonMode = GL_LINE;
-int vboMode; // 0 - noVBOs , 1 - VBOs
+int vboMode = 1; // 0 - noVBOs , 1 - VBOs
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
@@ -142,11 +142,8 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-
-    /*gluLookAt(camX, camY, camZ,
-              0.0,0.0,0.0,
-              0.0f,1.0f,0.0f); //*/
     camera->placeCamera();
+
     if (cameraInfo)
         renderText();
 
@@ -175,12 +172,7 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    // group->drawGroup(vboMode);
-
-    for (Group g : cubes)
-    {
-        g.drawGroup(vboMode);
-    }
+    group->drawGroup(vboMode);
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -436,15 +428,15 @@ int readXML(char* filePath){
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
         }
 
-        int labelCount = 0;
         group = new Group();
         group->readXML(world->FirstChildElement("group"));
+
         vector<Transformation*> transf;
         teleports = group->initializeTeleporter(&transf);
-
         for (auto it = teleports.begin(); it != teleports.end(); ++it) {
             keys.push_back(it->first);
         }
+
     }
 
     delete doc;
@@ -460,7 +452,7 @@ int main(int argc, char **argv) {
 
         if (!error) {
 
-            for (size_t i = 0; i < 10; i++)
+            /*for (size_t i = 0; i < 10; i++)
             {
                 for (size_t j = 0; j < 10; j++)
                 {
@@ -468,7 +460,7 @@ int main(int argc, char **argv) {
                     Group* newGroup = Creator::drawCube(*group, p);
                     cubes.emplace_back(*newGroup);
                 }
-            }
+            }*/
 
             // init GLUT and the window
             glutInit(&argc, argv);

@@ -135,22 +135,20 @@ void Group::drawGroup(int vboMode) {
 }
 
 void Group::prepareBuffers() {
-    if (this->models.size() > 0) {
-        glGenBuffers(this->models.size(), this->buffers);
-        glGenBuffers(this->models.size(), this->indexs);
+    glGenBuffers(this->models.size(), this->buffers);
+    glGenBuffers(this->models.size(), this->indexs);
 
-        for (int i = 0; i < this->models.size(); i++) {
-            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(),
-                         this->models[i].getVertices().data(), GL_STATIC_DRAW);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(),
-                         this->models[i].getIndexes().data(), GL_STATIC_DRAW);
-        }
+    for (int i = 0; i < this->models.size(); i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(),
+                     this->models[i].getVertices().data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(),
+                     this->models[i].getIndexes().data(), GL_STATIC_DRAW);
+    }
 
-        for (int i = 0; i < this->subgroups.size(); i++) {
-            this->subgroups[i].prepareBuffers();
-        }
+    for (int i = 0; i < this->subgroups.size(); i++) {
+        this->subgroups[i].prepareBuffers();
     }
 }
 
@@ -238,97 +236,47 @@ void Group::readXML(XMLElement *group) {
         }
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
-        int g = 0; // subgroups count - each element of a ring is also a subgroup
         if (models) {
             int i = 0; // number of models
             srand(1);
-            for (XMLElement* model = models->FirstChildElement(); model != NULL; model = model->NextSiblingElement()) {
-                string tagName = model->Value();
-                if (tagName.compare("ring") == 0){
-                    string fileName = model->Attribute("file");
-                    float inner = stof(model->Attribute("inner")), outer = stof(model->Attribute("outer"));
-                    int n = stoi(model->Attribute("n"));
-                    float minScale = stof(model->Attribute("minScale")), maxScale = stof(model->Attribute("maxScale"));
-                    float minVAngle = stof(model->Attribute("minVAngle")), maxVAngle = stof(model->Attribute("maxVAngle"));
-                    tuple <float, float, float> tup = make_tuple(stof(model->Attribute("red")), stof(model->Attribute("green")), stof(model->Attribute("blue")));
+            for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
-                    // For each object to be generated in a ring
-                    for(int j=0; j<n; j++){
-                        Group newGroup = Group(); // Each object is in a different subgroup (because it has different transformations)
-                        Model* m = new Model();
-                        m->readModel(fileName);
-
-                        float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle, 0, 0));
-
-                        float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle, 0, 0));
-
-                        vector<Point> aux;
-                        float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
-                        newGroup.transformations.push_back(new Translation(distance, 0, 0, 0, false, aux));
-
-                        float scaleF = ((double)rand() / (double)RAND_MAX) * (maxScale - minScale) + minScale;
-                        newGroup.transformations.push_back(new Scale(scaleF, scaleF, scaleF));
-
-                        m->setRgb(tup);
-                        m->setLabel("undefined");
-
-                        newGroup.buffers = new GLuint(i);
-                        newGroup.indexs = new GLuint(i);
-
-                        newGroup.addModel(*m);
-                        this->subgroups.push_back(newGroup);
-                    }
-                    g+=n;
+                Model* m = new Model();
+                m->readModel(model->Attribute("file"));
+                float red = 1, green = 1, blue = 1;
+                if (model->Attribute("red")){
+                    red = stof(model->Attribute("red"));
                 }
-                else if(tagName.compare("model") == 0){
-                    Model* m = new Model();
-                    m->readModel(model->Attribute("file"));
-                    float red, green, blue;
-                    if (model->Attribute("red") == NULL){
-                        red = 1;
-                    }
-                    else {
-                        red = stof(model->Attribute("red"));
-                    }
-                    if (model->Attribute("green") == NULL){
-                        green = 1;
-                    }
-                    else {
-                        green = stof(model->Attribute("green"));
-                    }
-                    if (model->Attribute("blue") == NULL){
-                        blue = 1;
-                    }
-                    else {
-                        blue = stof(model->Attribute("blue"));
-                    }
-                    tuple <float, float, float> tup = make_tuple(red, green, blue);
-                    m->setRgb(tup);
-
-                    string label;
-                    if (model->Attribute("label")){
-                        label = model->Attribute("label");
-                        m->setLabel(label);
-                    }
-                    else {
-                        m->setLabel("undefined");
-                    }
-
-                    this->models.push_back(*m);
-                    i++;
+                if (model->Attribute("green")){
+                    green = stof(model->Attribute("green"));
                 }
+                if (model->Attribute("blue")){
+                    blue = stof(model->Attribute("blue"));
+                }
+                tuple <float, float, float> tup = make_tuple(red, green, blue);
+                m->setRgb(tup);
+
+                if (model->Attribute("label")){
+                    m->setLabel(model->Attribute("label"));
+                }
+                else {
+                    m->setLabel("undefined");
+                }
+
+                this->models.push_back(*m);
+                i++;
             }
+
             this->buffers = new GLuint(i);
             this->indexs = new GLuint(i);
         }
 
         /* Groups */
+        Group *g;
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
-            this->subgroups.push_back(Group());
-            this->subgroups[g].readXML(gr);
-            g++;
+            g = new Group();
+            g->readXML(gr);
+            this->subgroups.push_back(*g);
         }
     }
     else{

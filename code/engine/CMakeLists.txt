@@ -11,6 +11,8 @@ Transformations/scale.cpp Transformations/translation.cpp Model.cpp)
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
+target_link_libraries(engine ${CMAKE_DL_LIBS})
+target_link_libraries(engine pthread)
 
 add_definitions(${OpenGL_DEFINITIONS})
 

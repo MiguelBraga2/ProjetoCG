@@ -40,7 +40,7 @@ void Model::drawModel() {
  * @param fileName name of the file
  */
 void Model::readModel(string fileName) {
-    this->vertices = (reader(fileName, &this->indexes));
+    this->vertices = reader(fileName, &this->indexes);
 }
 
 string Model::getLabel() {

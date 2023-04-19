@@ -120,6 +120,23 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
     return vertices;
 }
 
+vector<float> generateBox(float side, int grid, vector<unsigned int> *indexes, Point start, int *index) {
+
+    vector<float> vertices = generatePlane(side, grid, Point(1, 0, 1), Point(start.getX() - side / 2, start.getY() - side / 2, start.getZ()-side / 2), true, indexes, index);
+    vector<float> aux = generatePlane(side, grid, Point(1, 0, 1), Point(start.getX() - side / 2, start.getY() + side / 2, start.getZ() - side / 2), false, indexes, index);
+    vertices.insert(vertices.end(), aux.begin(), aux.end());
+    aux = generatePlane(side, grid, Point(0, -1, -1), Point(start.getX() + side / 2, start.getY() + side / 2, start.getZ() + side / 2), false, indexes, index);
+    vertices.insert(vertices.end(), aux.begin(), aux.end());
+    aux = generatePlane(side, grid, Point(0, -1, -1), Point(start.getX() - side / 2, start.getY() + side / 2, start.getZ() + side / 2), true, indexes, index);
+    vertices.insert(vertices.end(), aux.begin(), aux.end());
+    aux = generatePlane(side, grid, Point(-1, -1, 0), Point(start.getX() + side / 2, start.getY() + side / 2, start.getZ() + side / 2), true, indexes, index);
+    vertices.insert(vertices.end(), aux.begin(), aux.end());
+    aux = generatePlane(side, grid, Point(-1, -1, 0), Point(start.getX() + side / 2, start.getY() + side / 2, start.getZ() - side / 2), false, indexes, index);
+    vertices.insert(vertices.end(), aux.begin(), aux.end());
+
+    return vertices;
+}
+
 
 /**
  * Generates a group of triangles, making a cylinder of given radius and height
@@ -373,8 +390,9 @@ vector<float> generateTorus(float innerRadius, float outerRadius, float slices, 
     return vertices;
 }
 
-vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle,vector<unsigned int>* indexes){
+vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, vector<unsigned int>* indexes, char** args){
     vector<float> vertices;
+    vector<float> aux;
     int index = 0;
 
     // For each object to be generated in a ring
@@ -389,7 +407,11 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
 
         Point start(distance * cos(verticalAngle) * sin(angle), distance * sin(verticalAngle), distance * cos(verticalAngle) * cos(angle));
 
-        vector<float> aux = generateSphere(scaleF, 30, 30, indexes, start, &index);
+        if (strcmp(args[0], "sphere") == 0) {
+            aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), indexes, start, &index);
+        } else if (strcmp(args[0], "box") == 0) {
+            aux = generateBox(scaleF, stoi(args[1]), indexes, start, &index);
+        }
         vertices.insert(vertices.end(), aux.begin(), aux.end());
     }
 
@@ -422,23 +444,11 @@ int main(int argc, char** argv) {
         }
         else if (strcmp(argv[1], "box") == 0) {
             if (argc == 5) {
-                float side = stof(argv[2]);
-                int grid = stoi(argv[3]);
-
                 vector<unsigned int> indexes;
+                Point start(0,0,0);
                 int index = 0;
 
-                vector<float> vertices = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, -side / 2, -side / 2), true, &indexes, &index);
-                vector<float> aux = generatePlane(side, grid, Point(1, 0, 1), Point(-side / 2, side / 2, -side / 2), false, &indexes, &index);
-                vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(0, -1, -1), Point(side / 2, side / 2, side / 2), false, &indexes, &index);
-                vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(0, -1, -1), Point(-side / 2, side / 2, side / 2), true, &indexes, &index);
-                vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(-1, -1, 0), Point(side / 2, side / 2, side / 2), true, &indexes, &index);
-                vertices.insert(vertices.end(), aux.begin(), aux.end());
-                aux = generatePlane(side, grid, Point(-1, -1, 0), Point(side / 2, side / 2, -side / 2), false, &indexes, &index);
-                vertices.insert(vertices.end(), aux.begin(), aux.end());
+                vector<float> vertices = generateBox(stof(argv[2]), stoi(argv[3]), &indexes, start, &index);
                 writer(argv[4], indexes, vertices);
             }
             else {
@@ -479,9 +489,9 @@ int main(int argc, char** argv) {
             }
         }
         else if (strcmp(argv[1], "ring") == 0) {
-            if (argc == 10) {
+            if (argc > 10) {
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes);
+                vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]), stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &argv[10]);
                 writer(argv[9], indexes, vertices);
             }
             else {
