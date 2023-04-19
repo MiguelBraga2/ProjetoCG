@@ -40,8 +40,8 @@ Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, G
     {
         this->subgroups.emplace_back(subgroups[i]);
     }
-    this->buffers = new GLuint(1);
-    this->indexs = new GLuint(1);
+    this->buffers = new GLuint(this->models.size());
+    this->indexs = new GLuint(this->models.size());
 
 }
 
@@ -135,20 +135,23 @@ void Group::drawGroup(int vboMode) {
 }
 
 void Group::prepareBuffers() {
-    glGenBuffers(this->models.size(), this->buffers);
-    glGenBuffers(this->models.size(), this->indexs);
+    if (this->models.size() > 0) {
+        glGenBuffers(this->models.size(), this->buffers);
+        glGenBuffers(this->models.size(), this->indexs);
 
-    for (int i = 0; i < this->models.size(); i++) {
-        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(), this->models[i].getVertices().data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(), this->models[i].getIndexes().data(), GL_STATIC_DRAW);
-    }
-     
-    for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].prepareBuffers();
-    }
+        for (int i = 0; i < this->models.size(); i++) {
+            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(),
+                         this->models[i].getVertices().data(), GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(),
+                         this->models[i].getIndexes().data(), GL_STATIC_DRAW);
+        }
 
+        for (int i = 0; i < this->subgroups.size(); i++) {
+            this->subgroups[i].prepareBuffers();
+        }
+    }
 }
 
 /**
