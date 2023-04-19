@@ -24,6 +24,9 @@
 using namespace tinyxml2;
 
 class Group {
+
+
+
 private:
     vector<Transformation*> transformations;
     vector<Model> models;
@@ -32,11 +35,15 @@ private:
     vector<Group> subgroups;
 
 public:
+    Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, GLuint* indexs, vector<Group> subgroups);
+    Group();
     void prepareBuffers();
     map<string, tuple<Point, float>> initializeTeleporter(vector<Transformation*> *appliedTransfs);
-    void drawGroup();
+    void drawGroup(int vboMode);
     void readXML(XMLElement* group);
     void addModel(Model m);
+    void addTransformation(Transformation* t);
+    Group* clone();
 
 private:
     Point* calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius);

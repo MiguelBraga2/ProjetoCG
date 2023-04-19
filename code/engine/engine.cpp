@@ -1,3 +1,7 @@
+#define MINIAUDIO_IMPLEMENTATION
+#define MA_DEBUG_OUTPUT
+#include "../libraries/miniaudio.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -18,10 +22,12 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
+#include "Creator.h"
 
 
-using namespace tinyxml2;
+//using namespace tinyxml2;
 using namespace std;
+
 
 float width, height;
 Camera* camera;
@@ -40,11 +46,13 @@ int startX, startY, tracking = 0;
 
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
-int polygonMode = 0; // 0 - GL_FILL, 1 - GL_LINE, 2 - GL_POINT
+int polygonMode = GL_LINE;
+int vboMode; // 0 - noVBOs , 1 - VBOs
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
+vector<Group> cubes;
 
 /**
  * Callback called when the window is resized
@@ -74,6 +82,26 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void displaySound(const char* file) {
+    ma_result result;
+    ma_engine engine;
+
+
+    result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        printf("Failed to initialize audio engine.");
+    }
+
+    result = ma_engine_play_sound(&engine, file, NULL);
+
+    std::cout << result << std::endl;
+
+    printf("Press Enter to quit...");
+    getchar();
+
+    ma_engine_uninit(&engine);
+}
+
 /**
  * Function to render text
  */
@@ -94,6 +122,7 @@ void renderText() {
     for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
     }
+
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -146,11 +175,17 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup();
+    // group->drawGroup(vboMode);
+
+    for (Group g : cubes)
+    {
+        g.drawGroup(vboMode);
+    }
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
     int fps;
+
     if(time-timebase > 1000){
         fps = frames * 1000.0/(time-timebase);
         timebase = time;
@@ -173,10 +208,13 @@ void menu(int id)
     switch(id)
     {
         case 1:
+            vboMode = 0;
             break;
         case 2:
+            vboMode = 1;
             break;
         case 3:
+            displaySound("../audio/turbinada.mp3");
             break;
         case 4:
             break;
@@ -224,7 +262,10 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu, submenu2, submenu3;
+    int submenu1, submenu2, submenu3;
+    submenu1 = glutCreateMenu(menu);
+    glutAddMenuEntry("NoVbos", 1);
+    glutAddMenuEntry("Vbos", 2);
     submenu2 = glutCreateMenu(menu);
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
@@ -236,9 +277,11 @@ void createMenu(void){
         glutAddMenuEntry(it->first.c_str(), 15+i);
     }
     glutCreateMenu(menu);
+    glutAddSubMenu("Change VBOs", submenu1);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
+    glutAddMenuEntry("Modo DJ", 3);
     glutAddMenuEntry("Show camera info", 9);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
@@ -338,27 +381,28 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
 int readXML(char* filePath){
-    XMLDocument *doc = new XMLDocument();
-    XMLError error = doc->LoadFile(filePath);
-    XMLNode* world = doc->FirstChildElement("world");
+    //XMLDocument* doc;
+    tinyxml2::XMLDocument *doc = new  tinyxml2::XMLDocument();
+    tinyxml2::XMLError error = doc->LoadFile(filePath);
+    tinyxml2::XMLNode* world = doc->FirstChildElement("world");
 
-    float fov = 0, far = 0, near = 0;
+    float fov = 0, farV = 0, nearV = 0;
     Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
   
     if (!error && world) {
         /* window */
-        XMLElement* windowElem = world->FirstChildElement("window");
+        tinyxml2::XMLElement* windowElem = world->FirstChildElement("window");
         if (windowElem) {
             width =  stoi(windowElem->Attribute("width"));
             height = stoi(windowElem->Attribute("height"));
         }
         
         /* camera */
-        XMLElement* cameraElem = world->FirstChildElement("camera");
+        tinyxml2::XMLElement* cameraElem = world->FirstChildElement("camera");
         if (cameraElem) {
             
             /* camera position */
-            XMLElement* position = cameraElem->FirstChildElement("position");
+            tinyxml2::XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
                 cameraPosition->setX(stof(position->Attribute("x")));
                 cameraPosition->setY(stof(position->Attribute("y")));
@@ -366,7 +410,7 @@ int readXML(char* filePath){
             }
 
             /* camera lookAt */
-            XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
+            tinyxml2::XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
                 cameraLookAt->setX(stof(lookAt->Attribute("x")));
                 cameraLookAt->setY(stof(lookAt->Attribute("y")));
@@ -374,7 +418,7 @@ int readXML(char* filePath){
             }
 
             /* camera up */
-            XMLElement* up = cameraElem->FirstChildElement("up");
+            tinyxml2::XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
                 cameraUpVector->setX(stof(up->Attribute("x")));
                 cameraUpVector->setY(stof(up->Attribute("y")));
@@ -382,14 +426,14 @@ int readXML(char* filePath){
             }
             
             /* camera projection */
-            XMLElement* projection = cameraElem->FirstChildElement("projection");
+            tinyxml2::XMLElement* projection = cameraElem->FirstChildElement("projection");
             if (projection) {
                 fov = stof(projection->Attribute("fov"));
-                near = stof(projection->Attribute("near"));
-                far = stof(projection->Attribute("far"));
+                nearV = stof(projection->Attribute("near"));
+                farV = stof(projection->Attribute("far"));
             }
           
-            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, near, far);
+            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
         }
 
         int labelCount = 0;
@@ -415,6 +459,16 @@ int main(int argc, char **argv) {
         int error=readXML(argv[1]);
 
         if (!error) {
+
+            for (size_t i = 0; i < 10; i++)
+            {
+                for (size_t j = 0; j < 10; j++)
+                {
+                    Point p(i, 0, j);
+                    Group* newGroup = Creator::drawCube(*group, p);
+                    cubes.emplace_back(*newGroup);
+                }
+            }
 
             // init GLUT and the window
             glutInit(&argc, argv);

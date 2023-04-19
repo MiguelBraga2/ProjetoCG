@@ -9,11 +9,28 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Rotation::Rotation(float x, float y, float z, float angle) : Transformation(x, y, z), angle(angle) {
+Rotation::Rotation(float x, float y, float z, float angle, double startCounter, float duration360) : Transformation(x, y, z), angle(angle), startCounter(startCounter), duration360(duration360) {
 }
 
 void Rotation::applyTransformation() {
-    glRotatef(this->getAngle(), this->getX(), this->getY(), this->getZ());
+    double rAngle;
+    if (duration360 != 0) {
+        if (startCounter == 0) {
+            startCounter = glutGet(GLUT_ELAPSED_TIME); // Time since the beginning of the program
+        }
+
+        double currentTime = glutGet(GLUT_ELAPSED_TIME); // Current time
+        double rotationTime = (currentTime - startCounter) / 1000; // In seconds
+
+        if (rotationTime > duration360) {
+            startCounter = glutGet(GLUT_ELAPSED_TIME); // Set the counter to the current moment
+        }
+
+        rAngle = (double)rotationTime * 360 / duration360; // Angle in radians
+    }
+    else rAngle = this->getAngle();
+    
+    glRotatef(rAngle, this->getX(), this->getY(), this->getZ());
 }
 
 float Rotation::getAngle() {

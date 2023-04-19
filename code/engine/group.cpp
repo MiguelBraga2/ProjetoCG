@@ -19,6 +19,32 @@
 
 using namespace tinyxml2;
 
+Group::Group() {
+
+}
+
+Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, GLuint* indexs, vector<Group> subgroups) {
+    for (size_t i = 0; i < t.size(); i++)
+    {
+        this->transformations.emplace_back(t[i]);
+    }
+
+    for (size_t i = 0; i < models.size(); i++)
+    {
+        this->models.emplace_back(models[i]);
+    }
+
+    // Falta inicializar buffers e indexes 
+
+    for (size_t i = 0; i < subgroups.size(); i++)
+    {
+        this->subgroups.emplace_back(subgroups[i]);
+    }
+    this->buffers = new GLuint(this->models.size());
+    this->indexs = new GLuint(this->models.size());
+
+}
+
 /**
  * Calculate where the camera must me teleported in explorer mode (and with which radius) if we want to teleport
  * to the center of this group
@@ -77,7 +103,7 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup() {
+void Group::drawGroup(int vboMode) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
@@ -86,37 +112,46 @@ void Group::drawGroup() {
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        tuple<float, float, float> rgb = this->models[i].getRgb();
-        glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
-        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
+        if (vboMode == 0) {
+            this->models[i].drawModel();
+        }
+        else if (vboMode == 1) {
+            tuple<float, float, float> rgb = this->models[i].getRgb();
+            glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
+            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+            glVertexPointer(3, GL_FLOAT, 0, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+            glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
+        }
+        
     }
 
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup();
+        this->subgroups[i].drawGroup(vboMode);
     }
 
     glPopMatrix(); // Restore the transformations
 }
 
 void Group::prepareBuffers() {
-    glGenBuffers(this->models.size(), this->buffers);
-    glGenBuffers(this->models.size(), this->indexs);
+    if (this->models.size() > 0) {
+        glGenBuffers(this->models.size(), this->buffers);
+        glGenBuffers(this->models.size(), this->indexs);
 
-    for (int i = 0; i < this->models.size(); i++) {
-        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(), this->models[i].getVertices().data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(), this->models[i].getIndexes().data(), GL_STATIC_DRAW);
-    }
-     
-    for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].prepareBuffers();
-    }
+        for (int i = 0; i < this->models.size(); i++) {
+            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(),
+                         this->models[i].getVertices().data(), GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(),
+                         this->models[i].getIndexes().data(), GL_STATIC_DRAW);
+        }
 
+        for (int i = 0; i < this->subgroups.size(); i++) {
+            this->subgroups[i].prepareBuffers();
+        }
+    }
 }
 
 /**
@@ -137,15 +172,62 @@ void Group::readXML(XMLElement *group) {
 
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
-                float x = stof(transform->Attribute("x")), y = stof(transform->Attribute("y")), z = stof(transform->Attribute("z"));
+                float x, y, z;
+                if (transform->Attribute("x"))
+                    x = stof(transform->Attribute("x"));
+                if (transform->Attribute("x"))
+                    y = stof(transform->Attribute("y"));
+                if (transform->Attribute("z"))
+                    z = stof(transform->Attribute("z"));
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
-                    this->transformations.push_back(new Translation(x, y, z));
+                    float time;
+                    bool align;
+                    const char* strTime = transform->Attribute("time");
+                    const char* strAlign = transform->Attribute("align");
+                    vector<Point> controlPoints;
+                    if (strTime) {
+                        time = stof(strTime);
+
+                        if (std::strcmp(strAlign, "true") == 0) {
+                            align = true;
+                        }
+                        else if (std::strcmp(strAlign, "false") == 0) {
+                            align = false;
+                        }
+
+                        // Iterate over the control points
+                        for (XMLElement* point = transform->FirstChildElement(); point != NULL; point = point->NextSiblingElement()){
+                            float x = stof(point->Attribute("x")), y = stof(point->Attribute("y")), z = stof(point->Attribute("z"));
+                            Point p(x, y, z);
+                            controlPoints.push_back(p);
+                        }
+                        this->transformations.push_back(new Translation(0, 0, 0, time, align, controlPoints));
+                    }
+                    else {
+                        time = 0; align = false;
+                        this->transformations.push_back(new Translation(x, y, z, time, align, controlPoints));
+                    }
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){
-                    float angle = stof(transform->Attribute("angle"));
-                    this->transformations.push_back(new Rotation(x, y, z,angle));
+                    const char* strAngle = transform->Attribute("angle");
+                    const char* strTime = transform->Attribute("time");
+                    float angle, time;
+                    if (strAngle) {
+                        angle = stof(strAngle);
+                    }
+                    else {
+                        angle = 0;
+                    }
+                    if (strTime) {
+                        time = stof(strTime);
+                    }
+                    else {
+                        time = 0;
+                    }
+
+                    this->transformations.push_back(new Rotation(x, y, z,angle, 0, time));
                     numRotates++;
                 }
                 else if (tagName.compare("scale") == 0 && numScales == 0){
@@ -177,13 +259,14 @@ void Group::readXML(XMLElement *group) {
                         m->readModel(fileName);
 
                         float angle = ((double)rand() / (double)RAND_MAX) * 360; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle));
+                        newGroup.transformations.push_back(new Rotation(0, 1, 0, angle, 0, 0));
 
                         float verticalAngle = ((double)rand() / (double)RAND_MAX) * (maxVAngle-minVAngle) + minVAngle; // Pseudo-random angle between 0 and 360º
-                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle));
+                        newGroup.transformations.push_back(new Rotation(0, 0, 1, verticalAngle, 0, 0));
 
+                        vector<Point> aux;
                         float distance = ((double)rand() / (double)RAND_MAX) * (outer - inner) + inner;
-                        newGroup.transformations.push_back(new Translation(distance, 0, 0));
+                        newGroup.transformations.push_back(new Translation(distance, 0, 0, 0, false, aux));
 
                         float scaleF = ((double)rand() / (double)RAND_MAX) * (maxScale - minScale) + minScale;
                         newGroup.transformations.push_back(new Scale(scaleF, scaleF, scaleF));
@@ -255,4 +338,13 @@ void Group::readXML(XMLElement *group) {
 
 void Group::addModel(Model m) {
     this->models.push_back(m);
+}
+
+void Group::addTransformation(Transformation* t) {
+    this->transformations.push_back(t);
+}
+
+Group* Group::clone() {
+    Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
+    return g;
 }

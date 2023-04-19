@@ -11,7 +11,7 @@ private:
     Point position;
     Point lookAtPosition;
     Point upVector;
-    float fov, near, far;
+    float fov, nearV, farV;
     float increment;
     int mode; // 0 - Explorer mode, 1 - FPS mode
     float alfa, beta, cameraRadius;
@@ -22,7 +22,7 @@ private:
 
 public:
     Camera();
-    Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float near, float far);
+    Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float nearV, float farV);
 
     void setPosition(Point position);
 
