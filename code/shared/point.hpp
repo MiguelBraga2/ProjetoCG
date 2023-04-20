@@ -23,6 +23,7 @@ public:
     float getSize();
     void normalize();
     string toString();
+    static void multMatrixMatrix(float* m1, int m1X, int m1Y, float* m2, int m2X, int m2Y, float** r);
 };
 
 #endif

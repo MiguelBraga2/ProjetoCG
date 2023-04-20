@@ -73,6 +73,31 @@ void Point::normalize(){
     this->z = this->z/size;
 }
 
+void Point::multMatrixMatrix(float* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, float** r){
+    if (m1Colunas == m2Linhas){
+        int rLinhas = m1Linhas, rColunas = m2Colunas;
+        *r = (float*)malloc(rLinhas * rColunas * sizeof(float));
+        float* result = *r; // alias
+
+        for(int i=0; i<rLinhas; i++){
+            for(int j=0; j<rColunas; j++){
+                result[i*rColunas+j] = 0;
+            }
+        }
+
+        for(int i=0; i<rLinhas; i++){
+            for(int j=0; j<rColunas; j++){
+                for(int k=0; k<m2Linhas; k++){
+                    result[i*rColunas+j] += m1[i*m1Colunas + k] * m2[k*m2Colunas+j];
+                }
+            }
+        }
+    }
+    else{
+        cout << "Invalid sizes! cannot multiply matrices" << endl;
+    }
+}
+
 string Point::toString()
 {
     return to_string(this->x) + " " + to_string(this->y) + " " + to_string(this->z);
