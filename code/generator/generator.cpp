@@ -10,6 +10,7 @@
 #include "../shared/point.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
+#include <sstream>
 
 using namespace std;
 
@@ -418,6 +419,51 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
     return vertices;
 }
 
+vector<float> generatePatches(vector<Point> patches, int tesselation, vector<unsigned int>* indexes) {
+
+}
+
+vector<Point> readPatch(string fileName, vector<unsigned int>* indexes){
+    ifstream file("../patches/" + fileName);
+
+    if (!file) {
+        cout << "Não é possível abrir o ficheiro " << fileName << endl;
+    }
+    else{
+        string line;
+        vector<Point> controlPoints;
+        getline(file, line, '\n'); // Read the first line (number of patches) -> not so useful using vector (dynamic memory)
+        int mode = 0; // 0 - read indexes, 1 - read points
+        while (getline(file, line, '\n')) {
+            string first;
+            stringstream ss(line);
+            int count = 0;
+            vector<float> point_vector;
+            while (getline(ss, first, ',')){
+                if (mode == 0) {
+                    unsigned int index = stoi(first);
+                    indexes->push_back(index);
+                }
+                else if (mode == 1){
+                    float coord = stoi(first);
+                    point_vector.push_back(coord);
+                }
+                count++;
+            }
+            if (mode == 1){
+                Point p(point_vector[0], point_vector[1], point_vector[2]);
+                controlPoints.push_back(p);
+            }
+            if (count == 1){ // Read the number of control points
+                mode = 1;
+            }
+            cout << endl;
+        }
+
+        return controlPoints;
+    }
+}
+
 int main(int argc, char** argv) {
     if (argc > 1) {
         if (strcmp(argv[1], "sphere") == 0) {
@@ -502,6 +548,15 @@ int main(int argc, char** argv) {
             }
             else {
                 cout << "Ring: número de argumentos inválido." << endl;
+            }
+        }
+        // generator patch teapot.patch 10 bezier_10.3d
+        else if (strcmp(argv[1], "patch") == 0){
+            if (argc == 5){
+                vector<Point> controlPoints = readPatch(argv[2]);
+            }
+            else {
+                cout << "Patch: número de argumentos inválido." << endl;
             }
         }
         else {
