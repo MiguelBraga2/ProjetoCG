@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -16,6 +19,76 @@ Translation::Translation(float x, float y, float z, float duration, bool align, 
     startCounter = 0;
 }
 
+void Translation::getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float *pos, float *deriv) {
+
+    // catmull-rom matrix
+    float m[16] = {	-0.5f,  1.5f, -1.5f,  0.5f,
+                          1.0f, -2.5f,  2.0f, -0.5f,
+                         -0.5f,  0.0f,  0.5f,  0.0f,
+                         0.0f,  1.0f,  0.0f,  0.0f};
+
+    float p_0[3] = { p0.getX(), p0.getY(), p0.getZ()};
+    float p_1[3] = { p1.getX(), p1.getY(), p1.getZ()};
+    float p_2[3] = { p2.getX(), p2.getY(), p2.getZ()};
+    float p_3[3] = { p3.getX(), p3.getY(), p3.getZ()};
+
+    for (int i = 0; i < 3; i++) {
+        // Compute A = M * P
+        float P[4] = {p_0[i], p_1[i], p_2[i], p_3[i]};
+        float *A;
+        Point::multMatrixMatrix(m, 4, 4, P, 4, 1, &A);
+
+        // Compute pos = T * A
+        float T[4] { t*t*t , t*t, t, 1};
+        pos[i] = T[0] * A[0] + T[1] * A[1] + T[2] * A[2] + T[3] * A[3];
+
+        // compute deriv = T' * A
+        float TL[4] = { 3 * t * t, 2 * t, 1, 0};
+        deriv[i] = TL[0] * A[0] + TL[1] * A[1] + TL[2] * A[2] + TL[3] * A[3];
+    }
+}
+
+
+// given  global t, returns the point in the curve
+void Translation::getGlobalCatmullRomPoint(float gt, float *pos, float *deriv) {
+
+    float point_count = this->controlPoints.size();
+    float t = gt * point_count; // this is the real global t
+    int index = floor(t);  // which segment
+    t = t - index; // where within  the segment
+
+    // indices store the points
+    int indices[4];
+    indices[0] = (index + this->controlPoints.size()-1)%this->controlPoints.size();
+    indices[1] = (indices[0]+1)%this->controlPoints.size();
+    indices[2] = (indices[1]+1)%this->controlPoints.size();
+    indices[3] = (indices[2]+1)%this->controlPoints.size();
+
+    getCatmullRomPoint(t, this->controlPoints[indices[0]], this->controlPoints[indices[1]], this->controlPoints[indices[2]], this->controlPoints[indices[3]], pos, deriv);
+}
+
+void Translation::renderCatmullRomCurve() {
+
+    float pos[3];
+    float deriv[3];
+
+    glBegin(GL_LINE_LOOP);
+    for (float gt = 0; gt < 1; gt += 0.01) {
+        getGlobalCatmullRomPoint(gt, pos, deriv);
+        glVertex3f(pos[0], pos[1], pos[2]);
+    }
+    glEnd();
+
+}
+
+void buildRotMatrix(float *x, float *y, float *z, float *m) {
+
+    m[0] = x[0]; m[1] = x[1]; m[2] = x[2]; m[3] = 0;
+    m[4] = y[0]; m[5] = y[1]; m[6] = y[2]; m[7] = 0;
+    m[8] = z[0]; m[9] = z[1]; m[10] = z[2]; m[11] = 0;
+    m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
+}
+
 void Translation::applyTransformation(){
     if (this->duration == 0){
         glTranslatef(this->getX(), this->getY(), this->getZ());
@@ -27,76 +100,37 @@ void Translation::applyTransformation(){
 
         double currentTime = glutGet(GLUT_ELAPSED_TIME); // Current time
         double translationTime = (currentTime - startCounter) / 1000; // In seconds
-        double segmentTime = this->duration / this->controlPoints.size(); // Time for each segment
-        int segment = (int) (translationTime / segmentTime);
 
         if (translationTime > duration) {
             int iterationsPassed = (int) (translationTime / duration);
             translationTime = translationTime - iterationsPassed * this->duration;
-            segment = (int) (translationTime / segmentTime);
             startCounter = glutGet(GLUT_ELAPSED_TIME); // Set the counter to the current moment
         }
 
-        float t = (translationTime - segmentTime * segment)/segmentTime;
+        float t = translationTime / duration;
 
-        Point p1, p2, p3, p4;
-        // 4 pontos de controle
-        p1 = this->controlPoints[(segment-1)%this->controlPoints.size()];
-        p2 = this->controlPoints[(segment)%this->controlPoints.size()];
-        p3 = this->controlPoints[(segment+1)%this->controlPoints.size()];
-        p4 = this->controlPoints[(segment+2)%this->controlPoints.size()];
+        renderCatmullRomCurve();
 
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(p1.getX(), p1.getY(), p1.getZ());
-        glVertex3f(p2.getX(), p2.getY(), p2.getZ());
-        glVertex3f(p3.getX(), p3.getY(), p3.getZ());
-        glVertex3f(p4.getX(), p4.getY(), p4.getZ());
-        glEnd();
-
-        float M[4][4];
-        float t_vector[4] = {t*t*t, t*t, t, 1};
-        float t_vector_deriv[4] = {3*t*t, 2*t, 1, 0};
-        float Aux[4][4] = {{-0.5, 1.5, -1.5, 0.5},
-                           {1, -2.5, 2, -0.5},
-                           {-0.5, 0, 0.5, 0},
-                           {0, 1, 0, 0}};
-        float P[4][4] = {{p1.getX(), p1.getY(), p1.getZ(), 1},
-                         {p2.getX(), p2.getY(), p2.getZ(), 1},
-                         {p3.getX(), p3.getY(), p3.getZ(), 1},
-                         {p4.getX(), p4.getY(), p4.getZ(), 1}};
-        float* pos;
-        float* aux;
-        Point::multMatrixMatrix(t_vector, 1, 4, *Aux, 4, 4, &aux);
-        Point::multMatrixMatrix(aux, 1, 4, *P, 4, 4, &pos);
-
+        float pos[3];
+        float deriv[3];
+        getGlobalCatmullRomPoint(t, pos, deriv);
         glTranslatef(pos[0], pos[1], pos[2]);
 
-        float* deriv;
-        Point::multMatrixMatrix(t_vector_deriv, 1, 4, *Aux, 4, 4, &aux);
-        Point::multMatrixMatrix(aux, 1, 4, *P, 4, 4, &deriv);
+        Point X(deriv[0], deriv[1], deriv[2]);
+        X.normalize();
 
-        Point axX, axZ;
-        axX = Point(deriv[0], deriv[1], deriv[2]);
-        axX.normalize();
+        Point Z = Point::crossProduct(X, yi);
+        Z.normalize();
 
-        axZ = Point::crossProduct(axX, this->yi);
-        axZ.normalize();
+        Point yi = Point::crossProduct(Z, X);
 
-        this->yi = Point::crossProduct(axZ, axX);
-        this->yi.normalize();
+        float m[16];
+        float xi[3] = {X.getX(), X.getY(), X.getZ()};
+        float yf[3] = {yi.getX(), yi.getY(), yi.getZ()};
+        float zi[3] = {Z.getX(), Z.getY(), Z.getZ()};
 
-        M[0][0] = axX.getX(); M[0][1] = axX.getY(); M[0][2] = axX.getZ(); M[0][3] = 0;
-        M[1][0] = this->yi.getX(); M[1][1] = this->yi.getY(); M[1][2] = this->yi.getZ(); M[1][3] = 0;
-        M[2][0] = axZ.getX(); M[2][1] = axZ.getY(); M[2][2] = axZ.getZ(); M[2][3] = 0;
-        M[3][0] = 0; M[3][1] = 0; M[3][2] = 0; M[3][3] = 1;
-
-        for(int i=0; i<4; i++){
-            float o = aux[i];
-            //cout << aux[i] << endl;
-        }
-
-        // Matrix with the columns being the position of the axis
-        glMultMatrixf(*M);
+        buildRotMatrix(xi, yf, zi, m);
+        glMultMatrixf(m);
     }
 
 }
