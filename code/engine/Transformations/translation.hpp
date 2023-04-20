@@ -9,6 +9,8 @@ private:
     float duration;
     bool align;
     vector<Point> controlPoints;
+    Point yi;
+    float startCounter;
 public:
     Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints);
     void applyTransformation() override;
