@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <regex>
 #include "../shared/point.hpp"
 #include "../shared/triangle.hpp"
 #include "../shared/IO.hpp"
@@ -430,35 +431,38 @@ vector<Point> readPatch(string fileName, vector<unsigned int>* indexes){
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
     else{
-        string line;
         vector<Point> controlPoints;
-        getline(file, line, '\n'); // Read the first line (number of patches) -> not so useful using vector (dynamic memory)
-        int mode = 0; // 0 - read indexes, 1 - read points
-        while (getline(file, line, '\n')) {
+
+        string line;
+        regex r("\\s+");
+        getline(file, line); // Read the first line (number of patches)
+        line = regex_replace(line, r, "");
+        int nPatches = stoi(line);
+
+        for(int i = 0; i < nPatches && getline(file, line); i++) {
+            line = regex_replace(line, r, "");
+
             string first;
             stringstream ss(line);
-            int count = 0;
-            vector<float> point_vector;
-            while (getline(ss, first, ',')){
-                if (mode == 0) {
-                    unsigned int index = stoi(first);
-                    indexes->push_back(index);
-                }
-                else if (mode == 1){
-                    float coord = stoi(first);
-                    point_vector.push_back(coord);
-                }
-                count++;
+            for(int j = 0; j < 16 && getline(ss, first, ','); j++) {
+                indexes->push_back(stoi(first));
             }
-            if (mode == 1){
-                Point p(point_vector[0], point_vector[1], point_vector[2]);
+        }
+
+        getline(file, line); // Read the number of points
+        line = regex_replace(line, r, "");
+        int nPoints = stoi(line);
+
+        regex re(R"(\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*)");
+        smatch match;
+
+        for(int i = 0; i < nPoints && getline(file, line); i++) {
+            if (regex_search(line, match, re) == true) {
+                Point p(stof(match.str(1)), stof(match.str(2)), stof(match.str(3)));
                 controlPoints.push_back(p);
             }
-            if (count == 1){ // Read the number of control points
-                mode = 1;
-            }
-            cout << endl;
         }
+        file.close();
 
         return controlPoints;
     }
@@ -550,10 +554,11 @@ int main(int argc, char** argv) {
                 cout << "Ring: número de argumentos inválido." << endl;
             }
         }
-        // generator patch teapot.patch 10 bezier_10.3d
         else if (strcmp(argv[1], "patch") == 0){
+            /* generator patch teapot.patch 10 bezier_10.3d */
             if (argc == 5){
-                vector<Point> controlPoints = readPatch(argv[2]);
+                vector<unsigned int> indexes;
+                vector<Point> controlPoints = readPatch(argv[2], &indexes);
             }
             else {
                 cout << "Patch: número de argumentos inválido." << endl;
