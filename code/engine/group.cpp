@@ -171,12 +171,15 @@ void Group::readXML(XMLElement *group) {
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
                 float x, y, z;
-                if (transform->Attribute("x"))
+                if (transform->Attribute("x")) {
                     x = stof(transform->Attribute("x"));
-                if (transform->Attribute("x"))
+                }
+                if (transform->Attribute("x")) {
                     y = stof(transform->Attribute("y"));
-                if (transform->Attribute("z"))
+                }
+                if (transform->Attribute("z")) {
                     z = stof(transform->Attribute("z"));
+                }
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
                     float time;
@@ -184,6 +187,7 @@ void Group::readXML(XMLElement *group) {
                     const char* strTime = transform->Attribute("time");
                     const char* strAlign = transform->Attribute("align");
                     vector<Point> controlPoints;
+
                     if (strTime) {
                         time = stof(strTime);
 
@@ -195,17 +199,19 @@ void Group::readXML(XMLElement *group) {
                         }
 
                         // Iterate over the control points
-                        for (XMLElement* point = transform->FirstChildElement(); point != NULL; point = point->NextSiblingElement()){
-                            float x = stof(point->Attribute("x")), y = stof(point->Attribute("y")), z = stof(point->Attribute("z"));
+                        for (XMLElement* point = transform->FirstChildElement("point"); point != NULL; point = point->NextSiblingElement("point")){
+                            x = stof(point->Attribute("x"));
+                            y = stof(point->Attribute("y"));
+                            z = stof(point->Attribute("z"));
                             Point p(x, y, z);
                             controlPoints.push_back(p);
                         }
-                        this->transformations.push_back(new Translation(0, 0, 0, time, align, controlPoints));
                     }
                     else {
-                        time = 0; align = false;
-                        this->transformations.push_back(new Translation(x, y, z, time, align, controlPoints));
+                        time = 0;
+                        align = false;
                     }
+                    this->transformations.push_back(new Translation(x, y, z, time, align, controlPoints));
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){

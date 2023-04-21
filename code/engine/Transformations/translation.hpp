@@ -15,6 +15,9 @@ public:
     Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints);
     void applyTransformation() override;
     void applyTransformationToPoint(Point* base, float* radius) override;
+    void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv);
+    void getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float *pos, float *deriv);
+    void renderCatmullRomCurve();
 };
 
 #endif //ENGINE_TRANSLATION_H
