@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -8,10 +6,9 @@
 #include <vector>
 #include <string>
 #include <regex>
-#include "../shared/point.hpp"
-#include "../shared/triangle.hpp"
-#include "../shared/IO.hpp"
 #include <sstream>
+#include "../shared/point.hpp"
+#include "../shared/IO.hpp"
 
 using namespace std;
 
@@ -422,17 +419,17 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
 
 vector<float> generatePatches(vector<Point> patches, int tesselation, vector<unsigned int>* indexes) {
 
+
 }
 
 vector<Point> readPatch(string fileName, vector<unsigned int>* indexes){
     ifstream file("../patches/" + fileName);
+    vector<Point> controlPoints;
 
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
     else{
-        vector<Point> controlPoints;
-
         string line;
         regex r("\\s+");
         getline(file, line); // Read the first line (number of patches)
@@ -462,10 +459,10 @@ vector<Point> readPatch(string fileName, vector<unsigned int>* indexes){
                 controlPoints.push_back(p);
             }
         }
-        file.close();
-
-        return controlPoints;
     }
+    file.close();
+
+    return controlPoints;
 }
 
 int main(int argc, char** argv) {
