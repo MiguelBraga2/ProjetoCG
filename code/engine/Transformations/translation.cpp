@@ -116,21 +116,23 @@ void Translation::applyTransformation(){
         getGlobalCatmullRomPoint(t, pos, deriv);
         glTranslatef(pos[0], pos[1], pos[2]);
 
-        Point X(deriv[0], deriv[1], deriv[2]);
-        X.normalize();
+        if(align) {
+            Point X(deriv[0], deriv[1], deriv[2]);
+            X.normalize();
 
-        Point Z = Point::crossProduct(X, yi);
-        Z.normalize();
+            Point Z = Point::crossProduct(X, yi);
+            Z.normalize();
 
-        Point yi = Point::crossProduct(Z, X);
+            Point yi = Point::crossProduct(Z, X);
 
-        float m[16];
-        float xi[3] = {X.getX(), X.getY(), X.getZ()};
-        float yf[3] = {yi.getX(), yi.getY(), yi.getZ()};
-        float zi[3] = {Z.getX(), Z.getY(), Z.getZ()};
+            float m[16];
+            float xi[3] = {X.getX(), X.getY(), X.getZ()};
+            float yf[3] = {yi.getX(), yi.getY(), yi.getZ()};
+            float zi[3] = {Z.getX(), Z.getY(), Z.getZ()};
 
-        buildRotMatrix(xi, yf, zi, m);
-        glMultMatrixf(m);
+            buildRotMatrix(xi, yf, zi, m);
+            glMultMatrixf(m);
+        }
     }
 
 }
