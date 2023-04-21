@@ -419,7 +419,38 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
     return vertices;
 }
 
-vector<float> generatePatches(vector<Point> patches, int tesselation, vector<unsigned int>* indexes) {
+vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes) {
+    float delta = 1.0 / tesselation;
+    for(int k=0; k<patches.size(); k+=16){
+        // 16 pontos
+        float M[4][4] = {{-0.5, 1.5, -1.5, 0.5},
+                         {1, -2.5, 2, -0.5},
+                         {-0.5, 0, 0.5, 0},
+                         {0, 1, 0, 0}};
+
+        Point Points[4][4] = {{patches[patchesIndexes[k]], patches[patchesIndexes[k+1]], patches[patchesIndexes[k+2]], patches[patchesIndexes[k+3]]},
+                              {patches[patchesIndexes[k+4]], patches[patchesIndexes[k+5]], patches[patchesIndexes[k+6]], patches[patchesIndexes[k+7]]},
+                              {patches[patchesIndexes[k+8]], patches[patchesIndexes[k+9]], patches[patchesIndexes[k+10]], patches[patchesIndexes[k+11]]},
+                              {patches[patchesIndexes[k+12]], patches[patchesIndexes[k+13]], patches[patchesIndexes[k+14]], patches[patchesIndexes[k+15]]}};
+
+        Point* aux;
+        Point* pre;
+        Point::multMatrixPointMatrix(*M, 4, 4, *Points, 4, 4, &aux);
+        Point::multPointMatrixMatrix(aux, 4, 4, *M, 4, 4, &pre);
+
+        for(int i=0; i<tesselation; i++){
+            float u = delta*i;
+            float u_vector[4] = {u*u*u, u*u, u, 1};
+            Point* first;
+            Point::multMatrixPointMatrix(u_vector, 1, 4, pre, 4, 4, &first);
+            for(int j=0; j<tesselation; j++){
+                float v = delta*j;
+                Point* puv;
+                float v_vector[4] = {v*v*v, v*v, v, 1};
+                Point::multPointMatrixMatrix(first, 4, 4, v_vector, 4, 1, &puv);
+            }
+        }
+    }
 
 }
 
