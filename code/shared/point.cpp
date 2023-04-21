@@ -134,7 +134,7 @@ void Point::multMatrixPointMatrix(float* m1, int m1Linhas, int m1Colunas, Point*
     }
 }
 
-void multPointMatrixMatrix(Point* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, Point** r){
+void Point::multPointMatrixMatrix(Point* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, Point** r){
     if (m1Colunas == m2Linhas){
         int rLinhas = m1Linhas, rColunas = m2Colunas;
         *r = (Point*)malloc(rLinhas * rColunas * sizeof(Point));

@@ -418,6 +418,8 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
 }
 
 vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes) {
+    vector<float> generatedPoints;
+    int index=0;
     float delta = 1.0 / tesselation;
     for(int k=0; k<patches.size(); k+=16){
         // 16 pontos
@@ -439,17 +441,35 @@ vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patche
         for(int i=0; i<tesselation; i++){
             float u = delta*i;
             float u_vector[4] = {u*u*u, u*u, u, 1};
+            float uplus1_vector[4] = {(u+1)*(u+1)*(u+1), (u+1)*(u+1), u+1, 1};
             Point* first;
             Point::multMatrixPointMatrix(u_vector, 1, 4, pre, 4, 4, &first);
+            Point* second;
+            Point::multMatrixPointMatrix(uplus1_vector, 1, 4, pre, 4, 4, &second);
             for(int j=0; j<tesselation; j++){
                 float v = delta*j;
-                Point* puv;
+                Point* P1, *P2, *P3, *P4;
                 float v_vector[4] = {v*v*v, v*v, v, 1};
-                Point::multPointMatrixMatrix(first, 4, 4, v_vector, 4, 1, &puv);
+                float vplus1_vecotr[4] = {(v+1)*(v+1)*(v+1), (v+1)*(v+1), v+1, 1};
+                Point::multPointMatrixMatrix(first, 4, 4, v_vector, 4, 1, &P1);
+                Point::multPointMatrixMatrix(first, 4, 4, vplus1_vecotr, 4, 1, &P2);
+                Point::multPointMatrixMatrix(second, 4, 4, v_vector, 4, 1, &P3);
+                Point::multPointMatrixMatrix(second, 4, 4, vplus1_vecotr, 4, 1, &P4);
+                generatedPoints.push_back(P1[0].getX()); generatedPoints.push_back(P1[0].getY()); generatedPoints.push_back(P1[0].getZ());
+                generatedPoints.push_back(P2[0].getX()); generatedPoints.push_back(P2[0].getY()); generatedPoints.push_back(P2[0].getZ());
+                generatedPoints.push_back(P3[0].getX()); generatedPoints.push_back(P3[0].getY()); generatedPoints.push_back(P3[0].getZ());
+                generatedPoints.push_back(P4[0].getX()); generatedPoints.push_back(P4[0].getY()); generatedPoints.push_back(P4[0].getZ());
+                indexes->push_back(index);
+                indexes->push_back(index+1);
+                indexes->push_back(index+2);
+                indexes->push_back(index+3);
+                indexes->push_back(index+2);
+                indexes->push_back(index+1);
+                index+=4;
             }
         }
     }
-
+    return generatedPoints;
 
 }
 
@@ -587,6 +607,9 @@ int main(int argc, char** argv) {
             if (argc == 5){
                 vector<unsigned int> indexes;
                 vector<Point> controlPoints = readPatch(argv[2], &indexes);
+                vector<unsigned int> figureIndexes;
+                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes);
+                writer(argv[4], figureIndexes, vertices);
             }
             else {
                 cout << "Patch: número de argumentos inválido." << endl;
