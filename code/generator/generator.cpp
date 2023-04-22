@@ -421,17 +421,19 @@ vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patche
     vector<float> generatedPoints;
     int index=0;
     float delta = 1.0 / tesselation;
-    for(int k=0; k<patches.size(); k+=16){
-        // 16 pontos
-        float M[4][4] = {{-0.5, 1.5, -1.5, 0.5},
-                         {1, -2.5, 2, -0.5},
-                         {-0.5, 0, 0.5, 0},
-                         {0, 1, 0, 0}};
 
-        Point Points[4][4] = {{patches[patchesIndexes[k]], patches[patchesIndexes[k+1]], patches[patchesIndexes[k+2]], patches[patchesIndexes[k+3]]},
-                              {patches[patchesIndexes[k+4]], patches[patchesIndexes[k+5]], patches[patchesIndexes[k+6]], patches[patchesIndexes[k+7]]},
-                              {patches[patchesIndexes[k+8]], patches[patchesIndexes[k+9]], patches[patchesIndexes[k+10]], patches[patchesIndexes[k+11]]},
-                              {patches[patchesIndexes[k+12]], patches[patchesIndexes[k+13]], patches[patchesIndexes[k+14]], patches[patchesIndexes[k+15]]}};
+    // 16 pontos
+    float M[4][4] = {{-1, 3, -3, 1},
+                     {3, -6, 3, 0},
+                     {-3, 3, 0, 0},
+                     {1, 0, 0, 0}};
+
+    for(int k=0; k<patchesIndexes.size(); k+=16){
+
+        Point Points[4][4] = {{patches[patchesIndexes[k]], patches[patchesIndexes[k+4]], patches[patchesIndexes[k+8]], patches[patchesIndexes[k+12]]},
+                              {patches[patchesIndexes[k+1]], patches[patchesIndexes[k+5]], patches[patchesIndexes[k+9]], patches[patchesIndexes[k+13]]},
+                              {patches[patchesIndexes[k+2]], patches[patchesIndexes[k+6]], patches[patchesIndexes[k+10]], patches[patchesIndexes[k+14]]},
+                              {patches[patchesIndexes[k+3]], patches[patchesIndexes[k+7]], patches[patchesIndexes[k+11]], patches[patchesIndexes[k+15]]}};
 
         Point* aux;
         Point* pre;
@@ -440,17 +442,19 @@ vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patche
 
         for(int i=0; i<tesselation; i++){
             float u = delta*i;
+            float us = delta*(i + 1);
             float u_vector[4] = {u*u*u, u*u, u, 1};
-            float uplus1_vector[4] = {(u+1)*(u+1)*(u+1), (u+1)*(u+1), u+1, 1};
+            float uplus1_vector[4] = {(us)*(us)*(us), (us)*(us), us, 1};
             Point* first;
             Point::multMatrixPointMatrix(u_vector, 1, 4, pre, 4, 4, &first);
             Point* second;
             Point::multMatrixPointMatrix(uplus1_vector, 1, 4, pre, 4, 4, &second);
             for(int j=0; j<tesselation; j++){
                 float v = delta*j;
+                float vs = delta * (j+1);
                 Point* P1, *P2, *P3, *P4;
                 float v_vector[4] = {v*v*v, v*v, v, 1};
-                float vplus1_vecotr[4] = {(v+1)*(v+1)*(v+1), (v+1)*(v+1), v+1, 1};
+                float vplus1_vecotr[4] = {(vs)*(vs)*(vs), (vs)*(vs), vs, 1};
                 Point::multPointMatrixMatrix(first, 4, 4, v_vector, 4, 1, &P1);
                 Point::multPointMatrixMatrix(first, 4, 4, vplus1_vecotr, 4, 1, &P2);
                 Point::multPointMatrixMatrix(second, 4, 4, v_vector, 4, 1, &P3);
@@ -460,10 +464,10 @@ vector<float> generatePatches(vector<Point> patches, vector<unsigned int> patche
                 generatedPoints.push_back(P3[0].getX()); generatedPoints.push_back(P3[0].getY()); generatedPoints.push_back(P3[0].getZ());
                 generatedPoints.push_back(P4[0].getX()); generatedPoints.push_back(P4[0].getY()); generatedPoints.push_back(P4[0].getZ());
                 indexes->push_back(index);
+                indexes->push_back(index+2);
                 indexes->push_back(index+1);
                 indexes->push_back(index+2);
                 indexes->push_back(index+3);
-                indexes->push_back(index+2);
                 indexes->push_back(index+1);
                 index+=4;
             }
