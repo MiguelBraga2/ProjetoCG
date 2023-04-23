@@ -22,7 +22,7 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
-#include "Creator.h"
+#include "creator.hpp"
 
 
 //using namespace tinyxml2;

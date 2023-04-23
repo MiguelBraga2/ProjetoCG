@@ -19,7 +19,7 @@
 #include "../shared/triangle.hpp"
 #include "../libraries/tinyxml2.h"
 #include "Transformations/transformation.hpp"
-#include "Model.h"
+#include "model.hpp"
 
 using namespace tinyxml2;
 
