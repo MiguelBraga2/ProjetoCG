@@ -5,7 +5,7 @@ PROJECT(generator)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} generator.cpp ../shared/point.cpp ../shared/triangle.cpp ../shared/IO.cpp)
+add_executable(${PROJECT_NAME} generator.cpp ../shared/point.cpp ../shared/matrixOp.cpp ../shared/IO.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
