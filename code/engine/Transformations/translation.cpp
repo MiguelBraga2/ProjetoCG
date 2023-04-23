@@ -9,7 +9,7 @@
 #endif
 
 #include "translation.hpp"
-#include "../../shared/matrixOp.cpp"
+#include "../../shared/matrixOp.hpp"
 
 
 Translation::Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align) {
