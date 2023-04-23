@@ -1,8 +1,8 @@
-#include<iostream>
 #include "point.hpp"
-#include <string>
 #define _USE_MATH_DEFINES
-#include "math.h"
+#include <math.h>
+#include <string>
+
 using namespace std;
 
 Point::Point()
@@ -51,7 +51,6 @@ void Point::setPoint(float x, float y, float z) {
     this->x = x;
     this->y = y;
     this->z = z;
-
 }
 
 Point Point::crossProduct(Point v1, Point v2) {
@@ -82,81 +81,6 @@ void Point::sum(Point p){
     this->x += p.getX();
     this->y += p.getY();
     this->z += p.getZ();
-}
-
-void Point::multMatrixMatrix(float* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, float** r){
-    if (m1Colunas == m2Linhas){
-        int rLinhas = m1Linhas, rColunas = m2Colunas;
-        *r = (float*)malloc(rLinhas * rColunas * sizeof(float));
-        float* result = *r; // alias
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                result[i*rColunas+j] = 0;
-            }
-        }
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                for(int k=0; k<m2Linhas; k++){
-                    result[i*rColunas+j] += m1[i*m1Colunas + k] * m2[k*m2Colunas+j];
-                }
-            }
-        }
-    }
-    else{
-        cout << "Invalid sizes! cannot multiply matrices" << endl;
-    }
-}
-
-void Point::multMatrixPointMatrix(float* m1, int m1Linhas, int m1Colunas, Point* m2, int m2Linhas, int m2Colunas, Point** r){
-    if (m1Colunas == m2Linhas){
-        int rLinhas = m1Linhas, rColunas = m2Colunas;
-        *r = (Point*)malloc(rLinhas * rColunas * sizeof(Point));
-        Point* result = *r; // alias
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                result[i*rColunas+j] = Point(0,0,0);
-            }
-        }
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                for(int k=0; k<m2Linhas; k++){
-                    result[i*rColunas+j].sum(m2[k*m2Colunas+j].scale(m1[i*m1Colunas + k]));
-                }
-            }
-        }
-    }
-    else{
-        cout << "Invalid sizes! cannot multiply matrices" << endl;
-    }
-}
-
-void Point::multPointMatrixMatrix(Point* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, Point** r){
-    if (m1Colunas == m2Linhas){
-        int rLinhas = m1Linhas, rColunas = m2Colunas;
-        *r = (Point*)malloc(rLinhas * rColunas * sizeof(Point));
-        Point* result = *r; // alias
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                result[i*rColunas+j] = Point(0,0,0);
-            }
-        }
-
-        for(int i=0; i<rLinhas; i++){
-            for(int j=0; j<rColunas; j++){
-                for(int k=0; k<m2Linhas; k++){
-                    result[i*rColunas+j].sum(m1[i*m1Colunas + k].scale(m2[k*m2Colunas+j]));
-                }
-            }
-        }
-    }
-    else{
-        cout << "Invalid sizes! cannot multiply matrices" << endl;
-    }
 }
 
 string Point::toString()

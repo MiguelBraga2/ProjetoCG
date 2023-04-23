@@ -25,9 +25,6 @@ public:
     Point scale(float factor);
     void sum(Point p);
     string toString();
-    static void multMatrixMatrix(float* m1, int m1X, int m1Y, float* m2, int m2X, int m2Y, float** r);
-    static void multMatrixPointMatrix(float* m1, int m1Linhas, int m1Colunas, Point* m2, int m2Linhas, int m2Colunas, Point** r);
-    static void multPointMatrixMatrix(Point* m1, int m1Linhas, int m1Colunas, float* m2, int m2Linhas, int m2Colunas, Point** r);
 };
 
 #endif
