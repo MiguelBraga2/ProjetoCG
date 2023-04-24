@@ -22,28 +22,19 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
-#include "Creator.h"
+#include "creator.hpp"
 #include "Transformations/translation.hpp"
 
-
-//using namespace tinyxml2;
 using namespace std;
 
 
-float width, height;
+int width, height;
 Camera* camera;
 Group globalGroup; // Outer collection of transformations, models and subgroups
 
 // For FPS count
 int timebase;
 float frames;
-
-float camX = 00, camY = 300, camZ = 400; //
-int alpha = 0, myBeta = 45, r = 50; //
-int startX, startY, tracking = 0;
-
-
-
 
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
@@ -69,7 +60,7 @@ void changeSize(int w, int h) {
 		h = 1;
 
 	// compute window's aspect ratio 
-	float ratio = w * 1.0 / h;
+	float ratio = (float) w * 1.0f / (float) h;
 
 	// Set the projection matrix as current
 	glMatrixMode(GL_PROJECTION);
@@ -139,7 +130,7 @@ void renderText() {
  * Function to display the scene elements:
  * Calls the drawGroup function from the group class
  */
-void renderScene(void) {
+void renderScene() {
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -196,8 +187,9 @@ void renderScene(void) {
         timebase = time;
         frames = 0;
         char* s = (char*)malloc(4);
-        std::sprintf(s, "FPS: %d", fps);
+        sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
+        free(s);
     }
     glPolygonMode(GL_FRONT, polygonMode);
     // End of frame
@@ -234,12 +226,12 @@ void menu(int id)
         case 8:
             break;
         case 9:
-            if (cameraInfo == true) cameraInfo = false;
-            else if (cameraInfo == false) cameraInfo = true;
+            if (cameraInfo) cameraInfo = false;
+            else if (!cameraInfo) cameraInfo = true;
             break;
         case 10:
-            if (axis == false) axis = true;
-            else if (axis == true) axis = false;
+            if (!axis) axis = true;
+            else if (axis) axis = false;
             break;
         case 11:
             polygonMode = GL_FILL;
@@ -440,12 +432,12 @@ void processSpecialKeys(int key, int xx, int yy) {
  */
 int readXML(char* filePath, Group* group){
     //XMLDocument* doc;
-    tinyxml2::XMLDocument *doc = new  tinyxml2::XMLDocument();
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
     tinyxml2::XMLError error = doc->LoadFile(filePath);
     tinyxml2::XMLNode* world = doc->FirstChildElement("world");
 
     float fov = 0, farV = 0, nearV = 0;
-    Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
+    Point cameraPosition, cameraLookAt, cameraUpVector;
   
     if (!error && world) {
         /* window */
@@ -462,25 +454,25 @@ int readXML(char* filePath, Group* group){
             /* camera position */
             tinyxml2::XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
-                cameraPosition->setX(stof(position->Attribute("x")));
-                cameraPosition->setY(stof(position->Attribute("y")));
-                cameraPosition->setZ(stof(position->Attribute("z")));
+                cameraPosition.setX(stof(position->Attribute("x")));
+                cameraPosition.setY(stof(position->Attribute("y")));
+                cameraPosition.setZ(stof(position->Attribute("z")));
             }
 
             /* camera lookAt */
             tinyxml2::XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
-                cameraLookAt->setX(stof(lookAt->Attribute("x")));
-                cameraLookAt->setY(stof(lookAt->Attribute("y")));
-                cameraLookAt->setZ(stof(lookAt->Attribute("z")));
+                cameraLookAt.setX(stof(lookAt->Attribute("x")));
+                cameraLookAt.setY(stof(lookAt->Attribute("y")));
+                cameraLookAt.setZ(stof(lookAt->Attribute("z")));
             }
 
             /* camera up */
             tinyxml2::XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
-                cameraUpVector->setX(stof(up->Attribute("x")));
-                cameraUpVector->setY(stof(up->Attribute("y")));
-                cameraUpVector->setZ(stof(up->Attribute("z")));
+                cameraUpVector.setX(stof(up->Attribute("x")));
+                cameraUpVector.setY(stof(up->Attribute("y")));
+                cameraUpVector.setZ(stof(up->Attribute("z")));
             }
             
             /* camera projection */
@@ -491,7 +483,7 @@ int readXML(char* filePath, Group* group){
                 farV = stof(projection->Attribute("far"));
             }
           
-            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
+            camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
 
         group->readXML(world->FirstChildElement("group"));
@@ -567,6 +559,10 @@ int main(int argc, char **argv) {
 
             // enter GLUT's main cycle
             glutMainLoop();
+
+            delete camera;
+            globalGroup.freeGroup();
+            //delete globalGroup;
         }
         else {
             cout << "Ficheiro não encontrado ou erro na sua leitura." << endl;

@@ -16,13 +16,13 @@ private:
     int mode; // 0 - Explorer mode, 1 - FPS mode
     float alfa, beta, cameraRadius;
     float step;
-    Point d {};
+    Point d;
     int tracking = 0;
     int startX, startY;
 
 public:
     Camera();
-    Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float nearV, float farV);
+    Camera(Point position, Point lookAtPosition, Point upVector, float fov, float nearV, float farV);
 
     void setPosition(Point position);
 
@@ -54,19 +54,14 @@ public:
     float getFov();
     float getNear();
     float getFar();
+    void setLookAtPosition(Point lookAtPosition);
+    void setCameraRadius(float cameraRadius);
 
 private:
     /**
      * Convert spherical coordenates (alpha and beta) into x, y, z coordinates
      */
     void spherical2Cartesian();
-
-public:
-    void setLookAtPosition(Point lookAtPosition);
-
-    void setCameraRadius(float cameraRadius);
-
-private:
     void calculateDirection();
     void calculateAlfa();
     void calculateBeta();

@@ -1,4 +1,4 @@
-#include "Model.h"
+#include "model.hpp"
 #include "../shared/IO.hpp" // reader function
 
 #ifdef __APPLE__

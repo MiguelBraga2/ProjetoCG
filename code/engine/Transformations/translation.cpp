@@ -9,9 +9,10 @@
 #endif
 
 #include "translation.hpp"
+#include "../../shared/matrixOp.hpp"
 
 
-Translation::Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align) {
+Translation::Translation(float x, float y, float z, float duration, bool align, int tesselation, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align), tesselation(tesselation) {
     for(Point p: controlPoints){
         this->controlPoints.push_back(p);
     }
@@ -35,8 +36,8 @@ void Translation::getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Poin
     for (int i = 0; i < 3; i++) {
         // Compute A = M * P
         float P[4] = {p_0[i], p_1[i], p_2[i], p_3[i]};
-        float *A;
-        Point::multMatrixMatrix(m, 4, 4, P, 4, 1, &A);
+        float A[4];
+        multiplyMatrixVector(m, P, A);
 
         // Compute pos = T * A
         float T[4] { t*t*t , t*t, t, 1};
@@ -71,22 +72,15 @@ void Translation::renderCatmullRomCurve() {
 
     float pos[3];
     float deriv[3];
+    float inc = 1.0f / this->tesselation;
 
     glBegin(GL_LINE_LOOP);
-    for (float gt = 0; gt < 1; gt += 0.01) {
+    for (float gt = 0; gt < 1; gt += inc) {
         getGlobalCatmullRomPoint(gt, pos, deriv);
         glVertex3f(pos[0], pos[1], pos[2]);
     }
     glEnd();
 
-}
-
-void buildRotMatrix(float *x, float *y, float *z, float *m) {
-
-    m[0] = x[0]; m[1] = x[1]; m[2] = x[2]; m[3] = 0;
-    m[4] = y[0]; m[5] = y[1]; m[6] = y[2]; m[7] = 0;
-    m[8] = z[0]; m[9] = z[1]; m[10] = z[2]; m[11] = 0;
-    m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
 }
 
 void Translation::applyTransformation(){

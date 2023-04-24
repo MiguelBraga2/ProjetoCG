@@ -2,6 +2,7 @@
 *.swp
 demo.xml
 demo2.xml
+teste.xml
 *.out
 .idea/
 cmake-build-debug/

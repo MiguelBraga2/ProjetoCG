@@ -19,7 +19,7 @@
 #include "../shared/triangle.hpp"
 #include "../libraries/tinyxml2.h"
 #include "Transformations/transformation.hpp"
-#include "Model.h"
+#include "model.hpp"
 
 using namespace tinyxml2;
 
@@ -45,6 +45,7 @@ public:
     void addTransformation(Transformation* t);
     void addGroup(Group g);
     Group* clone();
+    void freeGroup();
 
 private:
     Point* calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius);
