@@ -24,25 +24,16 @@
 #include "group.hpp"
 #include "creator.hpp"
 
-
-//using namespace tinyxml2;
 using namespace std;
 
 
-float width, height;
+int width, height;
 Camera* camera;
 Group* group; // Outer collection of transformations, models and subgroups
 
 // For FPS count
 int timebase;
 float frames;
-
-float camX = 00, camY = 300, camZ = 400; //
-int alpha = 0, myBeta = 45, r = 50; //
-int startX, startY, tracking = 0;
-
-
-
 
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
@@ -66,7 +57,7 @@ void changeSize(int w, int h) {
 		h = 1;
 
 	// compute window's aspect ratio 
-	float ratio = w * 1.0 / h;
+	float ratio = (float) w * 1.0f / (float) h;
 
 	// Set the projection matrix as current
 	glMatrixMode(GL_PROJECTION);
@@ -136,7 +127,7 @@ void renderText() {
  * Function to display the scene elements:
  * Calls the drawGroup function from the group class
  */
-void renderScene(void) {
+void renderScene() {
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -183,8 +174,9 @@ void renderScene(void) {
         timebase = time;
         frames = 0;
         char* s = (char*)malloc(4);
-        std::sprintf(s, "FPS: %d", fps);
+        sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
+        free(s);
     }
     glPolygonMode(GL_FRONT, polygonMode);
     // End of frame
@@ -219,12 +211,12 @@ void menu(int id)
         case 8:
             break;
         case 9:
-            if (cameraInfo == true) cameraInfo = false;
-            else if (cameraInfo == false) cameraInfo = true;
+            if (cameraInfo) cameraInfo = false;
+            else if (!cameraInfo) cameraInfo = true;
             break;
         case 10:
-            if (axis == false) axis = true;
-            else if (axis == true) axis = false;
+            if (!axis) axis = true;
+            else if (axis) axis = false;
             break;
         case 11:
             polygonMode = GL_FILL;
@@ -374,7 +366,7 @@ void processSpecialKeys(int key, int xx, int yy) {
  */
 int readXML(char* filePath){
     //XMLDocument* doc;
-    tinyxml2::XMLDocument *doc = new  tinyxml2::XMLDocument();
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
     tinyxml2::XMLError error = doc->LoadFile(filePath);
     tinyxml2::XMLNode* world = doc->FirstChildElement("world");
 
