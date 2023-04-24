@@ -12,7 +12,7 @@
 #include "../../shared/matrixOp.hpp"
 
 
-Translation::Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align) {
+Translation::Translation(float x, float y, float z, float duration, bool align, int tesselation, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align), tesselation(tesselation) {
     for(Point p: controlPoints){
         this->controlPoints.push_back(p);
     }
@@ -72,9 +72,10 @@ void Translation::renderCatmullRomCurve() {
 
     float pos[3];
     float deriv[3];
+    float inc = 1.0f / this->tesselation;
 
     glBegin(GL_LINE_LOOP);
-    for (float gt = 0; gt < 1; gt += 0.01) {
+    for (float gt = 0; gt < 1; gt += inc) {
         getGlobalCatmullRomPoint(gt, pos, deriv);
         glVertex3f(pos[0], pos[1], pos[2]);
     }

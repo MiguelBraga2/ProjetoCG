@@ -8,11 +8,12 @@ class Translation : public Transformation {
 private:
     float duration;
     bool align;
+    int tesselation;
     vector<Point> controlPoints;
     Point yi;
     float startCounter;
 public:
-    Translation(float x, float y, float z, float duration, bool align, vector<Point> controlPoints);
+    Translation(float x, float y, float z, float duration, bool align, int tesselation, vector<Point> controlPoints);
     void applyTransformation() override;
     void applyTransformationToPoint(Point* base, float* radius) override;
     void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv);

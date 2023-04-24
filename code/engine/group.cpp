@@ -171,25 +171,34 @@ void Group::readXML(XMLElement *group) {
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
                 float x, y, z;
-                if (transform->Attribute("x")) {
-                    x = stof(transform->Attribute("x"));
+                const char *strX = transform->Attribute("x");
+                const char *strY = transform->Attribute("y");
+                const char *strZ = transform->Attribute("z");
+
+                if (strX) {
+                    x = stof(strX);
                 }
-                if (transform->Attribute("x")) {
-                    y = stof(transform->Attribute("y"));
+                if (strY) {
+                    y = stof(strY);
                 }
-                if (transform->Attribute("z")) {
-                    z = stof(transform->Attribute("z"));
+                if (strZ) {
+                    z = stof(strZ);
                 }
 
                 if (tagName.compare("translate") == 0 && numTranslates == 0){
                     float time;
                     bool align;
-                    const char* strTime = transform->Attribute("time");
-                    const char* strAlign = transform->Attribute("align");
+                    int tesselation;
                     vector<Point> controlPoints;
 
-                    if (strTime) {
+                    if (!strX && !strY && !strZ) {
+
+                        const char* strTime = transform->Attribute("time");
+                        const char* strAlign = transform->Attribute("align");
+                        const char* strTesselation = transform->Attribute("tesselation");
+
                         time = stof(strTime);
+                        tesselation = strTesselation ? stof(strTesselation) : 100;
 
                         if (std::strcmp(strAlign, "true") == 0) {
                             align = true;
@@ -206,12 +215,14 @@ void Group::readXML(XMLElement *group) {
                             Point p(x, y, z);
                             controlPoints.push_back(p);
                         }
+
                     }
                     else {
                         time = 0;
                         align = false;
+                        tesselation = 0;
                     }
-                    this->transformations.push_back(new Translation(x, y, z, time, align, controlPoints));
+                    this->transformations.push_back(new Translation(x, y, z, time, align, tesselation, controlPoints));
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){

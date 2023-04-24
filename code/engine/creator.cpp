@@ -4,7 +4,7 @@
 Group* Creator::drawCube(Group g, Point p) {
 	Group* newGroup = g.clone();
 	vector<Point> v;
-	Translation* t = new Translation(p.getX(), p.getY(), p.getZ(), 0, false,v);
+	Translation* t = new Translation(p.getX(), p.getY(), p.getZ(), 0, false, 0,v);
 
 	newGroup->addTransformation(t);
 	newGroup->prepareBuffers();
