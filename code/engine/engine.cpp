@@ -22,7 +22,6 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
-#include "creator.hpp"
 
 using namespace std;
 
@@ -43,7 +42,6 @@ int vboMode = 1; // 0 - noVBOs , 1 - VBOs
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
-vector<Group> cubes;
 
 /**
  * Callback called when the window is resized
@@ -371,7 +369,7 @@ int readXML(char* filePath){
     tinyxml2::XMLNode* world = doc->FirstChildElement("world");
 
     float fov = 0, farV = 0, nearV = 0;
-    Point* cameraPosition = new Point(), * cameraLookAt = new Point(), * cameraUpVector = new Point();
+    Point cameraPosition, cameraLookAt, cameraUpVector;
   
     if (!error && world) {
         /* window */
@@ -388,25 +386,25 @@ int readXML(char* filePath){
             /* camera position */
             tinyxml2::XMLElement* position = cameraElem->FirstChildElement("position");
             if (position) {
-                cameraPosition->setX(stof(position->Attribute("x")));
-                cameraPosition->setY(stof(position->Attribute("y")));
-                cameraPosition->setZ(stof(position->Attribute("z")));
+                cameraPosition.setX(stof(position->Attribute("x")));
+                cameraPosition.setY(stof(position->Attribute("y")));
+                cameraPosition.setZ(stof(position->Attribute("z")));
             }
 
             /* camera lookAt */
             tinyxml2::XMLElement* lookAt = cameraElem->FirstChildElement("lookAt");
             if (lookAt) {
-                cameraLookAt->setX(stof(lookAt->Attribute("x")));
-                cameraLookAt->setY(stof(lookAt->Attribute("y")));
-                cameraLookAt->setZ(stof(lookAt->Attribute("z")));
+                cameraLookAt.setX(stof(lookAt->Attribute("x")));
+                cameraLookAt.setY(stof(lookAt->Attribute("y")));
+                cameraLookAt.setZ(stof(lookAt->Attribute("z")));
             }
 
             /* camera up */
             tinyxml2::XMLElement* up = cameraElem->FirstChildElement("up");
             if (up) {
-                cameraUpVector->setX(stof(up->Attribute("x")));
-                cameraUpVector->setY(stof(up->Attribute("y")));
-                cameraUpVector->setZ(stof(up->Attribute("z")));
+                cameraUpVector.setX(stof(up->Attribute("x")));
+                cameraUpVector.setY(stof(up->Attribute("y")));
+                cameraUpVector.setZ(stof(up->Attribute("z")));
             }
             
             /* camera projection */
@@ -417,7 +415,7 @@ int readXML(char* filePath){
                 farV = stof(projection->Attribute("far"));
             }
           
-            camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
+            camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
 
         group = new Group();
@@ -443,16 +441,6 @@ int main(int argc, char **argv) {
         int error=readXML(argv[1]);
 
         if (!error) {
-
-            /*for (size_t i = 0; i < 10; i++)
-            {
-                for (size_t j = 0; j < 10; j++)
-                {
-                    Point p(i, 0, j);
-                    Group* newGroup = Creator::drawCube(*group, p);
-                    cubes.emplace_back(*newGroup);
-                }
-            }*/
 
             // init GLUT and the window
             glutInit(&argc, argv);
@@ -490,6 +478,10 @@ int main(int argc, char **argv) {
 
             // enter GLUT's main cycle
             glutMainLoop();
+
+            delete camera;
+            group->freeGroup();
+            delete group;
         }
         else {
             cout << "Ficheiro não encontrado ou erro na sua leitura." << endl;

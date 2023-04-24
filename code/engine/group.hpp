@@ -44,6 +44,7 @@ public:
     void addModel(Model m);
     void addTransformation(Transformation* t);
     Group* clone();
+    void freeGroup();
 
 private:
     Point* calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius);

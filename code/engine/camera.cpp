@@ -11,7 +11,7 @@
 #include <math.h>
 #include "stdio.h"
 
-Camera::Camera(const Point &position, const Point &lookAtPosition, const Point &upVector, float fov, float near,float far) {
+Camera::Camera(Point position,Point lookAtPosition,Point upVector, float fov, float near,float far) {
     this->position = position;
     this->lookAtPosition = lookAtPosition;
     this->upVector = upVector;

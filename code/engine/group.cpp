@@ -289,11 +289,10 @@ void Group::readXML(XMLElement *group) {
         }
 
         /* Groups */
-        Group *g;
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
-            g = new Group();
-            g->readXML(gr);
-            this->subgroups.push_back(*g);
+            Group g;
+            g.readXML(gr);
+            this->subgroups.push_back(g);
         }
     }
     else{
@@ -312,4 +311,13 @@ void Group::addTransformation(Transformation* t) {
 Group* Group::clone() {
     Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
     return g;
+}
+
+void Group::freeGroup() {
+    for(auto it: this->transformations) {
+        delete it;
+    }
+    for(auto it : this->subgroups) {
+        it.freeGroup();
+    }
 }
