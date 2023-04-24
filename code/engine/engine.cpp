@@ -23,6 +23,7 @@
 #include "camera.hpp"
 #include "group.hpp"
 #include "Creator.h"
+#include "Transformations/translation.hpp"
 
 
 //using namespace tinyxml2;
@@ -31,7 +32,7 @@ using namespace std;
 
 float width, height;
 Camera* camera;
-Group* group; // Outer collection of transformations, models and subgroups
+Group globalGroup; // Outer collection of transformations, models and subgroups
 
 // For FPS count
 int timebase;
@@ -48,11 +49,13 @@ bool axis = true; // Is axis shown
 bool cameraInfo = true;
 int polygonMode = GL_LINE;
 int vboMode = 1; // 0 - noVBOs , 1 - VBOs
+int mode = 0; // 0 - Solar Systemm, 1 - Creator
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
-vector<Group> cubes;
+Group cube;
+vector<Point> cubes_transformations;
 
 /**
  * Callback called when the window is resized
@@ -172,7 +175,17 @@ void renderScene(void) {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    group->drawGroup(vboMode);
+    if (mode == 0) globalGroup.drawGroup(vboMode);
+    else if (mode == 1){
+        for(Point t: cubes_transformations){
+            glPushMatrix();
+            glTranslatef(t.getX(), t.getY(), t.getZ());
+            glColor3f(1,0,0);
+            glutSolidCube(1);
+            //cube.drawGroup(vboMode);
+            glPopMatrix();
+        }
+    }
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -209,6 +222,8 @@ void menu(int id)
             displaySound("../audio/turbinada.mp3");
             break;
         case 4:
+            if (mode == 0) mode = 1;
+            else if (mode == 1) mode = 0;
             break;
         case 5:
             break;
@@ -274,9 +289,10 @@ void createMenu(void){
     glutAddSubMenu("Change polygon mode", submenu2);
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Modo DJ", 3);
+    glutAddMenuEntry("Change mode", 4);
     glutAddMenuEntry("Show camera info", 9);
 
-    glutAttachMenu(GLUT_MIDDLE_BUTTON);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 /**
@@ -288,6 +304,7 @@ void createMenu(void){
  */
 void processMouseButtons(int button, int state, int xx, int yy) {
     camera->updateMouseAngles(button, state, xx, yy);
+
 }
 
 /**
@@ -297,6 +314,47 @@ void processMouseButtons(int button, int state, int xx, int yy) {
  */
 void processMouseMotion(int xx, int yy) {
     camera->processMouseMotion(xx, yy);
+}
+
+unsigned char* picking(int x, int y) {
+    unsigned char* res = (unsigned char*) malloc(4);
+    GLint viewport[4];
+
+    glDisable(GL_LIGHTING);
+    //glDisable(GL_TEXTURE_2D);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+
+    glDepthFunc(GL_LEQUAL);
+    // Draw
+    camera->placeCamera();
+    /*gluLookAt(camX, camY, camZ,
+              0.0,0.0,0.0,
+              0.0f,1.0f,0.0f);*/
+
+    // Draw cubes
+    float i=1, j=0, k=0;
+    for(Point p: cubes_transformations){
+        glPushMatrix();
+        glTranslatef(p.getX(), p.getY(), p.getZ());
+        glColor3f(i/255, j/255, k/255);
+        glutSolidCube(1);
+        glPopMatrix();
+        if (i==255) { j++; i=0; }
+        if (j==255) { k++; j=0; }
+        i++;
+    }
+
+    glDepthFunc(GL_LESS);
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glReadPixels(x, viewport[3]-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, res);
+
+    //glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+
+    return res;
 }
 
 /**
@@ -326,6 +384,14 @@ void keyboard_events(unsigned char key, int x, int y) {
     }
     else if (key == 'm'){
         camera->changeMode(-1);
+    }
+    else if (key == 'p'){
+        unsigned char* result = picking(x, y);
+        printf("%d %d", x, y);
+        if (result)
+            printf("Picked Object %u %u %u\n", result[0], result[1], result[2]);
+        else
+            printf("Nothing selected\n");
     }
 
     glutPostRedisplay();
@@ -372,7 +438,7 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @param filePath the PATH of the XML
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
-int readXML(char* filePath){
+int readXML(char* filePath, Group* group){
     //XMLDocument* doc;
     tinyxml2::XMLDocument *doc = new  tinyxml2::XMLDocument();
     tinyxml2::XMLError error = doc->LoadFile(filePath);
@@ -428,7 +494,6 @@ int readXML(char* filePath){
             camera = new Camera(*cameraPosition, *cameraLookAt, *cameraUpVector, fov, nearV, farV);
         }
 
-        group = new Group();
         group->readXML(world->FirstChildElement("group"));
 
         vector<Transformation*> transf;
@@ -448,19 +513,22 @@ int readXML(char* filePath){
 int main(int argc, char **argv) {
     if (argc == 2) {
 
-        int error=readXML(argv[1]);
+        int error=readXML(argv[1], &globalGroup);
+
 
         if (!error) {
-
-            /*for (size_t i = 0; i < 10; i++)
+            error = readXML("../Minecraft.xml", &cube);
+            for (size_t i = 0; i < 10; i++)
             {
                 for (size_t j = 0; j < 10; j++)
                 {
                     Point p(i, 0, j);
-                    Group* newGroup = Creator::drawCube(*group, p);
-                    cubes.emplace_back(*newGroup);
+                    vector<Point> controlPoints;
+                    cubes_transformations.push_back(p);
+                    //Group* newGroup = Creator::drawCube(cube, p);
+                    //cubes.addGroup(*newGroup);
                 }
-            }*/
+            }
 
             // init GLUT and the window
             glutInit(&argc, argv);
@@ -489,7 +557,8 @@ int main(int argc, char **argv) {
             glewInit();
             glEnableClientState(GL_VERTEX_ARRAY);
 
-            group->prepareBuffers();
+            globalGroup.prepareBuffers();
+            cube.prepareBuffers();
 
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);

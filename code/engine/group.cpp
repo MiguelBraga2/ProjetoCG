@@ -298,6 +298,10 @@ void Group::addTransformation(Transformation* t) {
     this->transformations.push_back(t);
 }
 
+void Group::addGroup(Group g) {
+    this->subgroups.push_back(g);
+}
+
 Group* Group::clone() {
     Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
     return g;

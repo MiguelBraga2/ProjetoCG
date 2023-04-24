@@ -43,6 +43,7 @@ public:
     void readXML(XMLElement* group);
     void addModel(Model m);
     void addTransformation(Transformation* t);
+    void addGroup(Group g);
     Group* clone();
 
 private:
