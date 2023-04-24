@@ -4,7 +4,7 @@
 #define MATRIX_OPERATIONS
 
 
-void cross(float *a, float *b, float *res);
+void cross(const float *a, float *b, float *res);
 void normalize(float *a);
 float length(float *v);
 void buildRotMatrix(float *x, float *y, float *z, float *m);

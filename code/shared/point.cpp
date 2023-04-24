@@ -23,17 +23,17 @@ Point::Point(float x, float y, float z)
 float Point::getX()
 {
     return this->x; 
-};
+}
 
 float Point::getY() 
 {
     return this->y;
-};
+}
 
 float Point::getZ()
 { 
     return this->z; 
-};
+}
 
 void Point::setX(float x) {
     this->x = x;
@@ -62,7 +62,7 @@ Point Point::crossProduct(Point v1, Point v2) {
 }
 
 float Point::getSize(){
-    return abs(sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)));
+    return (float) abs(sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)));
 }
 
 void Point::normalize(){

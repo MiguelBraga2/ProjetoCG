@@ -1,7 +1,3 @@
-//
-// Created by mike on 03-03-2023.
-//
-
 #include "IO.hpp"
 #include <fstream>
 #include <string>
@@ -19,7 +15,7 @@ using namespace std;
  * @param indexes the vector of points to the respective indexes
  * @param vertices the list of vertices that make up a figure
  */
-void writer(string fileName, vector<unsigned int> indexes, vector<float> vertices) {
+void writer(const string& fileName, vector<unsigned int> indexes, vector<float> vertices) {
 
     ofstream file("../../figures/" + fileName);
     if (!file)
@@ -49,7 +45,7 @@ void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float 
 /*
 * Read the primitives files
 */
-vector<float> reader(string fileName, vector<unsigned int>* indexes) {
+vector<float> reader(const string& fileName, vector<unsigned int>* indexes) {
     ifstream file("../../figures/" + fileName);
     vector<float> vertices = vector<float>();
     
@@ -79,17 +75,17 @@ vector<float> reader(string fileName, vector<unsigned int>* indexes) {
             } else if (strings[0] == "f") {
                 // FORMAT: f vericeIndex1(/normalIndex1) verticeIndex2(/normalIndex2) verticeIndex3(/normalIndex2)
 
-                if (strings[1].find("/") == string::npos) {
+                if (strings[1].find('/') == string::npos) {
                     // FORMAT : f i1 i2 i3
                     indexes->push_back(stoi(strings[1]));
                     indexes->push_back(stoi(strings[2]));
                     indexes->push_back(stoi(strings[3]));
                 }
                 else {
-                    size_t f1 = strings[1].find("/");
-                    f1 = strings[1].find("/", f1+1);
-                    size_t f2 = strings[2].find("/");
-                    size_t f3 = strings[3].find("/");
+                    size_t f1 = strings[1].find('/');
+                    f1 = strings[1].find('/', f1+1);
+                    size_t f2 = strings[2].find('/');
+                    size_t f3 = strings[3].find('/');
 
                     int pointInd1 = stoi(strings[1].substr(0, f1));
                     int pointInd2 = stoi(strings[2].substr(0, f2));
