@@ -30,7 +30,7 @@ using namespace std;
 
 int width, height;
 Camera* camera;
-Group globalGroup; // Outer collection of transformations, models and subgroups
+Group* globalGroup; // Outer collection of transformations, models and subgroups
 
 // For FPS count
 int timebase;
@@ -166,7 +166,7 @@ void renderScene() {
     glColor3f(1.0f, 1.0f, 1.0f);
      
     // transformation and drawing instructions here
-    if (mode == 0) globalGroup.drawGroup(vboMode);
+    if (mode == 0) globalGroup->drawGroup(vboMode);
     else if (mode == 1){
         for(Point t: cubes_transformations){
             glPushMatrix();
@@ -430,7 +430,7 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @param filePath the PATH of the XML
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
-int readXML(char* filePath, Group* group){
+int readXML(char* filePath, Group** group){
     //XMLDocument* doc;
     tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
     tinyxml2::XMLError error = doc->LoadFile(filePath);
@@ -486,10 +486,11 @@ int readXML(char* filePath, Group* group){
             camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
 
-        group->readXML(world->FirstChildElement("group"));
+        (*group) = new Group();
+        (*group)->readXML(world->FirstChildElement("group"));
 
         vector<Transformation*> transf;
-        teleports = group->initializeTeleporter(&transf);
+        teleports = (*group)->initializeTeleporter(&transf);
         for (auto it = teleports.begin(); it != teleports.end(); ++it) {
             keys.push_back(it->first);
         }
@@ -505,11 +506,11 @@ int readXML(char* filePath, Group* group){
 int main(int argc, char **argv) {
     if (argc == 2) {
 
-        int error=readXML(argv[1], &globalGroup);
+        int error= readXML(argv[1], &globalGroup);
 
 
         if (!error) {
-            error = readXML("../Minecraft.xml", &cube);
+            /*error = readXML("../Minecraft.xml", &cube);
             for (size_t i = 0; i < 10; i++)
             {
                 for (size_t j = 0; j < 10; j++)
@@ -520,7 +521,7 @@ int main(int argc, char **argv) {
                     //Group* newGroup = Creator::drawCube(cube, p);
                     //cubes.addGroup(*newGroup);
                 }
-            }
+            }*/
 
             // init GLUT and the window
             glutInit(&argc, argv);
@@ -549,8 +550,8 @@ int main(int argc, char **argv) {
             glewInit();
             glEnableClientState(GL_VERTEX_ARRAY);
 
-            globalGroup.prepareBuffers();
-            cube.prepareBuffers();
+            globalGroup->prepareBuffers();
+            //cube.prepareBuffers();
 
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
@@ -561,8 +562,8 @@ int main(int argc, char **argv) {
             glutMainLoop();
 
             delete camera;
-            globalGroup.freeGroup();
-            //delete globalGroup;
+            globalGroup->freeGroup();
+            delete globalGroup;
         }
         else {
             cout << "Ficheiro não encontrado ou erro na sua leitura." << endl;

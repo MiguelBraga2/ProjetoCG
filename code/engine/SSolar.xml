@@ -16,15 +16,14 @@
             <model file="saturno_orbita.3d"></model>
             <model file="urano_orbita.3d"></model>
             <model file="neptune_orbita.3d"></model>
-            <ring file="sphere_1_8_8.3d" outer="4300" inner="3300" n="1000" minScale="2" maxScale="4" minVAngle="-10" maxVAngle="10" red="0.6" green="0.6" blue="0.6"></ring>
-            <ring file="sphere_1_8_8.3d" outer="51100" inner="31100" n="10000" minScale="8" maxScale="18" minVAngle="-1" maxVAngle="1" red="0.6" green="0.6" blue="0.6"></ring>
+            <model file="cintura_de_asteroides.3d"></model>
         </models>
         <group> <!-- Sol -->
             <transform>
                 <scale x="1100" y="1100" z="1100"/>
             </transform>
             <models> <!-- SOL -->
-                <model label="Sol" file="sphere_1_100_100.3d" red="1" green="0.85" blue="0.1"/>
+                <model label="Sol" file="sphere_1_30_30.3d" red="1" green="0.85" blue="0.1"/>
             </models>
         </group>
         <group> <!-- Nave -->
@@ -49,7 +48,7 @@
                 <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
             <models>
-                <model label="Mercurio" file="sphere_1_100_100.3d" red="1" green="0.93" blue="0.8" />
+                <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
             </models>
         </group>
         <group> <!-- Vénus -->
@@ -58,7 +57,7 @@
                 <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
             <models>
-                <model label="Venus" file="sphere_1_100_100.3d" red="1" green="0.83" blue="0.5" />
+                <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
             </models>
         </group>
         <group> <!-- Terra -->
@@ -70,7 +69,7 @@
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
-                    <model label="Terra" file="sphere_1_100_100.3d" red="0" green="0.6" blue="0.5"/>
+                    <model label="Terra" file="sphere_1_30_30.3d" red="0" green="0.6" blue="0.5"/>
                 </models>
             </group>
             <group> <!-- Lua -->
@@ -79,7 +78,7 @@
                     <scale x="2.7" y="2.7" z="2.7"/>
                 </transform>
                 <models>
-                    <model label="Lua" file="sphere_1_100_100.3d" red="0.94" green="0.97" blue="1" />
+                    <model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
                 </models>
             </group>
             <group> <!-- Lua Órbita-->
@@ -97,7 +96,7 @@
                     <scale x="5.3" y="5.3" z="5.3"/>
                 </transform>
                 <models>
-                    <model label="Marte" file="sphere_1_100_100.3d" red="0.7" green="0.23" blue="0" />
+                    <model label="Marte" file="sphere_1_30_30.3d" red="0.7" green="0.23" blue="0" />
                 </models>
             </group>
             <group> <!-- Fobos -->
@@ -106,7 +105,7 @@
                     <scale x="0.0054" y="0.0054" z="0.0054"/>
                 </transform>
                 <models>
-                    <model label="Fobos" file="sphere_1_100_100.3d" red="1" green="0" blue="0" />
+                    <model label="Fobos" file="sphere_1_30_30.3d" red="1" green="0" blue="0" />
                 </models>
             </group>
             <group> <!-- Fobos Órbita -->
@@ -120,7 +119,7 @@
                     <scale x="0.0015" y="0.0015" z="0.0015"/>
                 </transform>
                 <models>
-                    <model label="Deimos" file="sphere_1_100_100.3d" red="1" green="0" blue="0" />
+                    <model label="Deimos" file="sphere_1_30_30.3d" red="1" green="0" blue="0" />
                 </models>
             </group>
             <group> <!-- Deimos Órbita -->
@@ -138,7 +137,7 @@
                     <scale x="112" y="112" z="112"/>
                 </transform>
                 <models>
-                    <model label="Jupiter" file="sphere_1_100_100.3d" red="0.7" green="0.47" blue="0" />
+                    <model label="Jupiter" file="sphere_1_30_30.3d" red="0.7" green="0.47" blue="0" />
                 </models>
             </group>
             <group> <!-- Europa -->
@@ -147,7 +146,7 @@
                     <scale x="2.45" y="2.45" z="2.45"/>
                 </transform>
                 <models>
-                    <model label="Europa" file="sphere_1_100_100.3d" red="1" green="0.9" blue="0.93" />
+                    <model label="Europa" file="sphere_1_30_30.3d" red="1" green="0.9" blue="0.93" />
                 </models>
             </group>
             <group> <!-- Europa Orbita-->
@@ -161,7 +160,7 @@
                     <scale x="4.135" y="4.135" z="4.135"/>
                 </transform>
                 <models>
-                    <model label="Ganimedes" file="sphere_1_100_100.3d" red="1" green="0.65" blue="0.3" />
+                    <model label="Ganimedes" file="sphere_1_30_30.3d" red="1" green="0.65" blue="0.3" />
                 </models>
             </group>
             <group> <!-- Ganimedes Orbita-->
@@ -175,7 +174,7 @@
                     <scale x="3.78" y="3.78" z="3.78"/>
                 </transform>
                 <models>
-                    <model label="Calisto" file="sphere_1_100_100.3d" red="0" green="0.07" blue="0.4" />
+                    <model label="Calisto" file="sphere_1_30_30.3d" red="0" green="0.07" blue="0.4" />
                 </models>
             </group>
             <group> <!-- Calisto Orbita-->
@@ -189,7 +188,7 @@
                     <scale x="2.86" y="2.86" z="2.86"/>
                 </transform>
                 <models>
-                    <model label="Io" file="sphere_1_100_100.3d" red="0.9" green="0.9" blue="0" />
+                    <model label="Io" file="sphere_1_30_30.3d" red="0.9" green="0.9" blue="0" />
                 </models>
             </group>
             <group> <!-- IO Orbita-->
@@ -208,7 +207,7 @@
                     <rotate angle="45" x="1" y="0" z="1"/>
                 </transform>
                 <models>
-                    <model label="Saturno" file="sphere_1_100_100.3d" red="0.9"  green="0.75" blue="0"/>
+                    <model label="Saturno" file="sphere_1_30_30.3d" red="0.9"  green="0.75" blue="0"/>
                     <model file="torus_1.2_2_100_0.3d" red="0.8" green="0.53" blue="0" />
                 </models>
             </group>
@@ -218,7 +217,7 @@
                     <scale x="4.049" y="4.049" z="4.049"/>
                 </transform>
                 <models>
-                    <model label="Tita" file="sphere_1_100_100.3d" red="0" green="0.5" blue="0.17"/>
+                    <model label="Tita" file="sphere_1_30_30.3d" red="0" green="0.5" blue="0.17"/>
                 </models>
             </group>
             <group> <!-- Titã Orbita-->
@@ -232,7 +231,7 @@
                     <scale x="1.235" y="1.235" z="1.235"/>
                 </transform>
                 <models>
-                    <model label="Reia" file="sphere_1_100_100.3d" red="1" green="1" blue="1"/>
+                    <model label="Reia" file="sphere_1_30_30.3d" red="1" green="1" blue="1"/>
                 </models>
             </group>
             <group> <!-- Reia Orbita-->
@@ -246,7 +245,7 @@
                     <scale x="1.237" y="1.237" z="1.237"/>
                 </transform>
                 <models>
-                    <model label="Tetis" file="sphere_1_100_100.3d" red="1" green="0.95" blue="0.9" />
+                    <model label="Tetis" file="sphere_1_30_30.3d" red="1" green="0.95" blue="0.9" />
                 </models>
             </group>
             <group> <!-- Tetis Orbita-->
@@ -261,10 +260,10 @@
             </transform>
             <group>
                 <transform>
-                    <scale x="40" y="40" z="40  "/>
+                    <scale x="40" y="40" z="40"/>
                 </transform>
                 <models>
-                    <model label="Urano" file="sphere_1_100_100.3d" red="0.8" green="1" blue="0.97" />
+                    <model label="Urano" file="sphere_1_30_30.3d" red="0.8" green="1" blue="0.97" />
                 </models>
             </group>
             <group> <!-- Titania -->
@@ -273,7 +272,7 @@
                     <scale x="1.233" y="1.233" z="1.233"/>
                 </transform>
                 <models>
-                    <model label="Titania" file="sphere_1_100_100.3d" red="0.9" green="0.93" blue="1" />
+                    <model label="Titania" file="sphere_1_30_30.3d" red="0.9" green="0.93" blue="1" />
                 </models>
             </group>
             <group> <!-- Titania Orbita-->
@@ -287,7 +286,7 @@
                     <scale x="1.197" y="1.197" z="1.197"/>
                 </transform>
                 <models>
-                    <model label="Oberon" file="sphere_1_100_100.3d" red="0.6" green="0.8" blue="1" />
+                    <model label="Oberon" file="sphere_1_30_30.3d" red="0.6" green="0.8" blue="1" />
                 </models>
             </group>
             <group> <!-- Oberon Orbita-->
@@ -305,7 +304,7 @@
                     <scale x="38" y="38" z="38"/>
                 </transform>
                 <models>
-                    <model label="Neptuno" file="sphere_1_100_100.3d" red="0" green="0.5" blue="1" />
+                    <model label="Neptuno" file="sphere_1_30_30.3d" red="0" green="0.5" blue="1" />
                 </models>
             </group>
             <group> <!-- Tritão -->
@@ -314,7 +313,7 @@
                     <scale x="2.228" y="2.228" z="2.228"/>
                 </transform>
                 <models>
-                    <model label="Tritao" file="sphere_1_100_100.3d" red="1" green="0.9" blue="0.9" />
+                    <model label="Tritao" file="sphere_1_30_30.3d" red="1" green="0.9" blue="0.9" />
                 </models>
             </group>
             <group> <!-- Tritão Orbita-->
