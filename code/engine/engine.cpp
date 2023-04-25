@@ -1,7 +1,3 @@
-#define MINIAUDIO_IMPLEMENTATION
-#define MA_DEBUG_OUTPUT
-#include "../libraries/miniaudio.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -22,7 +18,6 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
-#include "creator.hpp"
 #include "Transformations/translation.hpp"
 
 using namespace std;
@@ -40,13 +35,10 @@ bool axis = true; // Is axis shown
 bool cameraInfo = true;
 int polygonMode = GL_LINE;
 int vboMode = 1; // 0 - noVBOs , 1 - VBOs
-int mode = 0; // 0 - Solar Systemm, 1 - Creator
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
-Group cube;
-vector<Point> cubes_transformations;
 
 /**
  * Callback called when the window is resized
@@ -74,26 +66,6 @@ void changeSize(int w, int h) {
 	gluPerspective(camera->getFov() ,ratio, camera->getNear() , camera->getFar());
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
-}
-
-void displaySound(const char* file) {
-    ma_result result;
-    ma_engine engine;
-
-
-    result = ma_engine_init(NULL, &engine);
-    if (result != MA_SUCCESS) {
-        printf("Failed to initialize audio engine.");
-    }
-
-    result = ma_engine_play_sound(&engine, file, NULL);
-
-    std::cout << result << std::endl;
-
-    printf("Press Enter to quit...");
-    getchar();
-
-    ma_engine_uninit(&engine);
 }
 
 /**
@@ -162,21 +134,9 @@ void renderScene() {
         glEnd();
     }
 
+    globalGroup->drawGroup(vboMode);
 
     glColor3f(1.0f, 1.0f, 1.0f);
-     
-    // transformation and drawing instructions here
-    if (mode == 0) globalGroup->drawGroup(vboMode);
-    else if (mode == 1){
-        for(Point t: cubes_transformations){
-            glPushMatrix();
-            glTranslatef(t.getX(), t.getY(), t.getZ());
-            glColor3f(1,0,0);
-            glutSolidCube(1);
-            //cube.drawGroup(vboMode);
-            glPopMatrix();
-        }
-    }
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -189,7 +149,6 @@ void renderScene() {
         char* s = (char*)malloc(4);
         sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
-        free(s);
     }
     glPolygonMode(GL_FRONT, polygonMode);
     // End of frame
@@ -211,11 +170,8 @@ void menu(int id)
             vboMode = 1;
             break;
         case 3:
-            displaySound("../audio/turbinada.mp3");
             break;
         case 4:
-            if (mode == 0) mode = 1;
-            else if (mode == 1) mode = 0;
             break;
         case 5:
             break;
@@ -284,7 +240,7 @@ void createMenu(void){
     glutAddMenuEntry("Change mode", 4);
     glutAddMenuEntry("Show camera info", 9);
 
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
 /**
@@ -306,47 +262,6 @@ void processMouseButtons(int button, int state, int xx, int yy) {
  */
 void processMouseMotion(int xx, int yy) {
     camera->processMouseMotion(xx, yy);
-}
-
-unsigned char* picking(int x, int y) {
-    unsigned char* res = (unsigned char*) malloc(4);
-    GLint viewport[4];
-
-    glDisable(GL_LIGHTING);
-    //glDisable(GL_TEXTURE_2D);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-
-    glDepthFunc(GL_LEQUAL);
-    // Draw
-    camera->placeCamera();
-    /*gluLookAt(camX, camY, camZ,
-              0.0,0.0,0.0,
-              0.0f,1.0f,0.0f);*/
-
-    // Draw cubes
-    float i=1, j=0, k=0;
-    for(Point p: cubes_transformations){
-        glPushMatrix();
-        glTranslatef(p.getX(), p.getY(), p.getZ());
-        glColor3f(i/255, j/255, k/255);
-        glutSolidCube(1);
-        glPopMatrix();
-        if (i==255) { j++; i=0; }
-        if (j==255) { k++; j=0; }
-        i++;
-    }
-
-    glDepthFunc(GL_LESS);
-
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    glReadPixels(x, viewport[3]-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, res);
-
-    //glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
-
-    return res;
 }
 
 /**
@@ -376,14 +291,6 @@ void keyboard_events(unsigned char key, int x, int y) {
     }
     else if (key == 'm'){
         camera->changeMode(-1);
-    }
-    else if (key == 'p'){
-        unsigned char* result = picking(x, y);
-        printf("%d %d", x, y);
-        if (result)
-            printf("Picked Object %u %u %u\n", result[0], result[1], result[2]);
-        else
-            printf("Nothing selected\n");
     }
 
     glutPostRedisplay();
@@ -432,9 +339,9 @@ void processSpecialKeys(int key, int xx, int yy) {
  */
 int readXML(char* filePath, Group** group){
     //XMLDocument* doc;
-    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
-    tinyxml2::XMLError error = doc->LoadFile(filePath);
-    tinyxml2::XMLNode* world = doc->FirstChildElement("world");
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLError error = doc.LoadFile(filePath);
+    tinyxml2::XMLNode* world = doc.FirstChildElement("world");
 
     float fov = 0, farV = 0, nearV = 0;
     Point cameraPosition, cameraLookAt, cameraUpVector;
@@ -496,8 +403,6 @@ int readXML(char* filePath, Group** group){
         }
 
     }
-
-    delete doc;
     
     return (int) error;
 }
@@ -510,18 +415,6 @@ int main(int argc, char **argv) {
 
 
         if (!error) {
-            /*error = readXML("../Minecraft.xml", &cube);
-            for (size_t i = 0; i < 10; i++)
-            {
-                for (size_t j = 0; j < 10; j++)
-                {
-                    Point p(i, 0, j);
-                    vector<Point> controlPoints;
-                    cubes_transformations.push_back(p);
-                    //Group* newGroup = Creator::drawCube(cube, p);
-                    //cubes.addGroup(*newGroup);
-                }
-            }*/
 
             // init GLUT and the window
             glutInit(&argc, argv);
@@ -551,7 +444,6 @@ int main(int argc, char **argv) {
             glEnableClientState(GL_VERTEX_ARRAY);
 
             globalGroup->prepareBuffers();
-            //cube.prepareBuffers();
 
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);

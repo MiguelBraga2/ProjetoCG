@@ -20,7 +20,8 @@
 using namespace tinyxml2;
 
 Group::Group() {
-
+    this->buffers = NULL;
+    this->indexs = NULL;
 }
 
 Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, GLuint* indexs, vector<Group> subgroups) {
@@ -222,7 +223,8 @@ void Group::readXML(XMLElement *group) {
                         align = false;
                         tesselation = 0;
                     }
-                    this->transformations.push_back(new Translation(x, y, z, time, align, tesselation, controlPoints));
+                    Translation *t = new Translation(x, y, z, time, align, tesselation, controlPoints);
+                    this->transformations.push_back(t);
                     numTranslates++;
                 }
                 else if (tagName.compare("rotate") == 0 && numRotates == 0){
@@ -242,11 +244,13 @@ void Group::readXML(XMLElement *group) {
                         time = 0;
                     }
 
-                    this->transformations.push_back(new Rotation(x, y, z,angle, 0, time));
+                    Rotation *r = new Rotation(x, y, z,angle, 0, time);
+                    this->transformations.push_back(r);
                     numRotates++;
                 }
                 else if (tagName.compare("scale") == 0 && numScales == 0){
-                    this->transformations.push_back(new Scale(x, y, z));
+                    Scale *s = new Scale(x, y, z);
+                    this->transformations.push_back(s);
                     numScales++;
                 }
             }
@@ -254,8 +258,6 @@ void Group::readXML(XMLElement *group) {
         /* Models */
         XMLElement* models = group->FirstChildElement("models");
         if (models) {
-            int i = 0; // number of models
-            srand(1);
             for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
                 Model* m = new Model();
@@ -281,22 +283,22 @@ void Group::readXML(XMLElement *group) {
                 }
 
                 this->models.push_back(*m);
-                i++;
             }
 
-            this->buffers = new GLuint(i);
-            this->indexs = new GLuint(i);
+            this->buffers = new GLuint(this->models.size());
+            this->indexs = new GLuint(this->models.size());
         }
 
         /* Groups */
+        Group *g;
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
-            Group g;
-            g.readXML(gr);
-            this->subgroups.push_back(g);
+            g = new Group();
+            g->readXML(gr);
+            this->subgroups.push_back(*g);
         }
     }
     else{
-        cout << "Group is NULL";
+        cout << "Group is NULL" << endl;
     }
 }
 
