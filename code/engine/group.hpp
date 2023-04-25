@@ -45,7 +45,6 @@ public:
     void addTransformation(Transformation* t);
     void addGroup(Group g);
     Group* clone();
-    void freeGroup();
 
 private:
     Point* calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius);

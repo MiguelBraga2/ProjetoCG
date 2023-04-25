@@ -316,12 +316,3 @@ Group* Group::clone() {
     Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
     return g;
 }
-
-void Group::freeGroup() {
-    for(auto it: this->transformations) {
-        delete it;
-    }
-    for(auto it : this->subgroups) {
-        it.freeGroup();
-    }
-}

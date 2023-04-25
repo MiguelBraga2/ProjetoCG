@@ -561,9 +561,6 @@ int main(int argc, char **argv) {
             // enter GLUT's main cycle
             glutMainLoop();
 
-            delete camera;
-            globalGroup->freeGroup();
-            delete globalGroup;
         }
         else {
             cout << "Ficheiro não encontrado ou erro na sua leitura." << endl;
