@@ -29,11 +29,11 @@ Group::Group() {
  * @param radius pointer to the radius we want to calculate
  * @return the center we calculated
  */
-Point* Group::calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius){
-    Point* base = new Point (0,0,0);
+Point Group::calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius){
+    Point base(0,0,0);
 
     for (int i=appliedTransforms.size()-1 ; i>=0; i--) {
-        appliedTransforms[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
+        appliedTransforms[i]->applyTransformationToPoint(&base, radius); // Apply the transformation to a point
     }
 
     return base;
@@ -56,8 +56,8 @@ map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *a
     for (int i = 0; i < this->models.size(); i++) {
         if (appliedTransforms != NULL && this->models[i].getLabel().compare("undefined") != 0){
             float radius = 4;
-            Point* cameraTeleport = calculateCameraTeleport(*appliedTransforms, &radius);
-            teleports[this->models[i].getLabel()] = make_tuple(*cameraTeleport, radius);
+            Point cameraTeleport = calculateCameraTeleport(*appliedTransforms, &radius);
+            teleports[this->models[i].getLabel()] = make_tuple(cameraTeleport, radius);
         }
     }
 
@@ -69,9 +69,9 @@ map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *a
         }
 
         appliedTransforms->clear();
-        for (int i=0; i < this->transformations.size(); i++) {
+        for (int j = 0; j < this->transformations.size(); j++) {
             if (appliedTransforms != NULL)
-                appliedTransforms->push_back(this->transformations[i]);
+                appliedTransforms->push_back(this->transformations[j]);
         }
     }
     return teleports;

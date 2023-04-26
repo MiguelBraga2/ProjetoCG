@@ -40,7 +40,7 @@ public:
     void freeGroup();
 
 private:
-    Point* calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius);
+    Point calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius);
 };
 
 

@@ -408,7 +408,10 @@ int readXML(char* filePath){
         }
         transforms.clear();
     }
-    
+
+    doc.Clear();
+    doc.~XMLDocument();
+
     return (int) error;
 }
 
@@ -422,7 +425,6 @@ int main(int argc, char **argv) {
         glutInitWindowPosition(100, 100);
         glutInitWindowSize(width, height);
         glutCreateWindow("ProjetoCG");
-        createMenu();
 
         timebase = glutGet(GLUT_ELAPSED_TIME);
 
@@ -446,6 +448,7 @@ int main(int argc, char **argv) {
         int error = readXML(argv[1]);
 
         if (!error) {
+            createMenu();
 
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
