@@ -19,8 +19,9 @@ Camera::Camera(Point position,Point lookAtPosition,Point upVector, float fov, fl
     this->nearV = near;
     this->farV = far;
     this->mode = 0;
-    this->d = Point(0,0,0);
-    this->calculateSpherical(); //  Enter spherical mode
+    this->d.setPoint(0,0,0);
+    this->calculateSpherical(); //  Enter explorer mode
+    this->spherical2Cartesian();
 }
 
 /**
@@ -34,6 +35,21 @@ void Camera::calculateSpherical(){
     calculateBeta();
     calculateAlfa();
 }
+
+void Camera::setMode(int mode) {
+    this->mode = mode;
+}
+
+
+void Camera::setAlpha(float angle) {
+    this->alfa = angle;
+}
+
+
+void Camera::setBeta(float angle) {
+    this->beta = angle;
+}
+
 
 /**
  * Given the cameraRadius, alfa and beta, calculate the camera position
@@ -50,13 +66,13 @@ void Camera::spherical2Cartesian() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementAlfa(){
-    if (this->mode == 0){
-        this->alfa += this->increment;
-        this->spherical2Cartesian();
-    }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->alfa -= this->increment;
         this->calculateDirection();
+    }
+    else if (this->mode == 0){
+        this->alfa += this->increment;
+        this->spherical2Cartesian();
     }
 }
 
@@ -66,13 +82,13 @@ void Camera::incrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementAlfa(){
-    if (this->mode == 0){
-        this->alfa -= this->increment;
-        this->spherical2Cartesian();
-    }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->alfa += this->increment;
         this->calculateDirection();
+    }
+    else if (this->mode == 0){
+        this->alfa -= this->increment;
+        this->spherical2Cartesian();
     }
 }
 
@@ -82,15 +98,16 @@ void Camera::decrementAlfa(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementBeta(){
-    this->beta += this->increment;
-
-    if (beta > M_PI/2)
-        beta = M_PI/2-0.1;
-    if (this->mode == 0){
-        this->spherical2Cartesian();
+    if (this->mode == 1 || this->mode == 0) {
+        this->beta += this->increment;
+        if (beta > 1.5f)
+            beta = 1.5f;
     }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->calculateDirection();
+    }
+    else if (this->mode == 0) {
+        this->spherical2Cartesian();
     }
 }
 
@@ -100,15 +117,16 @@ void Camera::incrementBeta(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementBeta(){
-    this->beta -= this->increment;
-
-    if (beta < -M_PI/2)
-        beta = -M_PI/2+0.01;
-    if (this->mode == 0){
-        this->spherical2Cartesian();
+    if (this->mode == 1 || this->mode == 0) {
+        this->beta -= this->increment;
+        if (beta < -1.5f)
+            beta = -1.5f;
     }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->calculateDirection();
+    }
+    else if (this->mode == 0){
+        this->spherical2Cartesian();
     }
 }
 
@@ -118,8 +136,10 @@ void Camera::decrementBeta(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementRadius(){
-    this->cameraRadius += this->increment;
-    this->spherical2Cartesian();
+    if (this->mode == 0) {
+        this->cameraRadius += this->increment;
+        this->spherical2Cartesian();
+    }
 }
 
 /**
@@ -128,10 +148,12 @@ void Camera::incrementRadius(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementRadius(){
-    this->cameraRadius -= this->increment;
-    if (cameraRadius < 0.1f)
-        cameraRadius = 0.1f;
-    this->spherical2Cartesian();
+    if (this->mode == 0) {
+        this->cameraRadius -= this->increment;
+        if (cameraRadius < 0.1f)
+            cameraRadius = 0.1f;
+        this->spherical2Cartesian();
+    }
 }
 
 /**
@@ -140,11 +162,11 @@ void Camera::decrementRadius(){
  * In FPS mode, recalculate direction vector
  */
 void Camera::incrementIncrement() {
-    if (this->mode == 0){
-        this->increment += 0.01;
-    }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->step += 1;
+    }
+    else if (this->mode == 0){
+        this->increment += 0.01f;
     }
 
 }
@@ -155,16 +177,16 @@ void Camera::incrementIncrement() {
  * In FPS mode, recalculate direction vector
  */
 void Camera::decrementIncrement() {
-    if (this->mode == 0){
-        this->increment -= 0.01;
-        if (this->increment <= 0){
-            this->increment = 0.01;
-        }
-    }
-    else if (this->mode == 1){
+    if (this->mode == 1){
         this->step -= 1;
         if (this->step < 1)
             this->step = 1;
+    }
+    else if (this->mode == 0) {
+        this->increment -= 0.01;
+        if (this->increment < 0.01f){
+            this->increment = 0.01f;
+        }
     }
 
 }
@@ -241,31 +263,30 @@ void Camera::moveDown() {
  * Changes the camera mode
  */
 void Camera::changeMode(int desiredMode){
-    if (desiredMode == -1){
-        if (this->mode == 0){
-            this->mode = 1;
-            this->d = Point((this->lookAtPosition.getX() - this->position.getX()),
-                            (this->lookAtPosition.getY() - this->position.getY()),
-                            (this->lookAtPosition.getZ() - this->position.getZ()));
-            this->d.normalize();
-            this->calculateAlfa();
-            this->calculateBeta();
-            this->step = 1;
-        }
-        else if (this->mode == 1){
-            this->mode = 0;
-            this->d = Point(0,0,0);
-            this->calculateSpherical();
-            this->spherical2Cartesian();
-        }
+    if (desiredMode == 0) {
+        // Explorer
+        this->mode = 0;
+        this->d = Point(0,0,0);
+        this->calculateSpherical();
+        this->spherical2Cartesian();
     }
-    else if (desiredMode == 0){
-        if (this->mode == 1){
-            this->mode = 0;
-            this->d = Point(0,0,0);
-            this->calculateSpherical();
-            this->spherical2Cartesian();
-        }
+    else if (desiredMode == 1) {
+        // FPS
+        this->mode = 1;
+        this->d = Point((this->lookAtPosition.getX() - this->position.getX()),
+                        (this->lookAtPosition.getY() - this->position.getY()),
+                        (this->lookAtPosition.getZ() - this->position.getZ()));
+        this->d.normalize();
+        this->calculateAlfa();
+        this->calculateBeta();
+        this->step = 1;
+    }
+    else if (desiredMode == 2) {
+        // Mouse mode
+        this->mode = 2;
+        this->d = Point(0,0,0);
+        this->calculateSpherical();
+        this->spherical2Cartesian();
     }
 }
 
@@ -294,7 +315,7 @@ float Camera::getFar() {
 }
 
 void Camera::updateMouseAngles(int button, int state, int xx, int yy){
-    if (mode == 0){
+    if (mode == 2){
         if (state == GLUT_DOWN)  {
             startX = xx;
             startY = yy;
@@ -322,7 +343,7 @@ void Camera::updateMouseAngles(int button, int state, int xx, int yy){
 }
 
 void Camera::processMouseMotion(int xx, int yy) {
-    if (mode == 0){
+    if (mode == 2){
         int deltaX, deltaY;
         int alphaAux, betaAux;
         int rAux;
@@ -351,9 +372,9 @@ void Camera::processMouseMotion(int xx, int yy) {
             if (rAux < 3)
                 rAux = 3;
         }
-        position.setX(rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getX());
+        position.setX( rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getX());
         position.setZ(rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0) + lookAtPosition.getY()) ;
-        position.setY(rAux * 							     sin(betaAux * 3.14 / 180.0) + lookAtPosition.getZ());
+        position.setY(rAux * sin(betaAux * 3.14 / 180.0) + lookAtPosition.getZ());
     }
 }
 
@@ -361,7 +382,7 @@ void Camera::processMouseMotion(int xx, int yy) {
  * Places the camera in the world, using the glut gluLookAt function
  */
 void Camera::placeCamera(){
-    if (mode == 0){
+    if (mode == 0 || mode == 2){
         gluLookAt(this->getPosition().getX(),this->getPosition().getY(),this->getPosition().getZ(),
                   this->getLookAtPosition().getX() ,this->getLookAtPosition().getY(),this->getLookAtPosition().getZ(),
                   this->getUpVector().getX(),this->getUpVector().getY(),this->getUpVector().getZ());
@@ -390,25 +411,11 @@ void Camera::calculateAlfa(){
     if (d.getX() == 0 && d.getY()==0 && d.getZ()==0) {
         float vx = this->position.getX() - this->lookAtPosition.getX();
         float vz = this->position.getZ() - this->lookAtPosition.getZ();
-        float norma = sqrt(pow(vx, 2) + pow(vz, 2));
-        alfa = acos(vz / norma);
-
-        if (vx < 0 && vz < 0) {
-            alfa += M_PI / 2;
-        } else if (vx < 0) {
-            alfa += 3 * M_PI / 2;
-        }
+        alfa = atan2(vx, vz);
     } else {
         float vx = this->lookAtPosition.getX() - this->position.getX();
         float vz = this->lookAtPosition.getZ() - this->position.getZ();
-        float norma = sqrt(pow(vx, 2) + pow(vz, 2));
-        alfa = acos(vz / norma);
-
-        if (vx < 0 && vz < 0) {
-            alfa += M_PI / 2;
-        } else if (vx < 0) {
-            alfa += 3 * M_PI / 2;
-        }
+        alfa = atan2(vx, vz);
     }
 }
 
@@ -418,9 +425,17 @@ void Camera::calculateAlfa(){
  */
 void Camera::calculateBeta(){
     if(d.getX() == 0 && d.getY()==0 && d.getZ()==0) {
-        beta = asin((this->position.getY() - this->lookAtPosition.getY()) / this->cameraRadius); // By default, between -PI/2 and PI/2 because of arcsin domain
+        float vy = this->position.getY() - this->lookAtPosition.getY();
+        float vx = this->position.getX() - this->lookAtPosition.getX();
+        float vz = this->position.getZ() - this->lookAtPosition.getZ();
+        float dist = sqrt(pow(vx, 2) + pow(vz, 2));
+        beta = atan2(vy, dist);
     } else {
-        beta = asin((this->lookAtPosition.getY() - this->position.getY()) / this->cameraRadius);
+        float vy = this->lookAtPosition.getY() - this->position.getY();
+        float vx = this->lookAtPosition.getX() - this->position.getX();
+        float vz = this->lookAtPosition.getZ() - this->position.getZ();
+        float dist = sqrt(pow(vx, 2) + pow(vz, 2));
+        beta = atan2(vy, dist);
     }
 }
 

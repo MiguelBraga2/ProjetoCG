@@ -13,7 +13,7 @@ private:
     Point upVector;
     float fov, nearV, farV;
     float increment;
-    int mode; // 0 - Explorer mode, 1 - FPS mode
+    int mode; // 0 - Explorer mode, 1 - FPS mode, 2 - Mouse mode
     float alfa, beta, cameraRadius;
     float step;
     Point d;
@@ -23,16 +23,15 @@ private:
 public:
     Camera();
     Camera(Point position, Point lookAtPosition, Point upVector, float fov, float nearV, float farV);
-
     void setPosition(Point position);
-
+    void setMode(int mode);
+    void setAlpha(float angle);
+    void setBeta(float beta);
     void incrementAlfa();
     void decrementAlfa();
     void incrementBeta();
     void decrementBeta();
-
     float getCameraRadius();
-
     void incrementRadius();
     void decrementRadius();
     void incrementIncrement();
@@ -56,11 +55,6 @@ public:
     float getFar();
     void setLookAtPosition(Point lookAtPosition);
     void setCameraRadius(float cameraRadius);
-
-private:
-    /**
-     * Convert spherical coordenates (alpha and beta) into x, y, z coordinates
-     */
     void spherical2Cartesian();
     void calculateDirection();
     void calculateAlfa();

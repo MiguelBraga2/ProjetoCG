@@ -34,7 +34,6 @@ float frames;
 bool axis = true; // Is axis shown
 bool cameraInfo = true;
 int polygonMode = GL_LINE;
-int vboMode = 1; // 0 - noVBOs , 1 - VBOs
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
@@ -165,16 +164,17 @@ void menu(int id)
     switch(id)
     {
         case 1:
-            vboMode = 0;
             break;
         case 2:
-            vboMode = 1;
             break;
         case 3:
+            camera->changeMode(0); // Explorer
             break;
         case 4:
+            camera->changeMode(1); // FPS
             break;
         case 5:
+            camera->changeMode(2); // Mouse motion
             break;
         case 6:
             break;
@@ -201,15 +201,22 @@ void menu(int id)
             break;
         case 14:
             camera->setLookAtPosition(Point(0,0,0));
-            camera->setCameraRadius(2);
-            camera->changeMode(0);
+            camera->setCameraRadius(5);
+            camera->setAlpha(0.785); // ~ 45º
+            camera->setBeta(0.785); // ~ 45º
+            camera->spherical2Cartesian();
+            camera->setMode(0);
             break;
         default:
             camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
             camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
-            camera->changeMode(0);
+            camera->setAlpha(0.785); // ~ 45º
+            camera->setBeta(0.785); // ~ 45º
+            camera->spherical2Cartesian();
+            camera->setMode(0);
             break;
     }
+    glutPostRedisplay();
 }
 
 /**
@@ -218,27 +225,31 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu1, submenu2, submenu3;
-    submenu1 = glutCreateMenu(menu);
-    glutAddMenuEntry("NoVbos", 1);
-    glutAddMenuEntry("Vbos", 2);
+    int submenu2, submenu3, submenu4;
+
     submenu2 = glutCreateMenu(menu);
     glutAddMenuEntry("GL_FILL", 11);
     glutAddMenuEntry("GL_LINE", 12);
     glutAddMenuEntry("GL_POINT", 13);
+
     submenu3 = glutCreateMenu(menu);
     int i=0;
     glutAddMenuEntry("Origin", 14);
     for (auto it = teleports.begin(); it != teleports.end(); ++it, i++) {
         glutAddMenuEntry(it->first.c_str(), 15+i);
     }
+
+    submenu4 = glutCreateMenu(menu);
+    glutAddMenuEntry("Explorer mode", 3);
+    glutAddMenuEntry("FPS mode", 4);
+    glutAddMenuEntry("Mouse mode", 5);
+
     glutCreateMenu(menu);
-    glutAddSubMenu("Change VBOs", submenu1);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
+    glutAddSubMenu("Camera mode", submenu4);
+
     glutAddMenuEntry("Add axes", 10);
-    glutAddMenuEntry("Modo DJ", 3);
-    glutAddMenuEntry("Change mode", 4);
     glutAddMenuEntry("Show camera info", 9);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
@@ -253,7 +264,6 @@ void createMenu(void){
  */
 void processMouseButtons(int button, int state, int xx, int yy) {
     camera->updateMouseAngles(button, state, xx, yy);
-
 }
 
 /**
@@ -289,9 +299,6 @@ void keyboard_events(unsigned char key, int x, int y) {
     }
     else if (key == '2'){
         camera->incrementIncrement();
-    }
-    else if (key == 'm'){
-        camera->changeMode(-1);
     }
 
     glutPostRedisplay();
@@ -439,7 +446,6 @@ int main(int argc, char **argv) {
         glutKeyboardFunc(keyboard_events);
         glutMouseFunc(processMouseButtons);
         glutMotionFunc(processMouseMotion);
-        //glutPassiveMotionFunc(mouse_function);
 
         // Required for VBOs
         glewInit();
