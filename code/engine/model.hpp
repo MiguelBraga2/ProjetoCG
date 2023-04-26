@@ -13,6 +13,12 @@
 #include <tuple>
 #include <vector>
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
 #include "../shared/point.hpp"
 
 using namespace std;
@@ -21,23 +27,16 @@ class Model {
 private:
     string label;
     tuple<float, float, float> rgb;
-    vector<float> vertices;
-    vector<unsigned int> indexes;
+    GLuint vertices;
+    GLuint indexes;
+    int indexCount;
 
 public:
     Model();
     void readModel(string fileName);
     void drawModel();
-
-    vector<float> getVertices();
-    void setVertices(vector<float> vertices);
-
-    vector<unsigned int> getIndexes();
-    void setIndexes(vector<unsigned int> indexes);
-
     string getLabel();
     void setLabel(string label);
-
     tuple<float, float, float> getRgb();
     void setRgb(tuple<float, float, float> rgb);
 };

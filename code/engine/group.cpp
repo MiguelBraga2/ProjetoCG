@@ -20,30 +20,6 @@
 using namespace tinyxml2;
 
 Group::Group() {
-    this->buffers = NULL;
-    this->indexs = NULL;
-}
-
-Group::Group(vector<Transformation*> t, vector<Model> models, GLuint* buffers, GLuint* indexs, vector<Group> subgroups) {
-    for (size_t i = 0; i < t.size(); i++)
-    {
-        this->transformations.emplace_back(t[i]);
-    }
-
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        this->models.emplace_back(models[i]);
-    }
-
-    // Falta inicializar buffers e indexes 
-
-    for (size_t i = 0; i < subgroups.size(); i++)
-    {
-        this->subgroups.emplace_back(subgroups[i]);
-    }
-    this->buffers = new GLuint(this->models.size());
-    this->indexs = new GLuint(this->models.size());
-
 }
 
 /**
@@ -113,18 +89,7 @@ void Group::drawGroup(int vboMode) {
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        if (vboMode == 0) {
-            this->models[i].drawModel();
-        }
-        else if (vboMode == 1) {
-            tuple<float, float, float> rgb = this->models[i].getRgb();
-            glColor3f(get<0>(rgb), get<1>(rgb), get<2>(rgb)); // Change color
-            glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-            glVertexPointer(3, GL_FLOAT, 0, 0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-            glDrawElements(GL_TRIANGLES, this->models[i].getIndexes().size(), GL_UNSIGNED_INT, 0);
-        }
-        
+        this->models[i].drawModel();
     }
 
     // Recursively draw each subgroup with the transformations of this group enabled
@@ -133,24 +98,6 @@ void Group::drawGroup(int vboMode) {
     }
 
     glPopMatrix(); // Restore the transformations
-}
-
-void Group::prepareBuffers() {
-    glGenBuffers(this->models.size(), this->buffers);
-    glGenBuffers(this->models.size(), this->indexs);
-
-    for (int i = 0; i < this->models.size(); i++) {
-        glBindBuffer(GL_ARRAY_BUFFER, this->buffers[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->models[i].getVertices().size(),
-                     this->models[i].getVertices().data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexs[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->models[i].getIndexes().size(),
-                     this->models[i].getIndexes().data(), GL_STATIC_DRAW);
-    }
-
-    for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].prepareBuffers();
-    }
 }
 
 /**
@@ -260,8 +207,8 @@ void Group::readXML(XMLElement *group) {
         if (models) {
             for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
-                Model* m = new Model();
-                m->readModel(model->Attribute("file"));
+                Model m;
+                m.readModel(model->Attribute("file"));
                 float red = 1, green = 1, blue = 1;
                 if (model->Attribute("red")){
                     red = stof(model->Attribute("red"));
@@ -273,48 +220,27 @@ void Group::readXML(XMLElement *group) {
                     blue = stof(model->Attribute("blue"));
                 }
                 tuple <float, float, float> tup = make_tuple(red, green, blue);
-                m->setRgb(tup);
+                m.setRgb(tup);
 
                 if (model->Attribute("label")){
-                    m->setLabel(model->Attribute("label"));
+                    m.setLabel(model->Attribute("label"));
                 }
                 else {
-                    m->setLabel("undefined");
+                    m.setLabel("undefined");
                 }
 
-                this->models.push_back(*m);
+                this->models.push_back(m);
             }
-
-            this->buffers = new GLuint(this->models.size());
-            this->indexs = new GLuint(this->models.size());
         }
 
         /* Groups */
-        Group *g;
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
-            g = new Group();
-            g->readXML(gr);
-            this->subgroups.push_back(*g);
+            Group g;
+            g.readXML(gr);
+            this->subgroups.push_back(g);
         }
     }
     else{
         cout << "Group is NULL" << endl;
     }
-}
-
-void Group::addModel(Model m) {
-    this->models.push_back(m);
-}
-
-void Group::addTransformation(Transformation* t) {
-    this->transformations.push_back(t);
-}
-
-void Group::addGroup(Group g) {
-    this->subgroups.push_back(g);
-}
-
-Group* Group::clone() {
-    Group* g = new Group(this->transformations, this->models, this->buffers, this->indexs, this->subgroups);
-    return g;
 }
