@@ -134,7 +134,7 @@ void renderScene() {
         glEnd();
     }
 
-    globalGroup->drawGroup(vboMode);
+    globalGroup->drawGroup();
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -397,12 +397,16 @@ int readXML(char* filePath){
         globalGroup = new Group();
         globalGroup->readXML(world->FirstChildElement("group"));
 
-        vector<Transformation*> transf;
-        teleports = globalGroup->initializeTeleporter(&transf);
-        for (auto it = teleports.begin(); it != teleports.end(); ++it) {
-            keys.push_back(it->first);
+        vector<Transformation*> transforms;
+        teleports = globalGroup->initializeTps(&transforms);
+        for (auto & teleport : teleports) {
+            keys.push_back(teleport.first);
         }
 
+        for(auto transform : transforms) {
+            delete transform;
+        }
+        transforms.clear();
     }
     
     return (int) error;
@@ -451,6 +455,8 @@ int main(int argc, char **argv) {
             // enter GLUT's main cycle
             glutMainLoop();
 
+            globalGroup->freeGroup();
+            delete globalGroup;
         }
         else {
             cout << "Error" << endl;

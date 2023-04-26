@@ -29,11 +29,11 @@ Group::Group() {
  * @param radius pointer to the radius we want to calculate
  * @return the center we calculated
  */
-Point* Group::calculateCameraTeleport(vector<Transformation*> appliedTransfs, float* radius){
-    Point* base = new Point(0,0,0);
+Point* Group::calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius){
+    Point* base = new Point (0,0,0);
 
-    for (int i=appliedTransfs.size()-1 ; i>=0; i--) {
-        appliedTransfs[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
+    for (int i=appliedTransforms.size()-1 ; i>=0; i--) {
+        appliedTransforms[i]->applyTransformationToPoint(base, radius); // Apply the transformation to a point
     }
 
     return base;
@@ -44,34 +44,34 @@ Point* Group::calculateCameraTeleport(vector<Transformation*> appliedTransfs, fl
  * @param appliedTransfs all the transformations these models are subject to
  * @return a map with a label as a key and a tuple containing the center and the radius of the model related of the label
  */
-map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformation*> *appliedTransfs){
+map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *appliedTransforms){
     map<string, tuple<Point, float>> teleports;
 
 
     for (int i=0; i < this->transformations.size(); i++) {
-        if (appliedTransfs != NULL)
-            appliedTransfs->push_back(this->transformations[i]);
+        if (appliedTransforms != NULL)
+            appliedTransforms->push_back(this->transformations[i]);
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        if (appliedTransfs != NULL && this->models[i].getLabel().compare("undefined") != 0){
+        if (appliedTransforms != NULL && this->models[i].getLabel().compare("undefined") != 0){
             float radius = 4;
-            Point* cameraTeleport = calculateCameraTeleport(*appliedTransfs, &radius);
+            Point* cameraTeleport = calculateCameraTeleport(*appliedTransforms, &radius);
             teleports[this->models[i].getLabel()] = make_tuple(*cameraTeleport, radius);
         }
     }
 
     for (int i = 0; i < this->subgroups.size(); i++) {
-        map<string, tuple<Point, float>> newTeleports = this->subgroups[i].initializeTeleporter(appliedTransfs);
+        map<string, tuple<Point, float>> newTeleports = this->subgroups[i].initializeTps(appliedTransforms);
 
         for (auto it = newTeleports.begin(); it != newTeleports.end(); ++it) {
             teleports[it->first] = it->second;
         }
 
-        appliedTransfs->clear();
+        appliedTransforms->clear();
         for (int i=0; i < this->transformations.size(); i++) {
-            if (appliedTransfs != NULL)
-                appliedTransfs->push_back(this->transformations[i]);
+            if (appliedTransforms != NULL)
+                appliedTransforms->push_back(this->transformations[i]);
         }
     }
     return teleports;
@@ -80,7 +80,7 @@ map<string, tuple<Point, float>> Group::initializeTeleporter(vector<Transformati
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup(int vboMode) {
+void Group::drawGroup() {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
@@ -94,7 +94,7 @@ void Group::drawGroup(int vboMode) {
 
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup(vboMode);
+        this->subgroups[i].drawGroup();
     }
 
     glPopMatrix(); // Restore the transformations
@@ -243,4 +243,11 @@ void Group::readXML(XMLElement *group) {
     else{
         cout << "Group is NULL" << endl;
     }
+}
+
+void Group::freeGroup() {
+    for (auto transform : this->transformations) {
+        delete transform;
+    }
+    this->transformations.clear();
 }
