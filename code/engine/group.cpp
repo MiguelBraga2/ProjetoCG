@@ -16,6 +16,7 @@
 #include "../shared/IO.hpp"
 #include "group.hpp"
 #include <tuple>
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 using namespace tinyxml2;
@@ -119,7 +120,7 @@ void Group::readXML(XMLElement *group) {
 
             for (XMLElement* transform = transformationsElem->FirstChildElement(); transform != NULL; transform = transform->NextSiblingElement()) {
                 string tagName = transform->Value();
-                float x, y, z;
+                float x=0, y=0, z=0;
                 const char *strX = transform->Attribute("x");
                 const char *strY = transform->Attribute("y");
                 const char *strZ = transform->Attribute("z");

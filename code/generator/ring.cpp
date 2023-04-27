@@ -4,6 +4,7 @@
 #include "ring.hpp"
 #include "sphere.hpp"
 #include "box.hpp"
+#include <string>
 
 std::vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, std::vector<unsigned int>* indexes, char** args){
     std::vector<float> vertices;

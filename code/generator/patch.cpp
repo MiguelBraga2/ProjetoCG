@@ -2,6 +2,8 @@
 #include <fstream>
 #include "patch.hpp"
 #include "../shared/matrixOp.hpp"
+#include <string>
+#include <sstream>
 
 
 void getVectorF(float f, float *v) {

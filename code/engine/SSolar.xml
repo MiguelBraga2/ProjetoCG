@@ -81,12 +81,18 @@
             </group>
             <group> <!-- Lua -->
                 <transform>
-                    <translate x="0" y="0" z="35.7"/>
-                    <scale x="2.7" y="2.7" z="2.7"/>
+					<translate time="10" align="false">
+						<pointSet type="ellipse" num_points="16" a="38.7" b="35.7" angleX="0" angleY="0" angleZ="0"/>
+					</translate>
                 </transform>
-                <models>
-                    <model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
-                </models>
+				<group>
+					<transform>
+						<scale x="2.7" y="2.7" z="2.7"/>
+					</transform>
+					<models>
+						<model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
+					</models>
+				</group>
             </group>
             <group> <!-- Lua Órbita-->
                 <models>

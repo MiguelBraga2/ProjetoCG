@@ -148,14 +148,13 @@ void renderScene() {
     int time = glutGet(GLUT_ELAPSED_TIME);
     int fps;
 
-    if(time-timebase > 1000){
-        fps = frames * 1000.0/(time-timebase);
+    if (time - timebase > 1000) {
+        fps = frames * 1000.0 / (time - timebase);
         timebase = time;
         frames = 0;
-        char* s = (char*)malloc(4);
+        char s[15];
         sprintf(s, "FPS: %d", fps);
         glutSetWindowTitle(s);
-        free(s);
     }
     glPolygonMode(GL_FRONT, polygonMode);
     // End of frame
