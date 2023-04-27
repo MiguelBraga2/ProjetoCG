@@ -18,6 +18,7 @@ void Model::drawModel() {
     glVertexPointer(3,GL_FLOAT,0,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
     glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
+    glColor3f(1,1,1);
 }
 
 /**

@@ -57,5 +57,4 @@ void Rotation::applyTransformationToPoint(Point* base, float* radius) {
         base->setY(baseY * cos(M_PI/180*angle) + baseZ * (-sin(M_PI/180*angle)));
         base->setZ(baseY * sin(M_PI/180*angle) + baseZ * cos(M_PI/180*angle));
     }
-    std::cout << base->toString() << endl;
 }

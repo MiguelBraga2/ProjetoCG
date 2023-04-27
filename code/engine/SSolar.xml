@@ -8,16 +8,8 @@
     </camera>
     <group>
         <models> <!-- Asteroides -->
-            <model file="mercurio_orbita.3d"></model>
-            <model file="venus_orbita.3d"></model>
-            <model file="terra_orbita.3d"></model>
-            <model file="marte_orbita.3d"></model>
             <model file="cintura_de_asteroides.3d"></model>
             <!--<model file="cintura_de_kuiper.3d"></model> Tem muitos!!-->
-            <model file="jupiter_orbita.3d"></model>
-            <model file="saturno_orbita.3d"></model>
-            <model file="urano_orbita.3d"></model>
-            <model file="neptune_orbita.3d"></model>
         </models>
         <group> <!-- Sol -->
             <transform>
@@ -45,25 +37,39 @@
         </group>
         <group> <!-- Mercúrio -->
             <transform>
-                <translate x="1490" y="0" z="0"/>
-                <scale x="3.8" y="3.8" z="3.8"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="1790" b="1490" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
-            <models>
-                <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
-            </models>
+            <group>
+                <transform>
+                    <scale x="3.8" y="3.8" z="3.8"/>
+                </transform>
+                <models>
+                    <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
+                </models>
+            </group>
         </group>
         <group> <!-- Vénus -->
             <transform>
-                <translate x="1820" y="0" z="0"/>
-                <scale x="9.5" y="9.5" z="9.5"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="2120" b="1820" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
-            <models>
-                <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
-            </models>
+            <group>
+                <transform>
+                    <scale x="9.5" y="9.5" z="9.5"/>
+                </transform>
+                <models>
+                    <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
+                </models>
+            </group>
         </group>
         <group> <!-- Terra -->
             <transform>
-                <translate x="2100" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="2420" b="2120" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>
@@ -90,7 +96,9 @@
         </group>
         <group> <!-- Marte -->
             <transform>
-                <translate x="2620" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="2920" b="2620" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>
@@ -131,7 +139,9 @@
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <translate x="6300" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="6600" b="6300" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>
@@ -200,7 +210,9 @@
         </group>
         <group> <!-- Saturno -->
             <transform>
-                <translate x="10680" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="10980" b="10680" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>
@@ -257,7 +269,9 @@
         </group>
         <group> <!-- Urano -->
             <transform>
-                <translate x="20280" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="20580" b="20280" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>
@@ -298,7 +312,9 @@
         </group>
         <group> <!-- Neptuno -->
             <transform>
-                <translate x="31107" y="0" z="0"/>
+                <translate time="10" align="false">
+                    <pointSet type="ellipse" num_points="16" a="31307" b="31107" angleX="0" angleY="0" angleZ="0"/>
+                </translate>
             </transform>
             <group>
                 <transform>

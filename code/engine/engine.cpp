@@ -97,10 +97,6 @@ void renderText() {
         }
     }
 
-
-
-
-
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -144,9 +140,9 @@ void renderScene() {
         glEnd();
     }
 
-    globalGroup->drawGroup();
-
     glColor3f(1.0f, 1.0f, 1.0f);
+
+    globalGroup->drawGroup();
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -458,27 +454,6 @@ int main(int argc, char **argv) {
         // Required for VBOs
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
-
-        Point p1(2,0,0);
-        Rotation r1(0, 0, 1, 30, 0, 0);
-        Rotation r2(0, 1, 0, 30, 0, 0);
-        float radius = 3;
-        std::cout << p1.toString() << endl;
-        r1.applyTransformationToPoint(&p1, &radius);
-        r2.applyTransformationToPoint(&p1, &radius);
-        Point p3(0,0,4);
-        std::cout << p3.toString() << endl;
-        r1.applyTransformationToPoint(&p3, &radius);
-        r2.applyTransformationToPoint(&p3, &radius);
-        Point p2(-2,0,0);
-        std::cout << p2.toString() << endl;
-        r1.applyTransformationToPoint(&p2, &radius);
-        r2.applyTransformationToPoint(&p2, &radius);
-        Point p4(0,0,-4);
-        std::cout << p4.toString() << endl;
-        r1.applyTransformationToPoint(&p4, &radius);
-        r2.applyTransformationToPoint(&p4, &radius);
-
 
         int error = readXML(argv[1]);
 
