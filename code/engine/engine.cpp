@@ -410,9 +410,6 @@ int readXML(char* filePath){
             keys.push_back(teleport.first);
         }
 
-        for(auto transform : transforms) {
-            delete transform;
-        }
         transforms.clear();
     }
 
