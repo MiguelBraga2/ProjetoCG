@@ -225,21 +225,21 @@ void Camera::moveBackwards() {
 
 void Camera::moveLeft() {
     if (mode == 1){ // Modo FPS
-        Point perp = Point::crossProduct(upVector, d);
+        Point perp = Point::crossProduct(d, upVector);
         perp.normalize();
-        this->position.setX(this->position.getX() + this->step*perp.getX());
-        this->position.setY(this->position.getY() + this->step*perp.getY());
-        this->position.setZ(this->position.getZ() + this->step*perp.getZ());
+        this->position.setX(this->position.getX() - this->step*perp.getX());
+        this->position.setY(this->position.getY() - this->step*perp.getY());
+        this->position.setZ(this->position.getZ() - this->step*perp.getZ());
     }
 }
 
 void Camera::moveRight() {
     if (mode == 1){ // Modo FPS
-        Point perp = Point::crossProduct(upVector, d);
+        Point perp = Point::crossProduct(d, upVector);
         perp.normalize();
-        this->position.setX(this->position.getX() - this->step*perp.getX());
-        this->position.setY(this->position.getY() - this->step*perp.getY());
-        this->position.setZ(this->position.getZ() - this->step*perp.getZ());
+        this->position.setX(this->position.getX() + this->step*perp.getX());
+        this->position.setY(this->position.getY() + this->step*perp.getY());
+        this->position.setZ(this->position.getZ() + this->step*perp.getZ());
     }
 }
 

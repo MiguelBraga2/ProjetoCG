@@ -32,7 +32,7 @@ int timebase;
 float frames;
 
 bool axis = true; // Is axis shown
-bool cameraInfo = true;
+bool cameraInfo = false;
 int polygonMode = GL_LINE;
 
 // For each label, store the center and the radius
@@ -201,7 +201,7 @@ void menu(int id)
             break;
         case 14:
             camera->setLookAtPosition(Point(0,0,0));
-            camera->setCameraRadius(5);
+            camera->setCameraRadius(10000);
             camera->setAlpha(0.785); // ~ 45º
             camera->setBeta(0.785); // ~ 45º
             camera->spherical2Cartesian();
