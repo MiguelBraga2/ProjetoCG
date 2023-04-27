@@ -84,8 +84,15 @@ void renderText() {
     glLoadIdentity();
     glRasterPos2d(0, 0); // text position in pixels
 
-    for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+    if (cameraInfo)
+        for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+        }
+    if (camera->getMode() == 1)
+        glRasterPos2d(width/2, height/2); // text position in pixels
+
+    for (const char *c = "+"; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
 
 
@@ -109,8 +116,7 @@ void renderScene() {
 	glLoadIdentity();
     camera->placeCamera();
 
-    if (cameraInfo)
-        renderText();
+    renderText();
 
     if (axis){
         // put axis drawing in here

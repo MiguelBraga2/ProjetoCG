@@ -455,3 +455,7 @@ void Camera::setCameraRadius(float cameraRadius) {
 float Camera::getCameraRadius() {
     return cameraRadius;
 }
+
+int Camera::getMode() {
+    return this->mode;
+}

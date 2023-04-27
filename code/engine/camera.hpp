@@ -60,6 +60,7 @@ public:
     void calculateAlfa();
     void calculateBeta();
     void calculateSpherical();
+    int getMode();
 };
 
 #endif
