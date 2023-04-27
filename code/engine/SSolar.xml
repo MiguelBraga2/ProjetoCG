@@ -11,6 +11,26 @@
             <model file="cintura_de_asteroides.3d"></model>
             <!--<model file="cintura_de_kuiper.3d"></model> Tem muitos!!-->
         </models>
+        <group>
+            <transform>
+                <translate x="5000" y="0" z="0"/>
+            </transform>
+            <group>
+                <transform>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="15"/>
+                    </translate>
+                </transform>
+                <group>
+                    <transform>
+                        <scale x="2.5" y="2.5" z="2.5"/>
+                    </transform>
+                    <models>
+                        <model file="comet_10.3d"/>
+                    </models>
+                </group>
+            </group>
+        </group>
         <group> <!-- Sol -->
             <transform>
                 <scale x="1100" y="1100" z="1100"/>
