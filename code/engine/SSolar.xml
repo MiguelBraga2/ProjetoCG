@@ -13,6 +13,7 @@
             <model file="terra_orbita.3d"></model>
             <model file="marte_orbita.3d"></model>
             <model file="cintura_de_asteroides.3d"></model>
+            <!--<model file="cintura_de_kuiper.3d"></model> Tem muitos!!-->
             <model file="jupiter_orbita.3d"></model>
             <model file="saturno_orbita.3d"></model>
             <model file="urano_orbita.3d"></model>

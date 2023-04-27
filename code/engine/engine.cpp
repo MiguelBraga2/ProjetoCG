@@ -19,6 +19,7 @@
 #include "camera.hpp"
 #include "group.hpp"
 #include "Transformations/translation.hpp"
+#include "Transformations/rotation.hpp"
 
 using namespace std;
 
@@ -88,12 +89,16 @@ void renderText() {
         for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
         }
-    if (camera->getMode() == 1)
-        glRasterPos2d(width/2, height/2); // text position in pixels
 
-    for (const char *c = "+"; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    if (camera->getMode() == 1) {
+        glRasterPos2d(width/2, height/2); // text position in pixels
+        for (const char *c = "+"; *c != '\0'; c++) {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+        }
     }
+
+
+
 
 
     glMatrixMode(GL_PROJECTION);
@@ -456,6 +461,15 @@ int main(int argc, char **argv) {
         // Required for VBOs
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
+
+        Point p1(2,0,0);
+        Rotation r1(0, 1, 0, 30, 0, 0);
+        float radius = 3;
+        r1.applyTransformationToPoint(&p1, &radius);
+        Point p2(-2,0,0);
+        Point p3(0,0,-2);
+        Point p4(0,0,2);
+
 
         int error = readXML(argv[1]);
 
