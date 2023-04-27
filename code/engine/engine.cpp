@@ -460,12 +460,24 @@ int main(int argc, char **argv) {
         glEnableClientState(GL_VERTEX_ARRAY);
 
         Point p1(2,0,0);
-        Rotation r1(0, 1, 0, 30, 0, 0);
+        Rotation r1(0, 0, 1, 30, 0, 0);
+        Rotation r2(0, 1, 0, 30, 0, 0);
         float radius = 3;
+        std::cout << p1.toString() << endl;
         r1.applyTransformationToPoint(&p1, &radius);
+        r2.applyTransformationToPoint(&p1, &radius);
+        Point p3(0,0,4);
+        std::cout << p3.toString() << endl;
+        r1.applyTransformationToPoint(&p3, &radius);
+        r2.applyTransformationToPoint(&p3, &radius);
         Point p2(-2,0,0);
-        Point p3(0,0,-2);
-        Point p4(0,0,2);
+        std::cout << p2.toString() << endl;
+        r1.applyTransformationToPoint(&p2, &radius);
+        r2.applyTransformationToPoint(&p2, &radius);
+        Point p4(0,0,-4);
+        std::cout << p4.toString() << endl;
+        r1.applyTransformationToPoint(&p4, &radius);
+        r2.applyTransformationToPoint(&p4, &radius);
 
 
         int error = readXML(argv[1]);

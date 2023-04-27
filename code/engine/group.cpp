@@ -16,6 +16,7 @@
 #include "../shared/IO.hpp"
 #include "group.hpp"
 #include <tuple>
+#include <math.h>
 
 using namespace tinyxml2;
 
@@ -155,13 +156,46 @@ void Group::readXML(XMLElement *group) {
                             align = false;
                         }
 
-                        // Iterate over the control points
-                        for (XMLElement* point = transform->FirstChildElement("point"); point != NULL; point = point->NextSiblingElement("point")){
-                            x = stof(point->Attribute("x"));
-                            y = stof(point->Attribute("y"));
-                            z = stof(point->Attribute("z"));
-                            Point p(x, y, z);
-                            controlPoints.push_back(p);
+                        XMLElement* set = transform->FirstChildElement("pointSet");
+
+                        if (set){ // Ex: <pointSet type="ellipse" num_points="4" a="4" b="2" angleX="30" angleY="0" angleZ="0"/>
+                            const char* type = set->Attribute("type");
+                            if (std::strcmp(type, "ellipse") == 0) {
+                                int numPoints = stoi(set->Attribute("num_points"));
+                                float a = stof(set->Attribute("a"));
+                                float b = stof(set->Attribute("b"));
+                                float angleX = stof(set->Attribute("angleX"));
+                                float angleY = stof(set->Attribute("angleY"));
+                                float angleZ = stof(set->Attribute("angleZ"));
+
+                                float alfa=360.0/numPoints;
+
+                                for(int i=0; i<numPoints; i++){
+                                    float angle = alfa*i;
+                                    float z = b*sin(angle*M_PI/180);
+                                    float x = a*cos(angle*M_PI/180);
+                                    Point p(x,0,z);
+                                    float radius = 1; // Not necessary
+                                    Rotation rX = Rotation(1,0,0, angleX, 0, 0);
+                                    Rotation rY = Rotation(0,1,0, angleY, 0, 0);
+                                    Rotation rZ = Rotation(0,0,1, angleZ, 0, 0);
+                                    rX.applyTransformationToPoint(&p, &radius);
+                                    rY.applyTransformationToPoint(&p, &radius);
+                                    rZ.applyTransformationToPoint(&p, &radius);
+                                    controlPoints.push_back(p);
+                                }
+                            }
+                        }
+                        else {
+                            // Iterate over the control points
+                            for (XMLElement *point = transform->FirstChildElement("point");
+                                 point != NULL; point = point->NextSiblingElement("point")) {
+                                x = stof(point->Attribute("x"));
+                                y = stof(point->Attribute("y"));
+                                z = stof(point->Attribute("z"));
+                                Point p(x, y, z);
+                                controlPoints.push_back(p);
+                            }
                         }
 
                     }
