@@ -20,15 +20,11 @@
                     <translate time="10" align="false">
                         <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="15"/>
                     </translate>
+                    <scale x="2.5" y="2.5" z="2.5"/>
                 </transform>
-                <group>
-                    <transform>
-                        <scale x="2.5" y="2.5" z="2.5"/>
-                    </transform>
-                    <models>
-                        <model file="comet_10.3d"/>
-                    </models>
-                </group>
+                <models>
+                    <model file="comet_10.3d"/>
+                </models>
             </group>
         </group>
         <group> <!-- Sol -->
@@ -60,34 +56,26 @@
                 <translate time="10" align="false">
                     <pointSet type="ellipse" num_points="16" a="1790" b="1490" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
+                <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
-            <group>
-                <transform>
-                    <scale x="3.8" y="3.8" z="3.8"/>
-                </transform>
-                <models>
-                    <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
-                </models>
-            </group>
+            <models>
+                <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
+            </models>
         </group>
         <group> <!-- Vénus -->
             <transform>
                 <translate time="10" align="false">
                     <pointSet type="ellipse" num_points="16" a="2120" b="1820" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
+                <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
-            <group>
-                <transform>
-                    <scale x="9.5" y="9.5" z="9.5"/>
-                </transform>
-                <models>
-                    <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
-                </models>
-            </group>
+            <models>
+                <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
+            </models>
         </group>
         <group> <!-- Terra -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="2420" b="2120" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -104,25 +92,16 @@
 					<translate time="10" align="false">
 						<pointSet type="ellipse" num_points="16" a="38.7" b="35.7" angleX="0" angleY="0" angleZ="0"/>
 					</translate>
+                    <scale x="2.7" y="2.7" z="2.7"/>
                 </transform>
-				<group>
-					<transform>
-						<scale x="2.7" y="2.7" z="2.7"/>
-					</transform>
-					<models>
-						<model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
-					</models>
-				</group>
-            </group>
-            <group> <!-- Lua Órbita-->
                 <models>
-                    <model file="lua_orbita.3d"/>
+                    <model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
                 </models>
             </group>
         </group>
         <group> <!-- Marte -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="2920" b="2620" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -136,36 +115,30 @@
             </group>
             <group> <!-- Fobos -->
                 <transform>
-                    <translate x="5.9626" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="8.9626" b="5.9626" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="0.0054" y="0.0054" z="0.0054"/>
                 </transform>
                 <models>
                     <model label="Fobos" file="sphere_1_30_30.3d" red="1" green="0" blue="0" />
                 </models>
             </group>
-            <group> <!-- Fobos Órbita -->
-                <models>
-                    <model file="fobos_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Deimos -->
                 <transform>
-                    <translate x="6.87" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="9.87" b="6.87" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="0.0015" y="0.0015" z="0.0015"/>
                 </transform>
                 <models>
                     <model label="Deimos" file="sphere_1_30_30.3d" red="1" green="0" blue="0" />
                 </models>
             </group>
-            <group> <!-- Deimos Órbita -->
-                <models>
-                    <model file="deimos_orbita.3d"/>
-                </models>
-            </group>
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="6600" b="6300" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -179,64 +152,52 @@
             </group>
             <group> <!-- Europa -->
                 <transform>
-                    <translate x="157" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="187" b="157" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="2.45" y="2.45" z="2.45"/>
                 </transform>
                 <models>
                     <model label="Europa" file="sphere_1_30_30.3d" red="1" green="0.9" blue="0.93" />
                 </models>
             </group>
-            <group> <!-- Europa Orbita-->
-                <models>
-                    <model file="europa_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Ganimedes -->
                 <transform>
-                    <translate x="183.6" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="213.6" b="183.6" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="4.135" y="4.135" z="4.135"/>
                 </transform>
                 <models>
                     <model label="Ganimedes" file="sphere_1_30_30.3d" red="1" green="0.65" blue="0.3" />
                 </models>
             </group>
-            <group> <!-- Ganimedes Orbita-->
-                <models>
-                    <model file="ganimedes_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Calisto -->
                 <transform>
-                    <translate x="238" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="268" b="238" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="3.78" y="3.78" z="3.78"/>
                 </transform>
                 <models>
                     <model label="Calisto" file="sphere_1_30_30.3d" red="0" green="0.07" blue="0.4" />
                 </models>
             </group>
-            <group> <!-- Calisto Orbita-->
-                <models>
-                    <model file="calisto_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- IO -->
                 <transform>
-                    <translate x="140.2" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="170.2" b="140.2" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="2.86" y="2.86" z="2.86"/>
                 </transform>
                 <models>
                     <model label="Io" file="sphere_1_30_30.3d" red="0.9" green="0.9" blue="0" />
                 </models>
             </group>
-            <group> <!-- IO Orbita-->
-                <models>
-                    <model file="io_orbita.3d"/>
-                </models>
-            </group>
         </group>
         <group> <!-- Saturno -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="10980" b="10680" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -252,50 +213,41 @@
             </group>
             <group> <!-- Titã -->
                 <transform>
-                    <translate x="175.8" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="205.8" b="175.8" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="4.049" y="4.049" z="4.049"/>
                 </transform>
                 <models>
                     <model label="Tita" file="sphere_1_30_30.3d" red="0" green="0.5" blue="0.17"/>
                 </models>
             </group>
-            <group> <!-- Titã Orbita-->
-                <models>
-                    <model file="tita_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Reia -->
                 <transform>
-                    <translate x="129.3" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="159.3" b="129.3" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="1.235" y="1.235" z="1.235"/>
                 </transform>
                 <models>
                     <model label="Reia" file="sphere_1_30_30.3d" red="1" green="1" blue="1"/>
                 </models>
             </group>
-            <group> <!-- Reia Orbita-->
-                <models>
-                    <model file="reia_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Tetis -->
                 <transform>
-                    <translate x="113.7" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="143.7" b="113.7" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="1.237" y="1.237" z="1.237"/>
                 </transform>
                 <models>
                     <model label="Tetis" file="sphere_1_30_30.3d" red="1" green="0.95" blue="0.9" />
                 </models>
             </group>
-            <group> <!-- Tetis Orbita-->
-                <models>
-                    <model file="tetis_orbita.3d"/>
-                </models>
-            </group>
         </group>
         <group> <!-- Urano -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="20580" b="20280" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -309,36 +261,30 @@
             </group>
             <group> <!-- Titania -->
                 <transform>
-                    <translate x="69.2" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="99.2" b="69.2" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="1.233" y="1.233" z="1.233"/>
                 </transform>
                 <models>
                     <model label="Titania" file="sphere_1_30_30.3d" red="0.9" green="0.93" blue="1" />
                 </models>
             </group>
-            <group> <!-- Titania Orbita-->
-                <models>
-                    <model file="titania_orbita.3d"/>
-                </models>
-            </group>
             <group> <!-- Oberon -->
                 <transform>
-                    <translate x="79.1" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="109.1" b="79.1" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="1.197" y="1.197" z="1.197"/>
                 </transform>
                 <models>
                     <model label="Oberon" file="sphere_1_30_30.3d" red="0.6" green="0.8" blue="1" />
                 </models>
             </group>
-            <group> <!-- Oberon Orbita-->
-                <models>
-                    <model file="oberon_orbita.3d"/>
-                </models>
-            </group>
         </group>
         <group> <!-- Neptuno -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="1000" align="false">
                     <pointSet type="ellipse" num_points="16" a="31307" b="31107" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
@@ -352,16 +298,13 @@
             </group>
             <group> <!-- Tritão -->
                 <transform>
-                    <translate x="61.7" y="0" z="0"/>
+                    <translate time="10" align="false">
+                        <pointSet type="ellipse" num_points="16" a="91.7" b="61.7" angleX="0" angleY="0" angleZ="0"/>
+                    </translate>
                     <scale x="2.228" y="2.228" z="2.228"/>
                 </transform>
                 <models>
                     <model label="Tritao" file="sphere_1_30_30.3d" red="1" green="0.9" blue="0.9" />
-                </models>
-            </group>
-            <group> <!-- Tritão Orbita-->
-                <models>
-                    <model file="tritao_orbita.3d"/>
                 </models>
             </group>
         </group>
