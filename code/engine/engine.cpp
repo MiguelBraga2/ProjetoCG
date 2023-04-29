@@ -23,7 +23,6 @@
 
 using namespace std;
 
-
 int width, height;
 Camera* camera;
 Group* globalGroup; // Outer collection of transformations, models and subgroups
@@ -34,6 +33,8 @@ float frames;
 
 bool axis = true; // Is axis shown
 bool cameraInfo = false;
+bool fixedMode = false;
+string fixedLabel = "";
 int polygonMode = GL_LINE;
 
 // For each label, store the center and the radius
@@ -115,7 +116,21 @@ void renderScene() {
 
 	// set the camera
 	glLoadIdentity();
-    camera->placeCamera();
+    if (fixedLabel.empty())
+        camera->placeCamera();
+
+    if (fixedMode == true && !fixedLabel.empty()){
+        vector<Transformation*> transforms;
+        teleports = globalGroup->initializeTps(&transforms);
+        transforms.clear();
+        camera->setLookAtPosition(get<0>(teleports[fixedLabel]));
+        camera->setCameraRadius(get<1>(teleports[fixedLabel]));
+        camera->placeCamera();
+    }
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    globalGroup->drawGroup();
 
     renderText();
 
@@ -139,10 +154,6 @@ void renderScene() {
         glVertex3f(0.0f, 0.0f, 100.0f);
         glEnd();
     }
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-
-    globalGroup->drawGroup();
 
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -183,7 +194,8 @@ void menu(int id)
             camera->changeMode(2); // Mouse motion
             break;
         case 6:
-            break;
+            if (fixedMode == true) { fixedMode = false; fixedLabel = ""; }
+            else if (fixedMode == false) fixedMode = true;
         case 7:
             break;
         case 8:
@@ -214,12 +226,20 @@ void menu(int id)
             camera->setMode(0);
             break;
         default:
-            camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
-            camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
-            camera->setAlpha(0.785); // ~ 45º
-            camera->setBeta(0.785); // ~ 45º
-            camera->spherical2Cartesian();
-            camera->setMode(0);
+            vector<Transformation*> transforms;
+            if (fixedMode == true){
+                fixedLabel = keys[id-15];
+            }
+            else{
+                teleports = globalGroup->initializeTps(&transforms);
+                transforms.clear();
+                camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
+                camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
+                camera->setAlpha(0.785); // ~ 45º
+                camera->setBeta(0.785); // ~ 45º
+                camera->spherical2Cartesian();
+                camera->setMode(0);
+            }
             break;
     }
     glutPostRedisplay();
@@ -241,8 +261,10 @@ void createMenu(void){
     submenu3 = glutCreateMenu(menu);
     int i=0;
     glutAddMenuEntry("Origin", 14);
-    for (auto it = teleports.begin(); it != teleports.end(); ++it, i++) {
-        glutAddMenuEntry(it->first.c_str(), 15+i);
+    for (string label:keys) {
+        const char* l = label.c_str();
+        glutAddMenuEntry(l, 15+i);
+        i++;
     }
 
     submenu4 = glutCreateMenu(menu);
@@ -253,6 +275,7 @@ void createMenu(void){
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
+    glutAddMenuEntry("Change Teleport Mode", 6);
     glutAddSubMenu("Camera mode", submenu4);
 
     glutAddMenuEntry("Add axes", 10);
@@ -351,7 +374,7 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @param filePath the PATH of the XML
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
-int readXML(char* filePath){
+int readXML(char* filePath, vector<string>* keys){
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError error = doc.LoadFile(filePath);
     tinyxml2::XMLNode* world = doc.FirstChildElement("world");
@@ -407,15 +430,7 @@ int readXML(char* filePath){
         }
 
         globalGroup = new Group();
-        globalGroup->readXML(world->FirstChildElement("group"));
-
-        vector<Transformation*> transforms;
-        teleports = globalGroup->initializeTps(&transforms);
-        for (auto & teleport : teleports) {
-            keys.push_back(teleport.first);
-        }
-
-        transforms.clear();
+        globalGroup->readXML(world->FirstChildElement("group"), keys);
     }
 
     return (int) error;
@@ -450,7 +465,7 @@ int main(int argc, char **argv) {
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        int error = readXML(argv[1]);
+        int error = readXML(argv[1], &keys);
 
         if (!error) {
             createMenu();

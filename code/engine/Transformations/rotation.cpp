@@ -12,7 +12,7 @@
 Rotation::Rotation(float x, float y, float z, float angle, double startCounter, float duration360) : Transformation(x, y, z), angle(angle), startCounter(startCounter), duration360(duration360) {
 }
 
-void Rotation::applyTransformation() {
+double Rotation::getRotationAngle(){
     double rAngle;
     if (duration360 != 0) {
         if (startCounter == 0) {
@@ -29,8 +29,12 @@ void Rotation::applyTransformation() {
         rAngle = (double)rotationTime * 360 / duration360; // Angle in radians
     }
     else rAngle = this->getAngle();
-    
-    glRotatef(rAngle, this->getX(), this->getY(), this->getZ());
+
+    return rAngle;
+}
+
+void Rotation::applyTransformation() {
+    glRotatef(this->getRotationAngle(), this->getX(), this->getY(), this->getZ());
 }
 
 float Rotation::getAngle() {
@@ -44,17 +48,17 @@ void Rotation::setAngle(float angle) {
 void Rotation::applyTransformationToPoint(Point* base, float* radius) {
     if (this->getX() == 0 && this->getY() == 0 && this->getZ() == 1){
         float baseX = base->getX(), baseY = base->getY();
-        base->setX(baseX * cos(M_PI/180*angle) + baseY*(-sin(M_PI/180*angle)));
-        base->setY(baseX * sin(M_PI/180*angle) + baseY * cos(M_PI/180*angle));
+        base->setX(baseX * cos(M_PI/180*getRotationAngle()) + baseY*(-sin(M_PI/180*getRotationAngle())));
+        base->setY(baseX * sin(M_PI/180*getRotationAngle()) + baseY * cos(M_PI/180*getRotationAngle()));
     }
     else if (this->getX() == 0 && this->getY() == 1 && this->getZ() == 0){
         float baseX = base->getX(), baseZ = base->getZ();
-        base->setX(baseX * cos(M_PI/180*angle) + baseZ * sin(M_PI/180*angle));
-        base->setZ(baseX * (-sin(M_PI/180*angle)) + baseZ * cos(M_PI/180*angle));
+        base->setX(baseX * cos(M_PI/180*getRotationAngle()) + baseZ * sin(M_PI/180*getRotationAngle()));
+        base->setZ(baseX * (-sin(M_PI/180*getRotationAngle())) + baseZ * cos(M_PI/180*getRotationAngle()));
     }
     else if (this->getX() == 1 && this->getY() == 0 && this->getZ() == 0){
         float baseY = base->getY(), baseZ = base->getZ();
-        base->setY(baseY * cos(M_PI/180*angle) + baseZ * (-sin(M_PI/180*angle)));
-        base->setZ(baseY * sin(M_PI/180*angle) + baseZ * cos(M_PI/180*angle));
+        base->setY(baseY * cos(M_PI/180*getRotationAngle()) + baseZ * (-sin(M_PI/180*getRotationAngle())));
+        base->setZ(baseY * sin(M_PI/180*getRotationAngle()) + baseZ * cos(M_PI/180*getRotationAngle()));
     }
 }
