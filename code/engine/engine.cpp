@@ -288,16 +288,16 @@ void processMouseMotion(int xx, int yy) {
  * @param y y coordinate of mouse in the screen
  */
 void keyboard_events(unsigned char key, int x, int y) {
-    if (key == 'w'){
+    if (key == 'w' || key == 'W'){
         camera->moveForwards();
     }
-    else if (key == 's'){
+    else if (key == 's' || key == 'S'){
         camera->moveBackwards();
     }
-    else if (key == 'a'){
+    else if (key == 'a' || key == 'A'){
         camera->moveLeft();
     }
-    else if (key == 'd'){
+    else if (key == 'd' || key == 'D'){
         camera->moveRight();
     }
     else if (key == '1'){

@@ -12,7 +12,7 @@
 #include "../../shared/matrixOp.hpp"
 
 
-Translation::Translation(float x, float y, float z, float duration, bool align, int tesselation, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align), tesselation(tesselation) {
+Translation::Translation(float x, float y, float z, float duration, bool align, int tesselation, bool show, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align), tesselation(tesselation), show(show) {
     for(Point p: controlPoints){
         this->controlPoints.push_back(p);
     }
@@ -103,7 +103,9 @@ void Translation::applyTransformation(){
 
         float t = translationTime / duration;
 
-        renderCatmullRomCurve();
+        if (show) {
+            renderCatmullRomCurve();
+        }
 
         float pos[3];
         float deriv[3];
