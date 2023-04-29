@@ -1,8 +1,0 @@
-﻿  Building Custom Rule C:/Users/jpago/Documents/CG/Teste/CMakeLists.txt
-  CMake is re-running because C:/Users/jpago/Documents/CG/Teste/build/CMakeFiles/generate.stamp dependency file is missing.
-  CMake Error at CMakeLists.txt:8:
-  -- Configuring incomplete, errors occurred!
-    Parse error.  Function missing ending ")".  End of file reached.
-  
-  
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(247,5): error MSB8066: o build personalizado para 'C:\Users\jpago\Documents\CG\Teste\CMakeLists.txt' foi encerrado com o código 1.
