@@ -1558,8 +1558,13 @@ void renderText() {
 
     glPushMatrix();
     glLoadIdentity();
-    glRasterPos2d(0, 0); // text position in pixels
+    glRasterPos2d(2, 2); // text position in pixels
 
+    glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
+
+    for (const unsigned char* c = "COLOR"; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+    }
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -1673,7 +1678,7 @@ void processKeys(unsigned char key, int xx, int yy) {
 
     }
     else if (key == 'V' || key == 'v') {
-        indColors = (indColors+1)%colorsVec.size()
+        indColors = (indColors + 1) % colorsVec.size();
     }
 }
 
