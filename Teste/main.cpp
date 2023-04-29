@@ -25,6 +25,10 @@ int red = 1, green = 100, blue = 0;
 
 float k = 1;
 
+int indColors = 0;
+
+std::vector<std::tuple<float, float, float>> colorsVec;
+
 int minecraftMode = 0; // 0 - Construir, 1 - Destruir
 
 GLuint buffers[4];
@@ -46,7 +50,7 @@ float currPosZ[255][255][255];
 
 int vertexCount = 0, indexCount = 0, numIndex = 0, cubeIndex = 0;
 
-float camX = 1, camY = 0, camZ = 1;
+float camX = 1, camY = 3, camZ = 1;
 float lx, ly, lz;
 float dx, dy, dz;
 
@@ -548,9 +552,13 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    float red_vec = std::get<0>(colorsVec[indColors]);
+    float green_vec = std::get<1>(colorsVec[indColors]);
+    float blue_vec = std::get<2>(colorsVec[indColors]);
+
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newNormalcolors.push_back(red / 255.0f);
     newNormalcolors.push_back(green / 255.0f);
@@ -1071,11 +1079,33 @@ void changeSize(int w, int h)
     glMatrixMode(GL_MODELVIEW);
 }
 
+void renderText() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    // set projection so that coordinates match window pixels
+    gluOrtho2D(0, tw, 0, th);
+    glMatrixMode(GL_MODELVIEW);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2d(0, 0); // text position in pixels
+
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
+}
 
 void renderScene(void)
 {
 
-    glClearColor(1, 1, 1, 0.0f);
+    glClearColor(0, 0, 0, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -1083,10 +1113,10 @@ void renderScene(void)
         camY = getHeightf(camX, camZ) + 3;
         aux1();
     }*/
-    gluLookAt(-250, 100, -250,
+    gluLookAt(camX, camY, camZ,
         0, 0, 0,
         0.0f, 1.0f, 0.0f);
-
+    renderText();
     //glColor3f(1,0,0);
     // put drawing instructions here
     //glutSolidCube(1);
@@ -1572,8 +1602,9 @@ void init() {
 
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            float height = getHeight(i,j)/2;
-            for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+            drawCube(i,j,0);
+            //float height = getHeight(i,j)/2;
+            //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
         }
     }
 
@@ -1638,11 +1669,15 @@ void processKeys(unsigned char key, int xx, int yy) {
     else if (key == 'u' || key == 'U'){
         //camY += 1;
     }
-    else {
+    else if (key == 'M' || key == 'm'){
         if (minecraftMode == 0) {
             minecraftMode = 1;
         }
         else minecraftMode = 0;
+
+    }
+    else if (key == 'V' || key == 'v') {
+        indColors = (indColors+1)%colorsVec.size();
     }
 }
 
@@ -1662,6 +1697,11 @@ int main(int argc, char** argv)
     glutDisplayFunc(renderScene);
     glutMouseFunc(processMouseButtons);
     glutMotionFunc(processMouseMotion);
+
+    colorsVec.push_back(std::make_tuple(1, 0, 0)); // RED
+    colorsVec.push_back(std::make_tuple(0, 1, 0)); // GREEN
+    colorsVec.push_back(std::make_tuple(0, 0, 1)); // BLUE
+
     glutKeyboardFunc(processKeys);
 
     // some OpenGL settings
