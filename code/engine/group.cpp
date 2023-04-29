@@ -139,6 +139,7 @@ void Group::readXML(XMLElement *group) {
                     float time;
                     bool align;
                     int tesselation;
+                    bool show = true;
                     vector<Point> controlPoints;
 
                     if (!strX && !strY && !strZ) {
@@ -146,9 +147,14 @@ void Group::readXML(XMLElement *group) {
                         const char* strTime = transform->Attribute("time");
                         const char* strAlign = transform->Attribute("align");
                         const char* strTesselation = transform->Attribute("tesselation");
+                        const char* strShow = transform->Attribute("show");
 
                         time = stof(strTime);
                         tesselation = strTesselation ? stof(strTesselation) : 100;
+
+                        if (strShow && strcmp(strShow, "false") == 0) {
+                            show = false;
+                        }
 
                         if (std::strcmp(strAlign, "true") == 0) {
                             align = true;
@@ -205,7 +211,7 @@ void Group::readXML(XMLElement *group) {
                         align = false;
                         tesselation = 0;
                     }
-                    Translation *t = new Translation(x, y, z, time, align, tesselation, controlPoints);
+                    Translation *t = new Translation(x, y, z, time, align, tesselation, show, controlPoints);
                     this->transformations.push_back(t);
                     numTranslates++;
                 }
