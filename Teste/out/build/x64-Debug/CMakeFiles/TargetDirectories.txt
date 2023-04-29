@@ -1,3 +1,0 @@
-C:/Users/jpago/Documents/CG/Teste/out/build/x64-Debug/CMakeFiles/class1.dir
-C:/Users/jpago/Documents/CG/Teste/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/jpago/Documents/CG/Teste/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
