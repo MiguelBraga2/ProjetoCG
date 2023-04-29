@@ -91,7 +91,7 @@ void renderText() {
         }
 
     if (camera->getMode() == 1) {
-        glRasterPos2d(width/2, height/2); // text position in pixels
+        glRasterPos2d(width/2 - 1, height/2 - 1); // text position in pixels
         for (const char *c = "+"; *c != '\0'; c++) {
             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
         }
@@ -352,7 +352,6 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
 int readXML(char* filePath){
-    //XMLDocument* doc;
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError error = doc.LoadFile(filePath);
     tinyxml2::XMLNode* world = doc.FirstChildElement("world");
@@ -418,9 +417,6 @@ int readXML(char* filePath){
 
         transforms.clear();
     }
-
-    doc.Clear();
-    doc.~XMLDocument();
 
     return (int) error;
 }
