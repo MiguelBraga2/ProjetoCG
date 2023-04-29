@@ -53,9 +53,10 @@
         </group>
         <group> <!-- Mercúrio -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="87.97" align="false">
                     <pointSet type="ellipse" num_points="16" a="1790" b="1490" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
+                <rotate time="58.6" x="0" y="1" z="0"/>
                 <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
             <models>
@@ -64,9 +65,10 @@
         </group>
         <group> <!-- Vénus -->
             <transform>
-                <translate time="10" align="false">
+                <translate time="224.70" align="false">
                     <pointSet type="ellipse" num_points="16" a="2120" b="1820" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
+                <rotate time="243" x="0" y="1" z="0"/>
                 <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
             <models>
@@ -75,12 +77,13 @@
         </group>
         <group> <!-- Terra -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="365.25" align="false">
                     <pointSet type="ellipse" num_points="16" a="2420" b="2120" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
+                    <rotate time="1" x="0" y="1" z="0"/>
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
@@ -89,9 +92,10 @@
             </group>
             <group> <!-- Lua -->
                 <transform>
-					<translate time="10" align="false">
+					<translate time="27.32" align="false">
 						<pointSet type="ellipse" num_points="16" a="38.7" b="35.7" angleX="0" angleY="0" angleZ="0"/>
 					</translate>
+                    <rotate time="27.23" x="0" y="1" z="0"/>
                     <scale x="2.7" y="2.7" z="2.7"/>
                 </transform>
                 <models>
@@ -101,12 +105,13 @@
         </group>
         <group> <!-- Marte -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="687.00" align="false">
                     <pointSet type="ellipse" num_points="16" a="2920" b="2620" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
+                    <rotate time="1.03" x="0" y="1" z="0"/>
                     <scale x="5.3" y="5.3" z="5.3"/>
                 </transform>
                 <models>
@@ -115,9 +120,10 @@
             </group>
             <group> <!-- Fobos -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="0.32" align="false">
                         <pointSet type="ellipse" num_points="16" a="8.9626" b="5.9626" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="0.32" x="0" y="1" z="0"/>
                     <scale x="0.0054" y="0.0054" z="0.0054"/>
                 </transform>
                 <models>
@@ -126,9 +132,10 @@
             </group>
             <group> <!-- Deimos -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="1.26" align="false">
                         <pointSet type="ellipse" num_points="16" a="9.87" b="6.87" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="1.26" x="0" y="1" z="0"/>
                     <scale x="0.0015" y="0.0015" z="0.0015"/>
                 </transform>
                 <models>
@@ -138,12 +145,13 @@
         </group>
         <group> <!-- Júpiter -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="4332.59" align="false">
                     <pointSet type="ellipse" num_points="16" a="6600" b="6300" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
+                    <rotate time="0.41" x="0" y="1" z="0"/>
                     <scale x="112" y="112" z="112"/>
                 </transform>
                 <models>
@@ -152,9 +160,10 @@
             </group>
             <group> <!-- Europa -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="3.55" align="false">
                         <pointSet type="ellipse" num_points="16" a="187" b="157" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="3.55" x="0" y="1" z="0"/>
                     <scale x="2.45" y="2.45" z="2.45"/>
                 </transform>
                 <models>
@@ -163,9 +172,10 @@
             </group>
             <group> <!-- Ganimedes -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="7.16" align="false">
                         <pointSet type="ellipse" num_points="16" a="213.6" b="183.6" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="7.16" x="0" y="1" z="0"/>
                     <scale x="4.135" y="4.135" z="4.135"/>
                 </transform>
                 <models>
@@ -174,9 +184,10 @@
             </group>
             <group> <!-- Calisto -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="16.69" align="false">
                         <pointSet type="ellipse" num_points="16" a="268" b="238" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="16.69" x="0" y="1" z="0"/>
                     <scale x="3.78" y="3.78" z="3.78"/>
                 </transform>
                 <models>
@@ -185,9 +196,10 @@
             </group>
             <group> <!-- IO -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="1.77" align="false">
                         <pointSet type="ellipse" num_points="16" a="170.2" b="140.2" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="1.77" x="0" y="1" z="0"/>
                     <scale x="2.86" y="2.86" z="2.86"/>
                 </transform>
                 <models>
@@ -197,14 +209,14 @@
         </group>
         <group> <!-- Saturno -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="10759.22" align="false">
                     <pointSet type="ellipse" num_points="16" a="10980" b="10680" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
+                    <rotate angle="0.45" x="1" y="0" z="1"/>
                     <scale x="94" y="94" z="94"/>
-                    <rotate angle="45" x="1" y="0" z="1"/>
                 </transform>
                 <models>
                     <model label="Saturno" file="sphere_1_30_30.3d" red="0.9"  green="0.75" blue="0"/>
@@ -213,9 +225,10 @@
             </group>
             <group> <!-- Titã -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="15.95" align="false">
                         <pointSet type="ellipse" num_points="16" a="205.8" b="175.8" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="15.95" x="0" y="1" z="0"/>
                     <scale x="4.049" y="4.049" z="4.049"/>
                 </transform>
                 <models>
@@ -224,9 +237,10 @@
             </group>
             <group> <!-- Reia -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="4.52" align="false">
                         <pointSet type="ellipse" num_points="16" a="159.3" b="129.3" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate angle="4.52" x="0" y="1" z="0"/>
                     <scale x="1.235" y="1.235" z="1.235"/>
                 </transform>
                 <models>
@@ -235,9 +249,10 @@
             </group>
             <group> <!-- Tetis -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="1.89" align="false">
                         <pointSet type="ellipse" num_points="16" a="143.7" b="113.7" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate angle="1.89" x="0" y="1" z="0"/>
                     <scale x="1.237" y="1.237" z="1.237"/>
                 </transform>
                 <models>
@@ -247,13 +262,14 @@
         </group>
         <group> <!-- Urano -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="30685.40" align="false">
                     <pointSet type="ellipse" num_points="16" a="20580" b="20280" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
                     <scale x="40" y="40" z="40"/>
+                    <rotate time="0.72" x="0" y="1" z="0"/>
                 </transform>
                 <models>
                     <model label="Urano" file="sphere_1_30_30.3d" red="0.8" green="1" blue="0.97" />
@@ -261,9 +277,10 @@
             </group>
             <group> <!-- Titania -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="8.71" align="false">
                         <pointSet type="ellipse" num_points="16" a="99.2" b="69.2" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate angle="8.71" x="0" y="1" z="0"/>
                     <scale x="1.233" y="1.233" z="1.233"/>
                 </transform>
                 <models>
@@ -272,9 +289,10 @@
             </group>
             <group> <!-- Oberon -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="13.46" align="false">
                         <pointSet type="ellipse" num_points="16" a="109.1" b="79.1" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate angle="13.46" x="0" y="1" z="0"/>
                     <scale x="1.197" y="1.197" z="1.197"/>
                 </transform>
                 <models>
@@ -284,12 +302,13 @@
         </group>
         <group> <!-- Neptuno -->
             <transform>
-                <translate time="1000" align="false">
+                <translate time="60190.03" align="false">
                     <pointSet type="ellipse" num_points="16" a="31307" b="31107" angleX="0" angleY="0" angleZ="0"/>
                 </translate>
             </transform>
             <group>
                 <transform>
+                    <rotate time="0.67" x="0" y="1" z="0"/>
                     <scale x="38" y="38" z="38"/>
                 </transform>
                 <models>
@@ -298,9 +317,10 @@
             </group>
             <group> <!-- Tritão -->
                 <transform>
-                    <translate time="10" align="false">
+                    <translate time="5.88" align="false">
                         <pointSet type="ellipse" num_points="16" a="91.7" b="61.7" angleX="0" angleY="0" angleZ="0"/>
                     </translate>
+                    <rotate time="5.88" x="0" y="1" z="0"/>
                     <scale x="2.228" y="2.228" z="2.228"/>
                 </transform>
                 <models>
