@@ -1075,16 +1075,16 @@ void changeSize(int w, int h)
 void renderScene(void)
 {
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(1, 1, 1, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    if (!(abs(camX) > 127.5f || abs(camZ) > 127.5f)) {
+    /*if (!(abs(camX) > 127.5f || abs(camZ) > 127.5f)) {
         camY = getHeightf(camX, camZ) + 3;
         aux1();
-    }
-    gluLookAt(camX, camY, camZ,
-        lx, ly, lz,
+    }*/
+    gluLookAt(-250, 100, -250,
+        0, 0, 0,
         0.0f, 1.0f, 0.0f);
 
     //glColor3f(1,0,0);
@@ -1545,7 +1545,7 @@ void init() {
     ilBindImage(t);
 
     // terreno.jpg is the image containing our height map
-    ilLoadImage((ILstring)"../tnt.png");
+    ilLoadImage((ILstring)"../terreno.jpg");
 
     // convert the image to single channel per pixel
     // with values ranging between 0 and 255
@@ -1572,7 +1572,8 @@ void init() {
 
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            for(int k=getHeight(i,j)-8; k < getHeight(i,j); k++) drawCube(i-w/2,k, j-h/2);
+            float height = getHeight(i,j)/2;
+            for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
         }
     }
 
@@ -1633,6 +1634,9 @@ void processKeys(unsigned char key, int xx, int yy) {
     }
     else if (key == 'C' || key == 'c') {
         alpha += 0.05;
+    }
+    else if (key == 'u' || key == 'U'){
+        //camY += 1;
     }
     else {
         if (minecraftMode == 0) {
