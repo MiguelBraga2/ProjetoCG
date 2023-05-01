@@ -525,6 +525,8 @@ void addCube(int x, int y, int z) {
     std::vector<unsigned int> newIndexes;
     std::vector<float> newNormalcolors;
     std::vector<float> newColors;
+    //GLfloat newVertices[] = {
+      //      static_cast<GLfloat>(-0.5 + x), static_cast<GLfloat>(-0.5 + y), static_cast<GLfloat>(0.5 + z)};
     // Front
     newVertices.push_back(-0.5 + x);
     newVertices.push_back(-0.5 + y);
@@ -560,17 +562,17 @@ void addCube(int x, int y, int z) {
     newNormalcolors.push_back(green_vec);
     newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -625,21 +627,21 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -694,21 +696,21 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -763,21 +765,21 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -832,21 +834,21 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -901,21 +903,21 @@ void addCube(int x, int y, int z) {
 
     indexCount += 4;
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
-    newNormalcolors.push_back(red / 255.0f);
-    newNormalcolors.push_back(green / 255.0f);
-    newNormalcolors.push_back(blue / 255.0f);
+    newNormalcolors.push_back(red_vec);
+    newNormalcolors.push_back(green_vec);
+    newNormalcolors.push_back(blue_vec);
 
     newColors.push_back(red / 255.0f);
     newColors.push_back(green / 255.0f);
@@ -1091,8 +1093,13 @@ void renderText() {
 
     glPushMatrix();
     glLoadIdentity();
-    glRasterPos2d(0, 0); // text position in pixels
+    glRasterPos2d(2, 2); // text position in pixels
 
+    glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
+
+    for (const char* c = "COLOR"; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+    }
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -1109,10 +1116,10 @@ void renderScene(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    /*if (!(abs(camX) > 127.5f || abs(camZ) > 127.5f)) {
+    if (!(abs(camX) > 127.5f || abs(camZ) > 127.5f)) {
         camY = getHeightf(camX, camZ) + 3;
         aux1();
-    }*/
+    }
     gluLookAt(camX, camY, camZ,
         0, 0, 0,
         0.0f, 1.0f, 0.0f);
@@ -1602,9 +1609,9 @@ void init() {
 
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            drawCube(i,j,0);
-            //float height = getHeight(i,j)/2;
-            //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+            //drawCube(i,j,0);
+            float height = getHeight(i,j)/2;
+            for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
         }
     }
 
@@ -1701,6 +1708,13 @@ int main(int argc, char** argv)
     colorsVec.push_back(std::make_tuple(1, 0, 0)); // RED
     colorsVec.push_back(std::make_tuple(0, 1, 0)); // GREEN
     colorsVec.push_back(std::make_tuple(0, 0, 1)); // BLUE
+    colorsVec.push_back(std::make_tuple(1, 1, 0.1)); // LASER LEMON
+    colorsVec.push_back(std::make_tuple(1, 0.3, 1)); // ULTRA PINK
+    colorsVec.push_back(std::make_tuple(0, 0, 0)); // BLACK
+    colorsVec.push_back(std::make_tuple(1, 1, 1)); // WHITE
+    colorsVec.push_back(std::make_tuple(0, 0.2, 0)); // DARK GREEN
+    colorsVec.push_back(std::make_tuple(0.2, 0.07, 0)); // ZINNWALDITE BROWN
+
 
     glutKeyboardFunc(processKeys);
 
