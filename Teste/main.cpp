@@ -161,801 +161,159 @@ unsigned char* picking(int x, int y) {
 }
 
 void removeCube(unsigned int index) {
-    std::vector<float> newVertices;
-    std::vector<unsigned int> newIndexes;
-    std::vector<float> newNormalcolors;
-    std::vector<float> newColors;
-    // Front
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    // Back
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    // Top
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    // Bottom
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    // Right
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    // Left
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-    newVertices.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-    newIndexes.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-    newNormalcolors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
-
-    newColors.push_back(0);
-    newColors.push_back(0);
-    newColors.push_back(0);
+    GLfloat newVertices[] = {0,0,0,0,0,0,0,0,0,0,0,0, // Front
+                             0,0,0,0,0,0,0,0,0,0,0,0, // Back
+                             0,0,0,0,0,0,0,0,0,0,0,0, // Top
+                             0,0,0,0,0,0,0,0,0,0,0,0, // Bottom
+                             0,0,0,0,0,0,0,0,0,0,0,0, // Right
+                             0,0,0,0,0,0,0,0,0,0,0,0}; // Left
+
+    unsigned int newIndexes[] = {0,0,0,0,0,0, // Front
+                                 0,0,0,0,0,0, // Back
+                                 0,0,0,0,0,0, // Top
+                                 0,0,0,0,0,0, // Bottom
+                                 0,0,0,0,0,0, // Right
+                                 0,0,0,0,0,0}; // Left
+
+    float newNormalColors[] = {0,0,0,0,0,0,0,0,0,0,0,0, // Front
+                               0,0,0,0,0,0,0,0,0,0,0,0, // Back
+                               0,0,0,0,0,0,0,0,0,0,0,0, // Top
+                               0,0,0,0,0,0,0,0,0,0,0,0, // Bottom
+                               0,0,0,0,0,0,0,0,0,0,0,0, // Right
+                               0,0,0,0,0,0,0,0,0,0,0,0}; // Left
+
+    float newColors[] = {0,0,0,0,0,0,0,0,0,0,0,0,
+                         0,0,0,0,0,0,0,0,0,0,0,0,
+                         0,0,0,0,0,0,0,0,0,0,0,0,
+                         0,0,0,0,0,0,0,0,0,0,0,0,
+                         0,0,0,0,0,0,0,0,0,0,0,0,
+                         0,0,0,0,0,0,0,0,0,0,0,0};
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), newVertices.size() * sizeof(float), newVertices.data());
+    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newVertices), newVertices);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index * 36 * sizeof(int), newIndexes.size() * sizeof(int), newIndexes.data());
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index * 36 * sizeof(int), sizeof(newIndexes), newIndexes);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
-    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), newColors.size() * sizeof(float), newColors.data());
+    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newColors), newColors);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
-    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), newNormalcolors.size() * sizeof(float), newNormalcolors.data());
+    glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 }
 
 void addCube(int x, int y, int z) {
-    std::vector<float> newVertices;
-    std::vector<unsigned int> newIndexes;
-    std::vector<float> newNormalcolors;
-    std::vector<float> newColors;
-    //GLfloat newVertices[] = {
-      //      static_cast<GLfloat>(-0.5 + x), static_cast<GLfloat>(-0.5 + y), static_cast<GLfloat>(0.5 + z)};
-    // Front
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
+    float newVertices[] = {
+            -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
+            0.5f + x, -0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // BACK
+            -0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, -0.5f + y, -0.5f + z,
+            -0.5f + x, 0.5f + y, -0.5f + z, // TOP
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, -0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // BOTTOM
+            0.5f + x, -0.5f + y, -0.5f + z,
+            0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, 0.5f + z,
+            0.5f + x, -0.5f + y, -0.5f + z, // RIGHT
+            0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // LEFT
+            -0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, -0.5f + z
+            };
 
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
+    int newIndexes[] = {
+            indexCount + 0, indexCount + 1, indexCount + 2, // FRONT
+            indexCount + 2, indexCount + 3, indexCount + 0,
+            indexCount + 0+4, indexCount + 1+4, indexCount + 2+4, // BACK
+            indexCount + 2+4, indexCount + 3+4, indexCount + 0+4,
+            indexCount + 0+8, indexCount + 1+8, indexCount + 2+8, // TOP
+            indexCount + 2+8, indexCount + 3+8, indexCount + 0+8,
+            indexCount + 0+12, indexCount + 1+12, indexCount + 2+12, // BOTTOM
+            indexCount + 2+12, indexCount + 3+12, indexCount + 0+12,
+            indexCount + 0+16, indexCount + 1+16, indexCount + 2+16, // RIGHT
+            indexCount + 2+16, indexCount + 3, indexCount + 0,
+            indexCount + 0+20, indexCount + 1+20, indexCount + 2+20, // LEFT
+            indexCount + 2+20, indexCount + 3+20, indexCount + 0+20,
+    }; // Foreach face, the indexCount is increment 4 unities
 
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
+    indexCount += 24;
 
     float red_vec = std::get<0>(colorsVec[indColors]);
     float green_vec = std::get<1>(colorsVec[indColors]);
     float blue_vec = std::get<2>(colorsVec[indColors]);
 
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z + 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Back
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z - 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Top
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y + 1;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Bottom
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y - 1;
-    nextPosZ[red][green][blue] = z - 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Right
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x + 1;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Left
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(-0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(0.5 + z);
-
-    newVertices.push_back(-0.5 + x);
-    newVertices.push_back(0.5 + y);
-    newVertices.push_back(-0.5 + z);
-
-    newIndexes.push_back(indexCount + 0);
-    newIndexes.push_back(indexCount + 1);
-    newIndexes.push_back(indexCount + 2);
-
-    newIndexes.push_back(indexCount + 2);
-    newIndexes.push_back(indexCount + 3);
-    newIndexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newNormalcolors.push_back(red_vec);
-    newNormalcolors.push_back(green_vec);
-    newNormalcolors.push_back(blue_vec);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    newColors.push_back(red / 255.0f);
-    newColors.push_back(green / 255.0f);
-    newColors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x - 1;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
+    float newNormalColors[4*6*3];
+    // 4 vertices in each face, 6 faces, 3 colors per vector
+    for(int i=0; i<4*6*3; i+=3){
+        newNormalColors[i] = red_vec;
+        newNormalColors[i+1] = green_vec;
+        newNormalColors[i+2] = blue_vec;
+    } // All vertices with the same color
+
+    float newColors[4*6*3];
+    // 4 vertices in each face, 6 faces, 3 colors per vector
+
+    for(int i=0; i<4*6*3; i+=12){
+        for(int j=0; j<4; j++){
+            newColors[i+3*j] = red / 255.0f;
+            newColors[i+3*j+1] = green / 255.0f;
+            newColors[i+3*j+2] = blue / 255.0f;
+        }
+
+        int nextX = x, nextY = y, nextZ = z;
+
+        switch(i/12){
+            case 0: // FRONT
+                nextZ = z+1;
+                break;
+            case 1: // BACK
+                nextZ = z-1;
+                break;
+            case 2: // TOP
+                nextY = y+1;
+                break;
+            case 3: // BOTTOM
+                nextY = y-1;
+                break;
+            case 4: // RIGHT
+                nextX = x+1;
+                break;
+            case 5: // LEFT
+                nextX = x-1;
+                break;
+        }
+
+        nextPosX[red][green][blue] = nextX;
+        nextPosY[red][green][blue] = nextY;
+        nextPosZ[red][green][blue] = nextZ;
+
+        currPosX[red][green][blue] = x;
+        currPosY[red][green][blue] = y;
+        currPosZ[red][green][blue] = z;
+
+        incrementColors();
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), newVertices.size() * sizeof(float), newVertices.data());
+    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newVertices), newVertices);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, numIndex * sizeof(int), newIndexes.size() * sizeof(int), newIndexes.data());
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, numIndex * sizeof(int), sizeof(newIndexes), newIndexes);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
-    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), newColors.size() * sizeof(float), newColors.data());
+    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newColors), newColors);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
-    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), newNormalcolors.size() * sizeof(float), newNormalcolors.data());
+    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 
     vertexCount += 6 * 4;
     numIndex += 36;
@@ -1157,417 +515,121 @@ void renderScene(void)
 }
 
 void drawCube(int x, int y, int z) {
-    // Front
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z + 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Back
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z - 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Top
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y + 1;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Bottom
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x;
-    nextPosY[red][green][blue] = y - 1;
-    nextPosZ[red][green][blue] = z - 1;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Right
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x + 1;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
-
-    incrementColors();
-
-    // Left
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(-0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(0.5 + z);
-
-    vertices.push_back(-0.5 + x);
-    vertices.push_back(0.5 + y);
-    vertices.push_back(-0.5 + z);
-
-    indexes.push_back(indexCount + 0);
-    indexes.push_back(indexCount + 1);
-    indexes.push_back(indexCount + 2);
-
-    indexes.push_back(indexCount + 2);
-    indexes.push_back(indexCount + 3);
-    indexes.push_back(indexCount + 0);
-
-    indexCount += 4;
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    normalColors.push_back(red / 255.0f);
-    normalColors.push_back(green / 255.0f);
-    normalColors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    colors.push_back(red / 255.0f);
-    colors.push_back(green / 255.0f);
-    colors.push_back(blue / 255.0f);
-
-    nextPosX[red][green][blue] = x - 1;
-    nextPosY[red][green][blue] = y;
-    nextPosZ[red][green][blue] = z;
-
-    currPosX[red][green][blue] = x;
-    currPosY[red][green][blue] = y;
-    currPosZ[red][green][blue] = z;
+    float newVertices[] = {
+            -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
+            0.5f + x, -0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // BACK
+            -0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, -0.5f + y, -0.5f + z,
+            -0.5f + x, 0.5f + y, -0.5f + z, // TOP
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, 0.5f + y, -0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // BOTTOM
+            0.5f + x, -0.5f + y, -0.5f + z,
+            0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, 0.5f + z,
+            0.5f + x, -0.5f + y, -0.5f + z, // RIGHT
+            0.5f + x, 0.5f + y, -0.5f + z,
+            0.5f + x, 0.5f + y, 0.5f + z,
+            0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, -0.5f + y, -0.5f + z, // LEFT
+            -0.5f + x, -0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, 0.5f + z,
+            -0.5f + x, 0.5f + y, -0.5f + z
+    };
+
+    int newIndexes[] = {
+            indexCount + 0, indexCount + 1, indexCount + 2, // FRONT
+            indexCount + 2, indexCount + 3, indexCount + 0,
+            indexCount + 0+4, indexCount + 1+4, indexCount + 2+4, // BACK
+            indexCount + 2+4, indexCount + 3+4, indexCount + 0+4,
+            indexCount + 0+8, indexCount + 1+8, indexCount + 2+8, // TOP
+            indexCount + 2+8, indexCount + 3+8, indexCount + 0+8,
+            indexCount + 0+12, indexCount + 1+12, indexCount + 2+12, // BOTTOM
+            indexCount + 2+12, indexCount + 3+12, indexCount + 0+12,
+            indexCount + 0+16, indexCount + 1+16, indexCount + 2+16, // RIGHT
+            indexCount + 2+16, indexCount + 3, indexCount + 0,
+            indexCount + 0+20, indexCount + 1+20, indexCount + 2+20, // LEFT
+            indexCount + 2+20, indexCount + 3+20, indexCount + 0+20,
+    }; // Foreach face, the indexCount is increment 4 unities
+
+    indexCount += 24;
+
+    float red_vec = std::get<0>(colorsVec[indColors]);
+    float green_vec = std::get<1>(colorsVec[indColors]);
+    float blue_vec = std::get<2>(colorsVec[indColors]);
+
+    float newNormalColors[4*6*3];
+    // 4 vertices in each face, 6 faces, 3 colors per vector
+    for(int i=0; i<4*6*3; i+=3){
+        newNormalColors[i] = red_vec;
+        newNormalColors[i+1] = green_vec;
+        newNormalColors[i+2] = blue_vec;
+    } // All vertices with the same color
+
+    float newColors[4*6*3];
+    // 4 vertices in each face, 6 faces, 3 colors per vector
+
+    for(int i=0; i<4*6*3; i+=12){
+        for(int j=0; j<4; j++){
+            newColors[i+3*j] = red / 255.0f;
+            newColors[i+3*j+1] = green / 255.0f;
+            newColors[i+3*j+2] = blue / 255.0f;
+        }
+
+        int nextX = x, nextY = y, nextZ = z;
+
+        switch(i/12){
+            case 0: // FRONT
+                nextZ = z+1;
+                break;
+            case 1: // BACK
+                nextZ = z-1;
+                break;
+            case 2: // TOP
+                nextY = y+1;
+                break;
+            case 3: // BOTTOM
+                nextY = y-1;
+                break;
+            case 4: // RIGHT
+                nextX = x+1;
+                break;
+            case 5: // LEFT
+                nextX = x-1;
+                break;
+        }
+
+        nextPosX[red][green][blue] = nextX;
+        nextPosY[red][green][blue] = nextY;
+        nextPosZ[red][green][blue] = nextZ;
+
+        currPosX[red][green][blue] = x;
+        currPosY[red][green][blue] = y;
+        currPosZ[red][green][blue] = z;
+
+        incrementColors();
+    }
+
+    for(float v: newVertices){
+        vertices.push_back(v);
+    }
+
+    for(int ind: newIndexes){
+        indexes.push_back(ind);
+    }
+
+    for(float normalcolor: newNormalColors){
+        normalColors.push_back(normalcolor);
+    }
+
+    for(float color: newColors){
+        colors.push_back(color);
+    }
 
     numIndex += 36;
     mapPointIndex[std::make_tuple(x, y, z)] = cubeIndex;
@@ -1609,9 +671,9 @@ void init() {
 
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-            //drawCube(i,j,0);
-            float height = getHeight(i,j)/2;
-            for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+            drawCube(i,j,0);
+            //float height = getHeight(i,j)/2;
+            //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
         }
     }
 
