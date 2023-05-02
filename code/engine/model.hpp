@@ -27,6 +27,8 @@ class Model {
 private:
     string label;
     tuple<float, float, float> rgb;
+    vector<float> verticesVector;
+    vector<unsigned int> indexesVector;
     GLuint vertices;
     GLuint indexes;
     int indexCount;
@@ -34,7 +36,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
-    void drawModel();
+    void drawModel(bool vboActive);
     string getLabel();
     void setLabel(string label);
     tuple<float, float, float> getRgb();

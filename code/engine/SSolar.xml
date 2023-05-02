@@ -23,7 +23,7 @@
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
-                    <model label="Cometa" file="comet_10.3d"/>
+                    <model label="Cometa" file="comet_10.3d" red="0.72" green="0.74" blue="0.77"/>
                 </models>
             </group>
         </group>

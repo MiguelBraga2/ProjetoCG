@@ -41,6 +41,8 @@ int polygonMode = GL_LINE;
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
 
+bool vboActive = true;
+
 /**
  * Callback called when the window is resized
  * @param w width of the window
@@ -130,7 +132,7 @@ void renderScene() {
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    globalGroup->drawGroup();
+    globalGroup->drawGroup(vboActive);
 
     renderText();
 
@@ -196,9 +198,12 @@ void menu(int id)
         case 6:
             if (fixedMode == true) { fixedMode = false; fixedLabel = ""; }
             else if (fixedMode == false) fixedMode = true;
+            break;
         case 7:
             break;
         case 8:
+            if (vboActive == true) vboActive = false;
+            else if (vboActive == false) vboActive = true;
             break;
         case 9:
             if (cameraInfo) cameraInfo = false;
@@ -280,6 +285,7 @@ void createMenu(void){
 
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Show camera info", 9);
+    glutAddMenuEntry("Toggle vbo mode", 8);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
