@@ -134,9 +134,9 @@ Creator::Creator(Camera* camera) {
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                drawCube(i, getHeight(i, j) / 2, j, 0, 1, 0);
-                //float height = getHeight(i,j)/2;
-                //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+                //drawCube(i, getHeight(i, j) / 2, j, -1, -1, -1);
+                float height = getHeight(i,j)/2;
+                for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2, -1, -1, -1);
             }
         }
 
@@ -546,8 +546,6 @@ void Creator::render(int height, int width){
 
     globalCamera->placeCamera();
 
-    renderText(height, width);
-
     //glColor3f(1,0,0);
     // put drawing instructions here
     //glutSolidCube(1);
@@ -561,6 +559,8 @@ void Creator::render(int height, int width){
     glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+    renderText(height, width);
 
     // End of frame
     glutSwapBuffers();
