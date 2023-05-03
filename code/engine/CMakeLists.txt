@@ -6,7 +6,7 @@ PROJECT(engine)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_executable(${PROJECT_NAME} engine.cpp camera.cpp group.cpp ../libraries/tinyxml2.cpp  ../shared/point.cpp ../shared/IO.cpp ../shared/matrixOp.cpp ../shared/triangle.cpp Transformations/transformation.cpp Transformations/rotation.cpp
-Transformations/scale.cpp Transformations/translation.cpp model.cpp)
+Transformations/scale.cpp Transformations/translation.cpp model.cpp creator.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
