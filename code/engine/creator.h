@@ -16,7 +16,7 @@
 
 class Creator {
 private:
-    int red = 1, green = 100, blue = 0;
+    int red = 0, green = 0, blue = 0;
 
     int indColors = 0;
 
@@ -33,6 +33,9 @@ private:
     std::vector<float> colors;
     std::vector<float> normalColors;
 
+    std::vector<float> cubesPositions;
+    std::vector<float> cubesColors;
+
     float nextPosX[255][255][255];
     float nextPosY[255][255][255];
     float nextPosZ[255][255][255];
@@ -46,14 +49,19 @@ private:
     Camera* globalCamera;
 public:
     Creator(Camera* camera);
-    void drawCube(int x, int y, int z);
+    ~Creator();
+    void drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue);
     void addCube(int x, int y, int z);
     void removeCube(unsigned int index);
     void render();
     void processMouseButtons(int button, int state, int xx, int yy);
     unsigned char* picking(int x, int y);
+    void changeBlockColor();
+    void importScene(string filename);
+    void exportScene(string filename);
 private:
     void incrementColors();
+    void renderText();
 };
 
 

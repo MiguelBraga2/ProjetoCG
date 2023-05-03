@@ -2,6 +2,9 @@
 
 #include <IL/il.h>
 #include <iostream>
+#include <fstream>
+#include <regex>
+#include <sstream>
 
 /////// MINECRAFT /////////
 
@@ -9,11 +12,71 @@ unsigned char* imageData;
 
 unsigned int t, tw, th;
 
+void Creator::importScene(string filename) {
+    ifstream file("../../scenes/" + filename);
+
+    if (!file) {
+        cout << "Não é possível abrir o ficheiro " << filename << endl;
+    }
+    else {
+        string line;
+        while (getline(file, line, '\n')) {
+            // [vf] \d+ \d+ \d+
+            vector<string> strings;
+            stringstream ss(line);
+            string word;
+            while (ss >> word) {
+                strings.push_back(word);
+            }
+
+            float xCoord = stof(strings[0]);
+            float yCoord = stof(strings[1]);
+            float zCoord = stof(strings[2]);
+
+            float redComp = stof(strings[3]);
+            float greenComp = stof(strings[4]);
+            float blueComp = stof(strings[5]);
+
+            drawCube(xCoord, yCoord, zCoord, redComp, greenComp, blueComp);
+            vertexCount += 6 * 4;
+        }
+    }
+}
+
+void Creator::exportScene(std::string filename) {
+    ofstream file("../../scenes/" + filename);
+    if (!file)
+    {
+        cout << "Não é possível abrir o ficheiro " << filename << endl;
+    }
+    else
+    {
+        for(int i=0; i<cubesPositions.size(); i+=3){
+            // Se o bloco não tiver sido removido
+            if (cubesPositions[i] != 1000000 && cubesPositions[i+1] != 1000000 && cubesPositions[i+2] != 1000000){
+                file << cubesPositions[i] << " " << cubesPositions[i + 1] << " " << cubesPositions[i + 2] << " " <<
+                     cubesColors[i] << " " << cubesColors[i + 1] << " " << cubesColors[i + 2] << endl;
+            }
+
+        }
+    }
+}
+
+void Creator::changeBlockColor(){
+    indColors = (indColors+1)%colorsVec.size();
+    std::cout << "Color: " << indColors << std::endl;
+    std::cout << get<0>(colorsVec[indColors]) << std::endl;
+}
+
 float getHeight(int i, int j) {
     return imageData[i * tw + j];
 }
 
 Creator::Creator(Camera* camera) {
+    std::cout << "Como deseja inicializar o terreno?\n 1 - Plano\n 2 - Ficheiro de Imagem\n 3 - Importar terreno" << std::endl;
+    int option;
+    std::cin >> option;
+
     this->globalCamera = camera;
     ilInit();
 
@@ -27,47 +90,67 @@ Creator::Creator(Camera* camera) {
     colorsVec.push_back(std::make_tuple(0, 0.2, 0)); // DARK GREEN
     colorsVec.push_back(std::make_tuple(0.2, 0.07, 0)); // ZINNWALDITE BROWN
 
-    // 	Load the height map "terreno.jpg"
-    ilGenImages(1, &t);
-    ilBindImage(t);
-
-    // terreno.jpg is the image containing our height map
-    ilLoadImage((ILstring)"../terreno.jpg");
-
-    // convert the image to single channel per pixel
-    // with values ranging between 0 and 255
-    ilConvertImage(IL_LUMINANCE, IL_UNSIGNED_BYTE);
-
-    // important: check tw and th values
-    // both should be equal to 256
-    // if not there was an error loading the image
-    // most likely the image could not be found
-    tw = ilGetInteger(IL_IMAGE_WIDTH);
-    th = ilGetInteger(IL_IMAGE_HEIGHT);
-    std::cout << "Largura: " << tw << " Altura: " << th << std::endl;
-
-    // imageData is a LINEAR array with the pixel values
-    imageData = ilGetData();
-
-    int h = (int)th - 1, w = (int)tw - 1;
-
-    int side = h;
-
     glGenBuffers(4, buffers);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-
-    for (int i = 0; i < h; i++) {
-        for (int j = 0; j < w; j++) {
-            drawCube(i,j, getHeight(i,j)/2);
-            //float height = getHeight(i,j)/2;
-            //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+    if (option == 1){
+        std::cout << "Qual o tamanho do plano? " << std::endl;
+        int side;
+        std::cin >> side;
+        for (int i = 0; i < side; i++) {
+            for (int j = 0; j < side; j++) {
+                drawCube(i, 0, j, 0, 1, 0);
+            }
         }
+
+        vertexCount += side * side * 6 * 4;
+    }
+    else if (option == 2) {
+        // 	Load the height map "terreno.jpg"
+        ilGenImages(1, &t);
+        ilBindImage(t);
+
+        // terreno.jpg is the image containing our height map
+        ilLoadImage((ILstring) "../terreno.jpg");
+
+        // convert the image to single channel per pixel
+        // with values ranging between 0 and 255
+        ilConvertImage(IL_LUMINANCE, IL_UNSIGNED_BYTE);
+
+        // important: check tw and th values
+        // both should be equal to 256
+        // if not there was an error loading the image
+        // most likely the image could not be found
+        tw = ilGetInteger(IL_IMAGE_WIDTH);
+        th = ilGetInteger(IL_IMAGE_HEIGHT);
+        std::cout << "Largura: " << tw << " Altura: " << th << std::endl;
+
+        // imageData is a LINEAR array with the pixel values
+        imageData = ilGetData();
+
+        int h = (int) th - 1, w = (int) tw - 1;
+
+        int side = h;
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                drawCube(i, getHeight(i, j) / 2, j, 0, 1, 0);
+                //float height = getHeight(i,j)/2;
+                //for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2);
+            }
+        }
+
+        vertexCount += side * side * 6 * 4;
+    }
+    else if (option == 3){
+        std::cout << "Qual o nome do ficheiro a importar? " << std::endl;
+        string filename;
+        std::cin >> filename;
+
+        this->importScene(filename);
     }
 
     int maxPlacedBlocks = 1000;
-
-    vertexCount += side * side * 6 * 4;
 
     for (int i = 0; i < maxPlacedBlocks; i++) {
         for (int j = 0; j < 24; j++) {
@@ -80,8 +163,6 @@ Creator::Creator(Camera* camera) {
             indexes.push_back(0);
         }
     }
-
-
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -96,6 +177,48 @@ Creator::Creator(Camera* camera) {
     glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(float), normalColors.data(), GL_STATIC_DRAW);
 }
 
+Creator::~Creator() {
+    std::cout << "Deseja guardar o resultado em ficheiro? S | N" << std::endl;
+    char option;
+    std::cin >> option;
+
+    if (option == 'S'){
+        std::cout << "Introduza o nome do ficheiro ... " << std::endl;
+        string filename;
+        std::cin >> filename;
+
+        this->exportScene(filename);
+    }
+}
+
+void Creator::renderText() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    // set projection so that coordinates match window pixels
+    gluOrtho2D(0, tw, 0, th);
+    glMatrixMode(GL_MODELVIEW);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2d(2, 2); // text position in pixels
+
+    glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
+
+    for (const char* c = "COLOR"; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
+}
+
 void Creator::incrementColors() {
     red += 1;
     if (red >= 255) {
@@ -108,7 +231,7 @@ void Creator::incrementColors() {
     }
 }
 
-void Creator::drawCube(int x, int y, int z) {
+void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue) {
     float newVertices[] = {
             -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
             0.5f + x, -0.5f + y, 0.5f + z,
@@ -160,9 +283,16 @@ void Creator::drawCube(int x, int y, int z) {
     float newNormalColors[4*6*3];
     // 4 vertices in each face, 6 faces, 3 colors per vector
     for(int i=0; i<4*6*3; i+=3){
-        newNormalColors[i] = red_vec;
-        newNormalColors[i+1] = green_vec;
-        newNormalColors[i+2] = blue_vec;
+        if (cRed == -1 && cGreen == -1 && cBlue == -1) {
+            newNormalColors[i] = red/255.0f;
+            newNormalColors[i + 1] = green/255.0f;
+            newNormalColors[i + 2] = blue/255.0f;
+        }
+        else{
+            newNormalColors[i] = cRed;
+            newNormalColors[i + 1] = cGreen;
+            newNormalColors[i + 2] = cBlue;
+        }
     } // All vertices with the same color
 
     float newColors[4*6*3];
@@ -225,6 +355,13 @@ void Creator::drawCube(int x, int y, int z) {
         colors.push_back(color);
     }
 
+    cubesPositions.push_back(x);
+    cubesPositions.push_back(y);
+    cubesPositions.push_back(z);
+    cubesColors.push_back(cRed);
+    cubesColors.push_back(cGreen);
+    cubesColors.push_back(cBlue);
+
     numIndex += 36;
     mapPointIndex[std::make_tuple(x, y, z)] = cubeIndex;
     cubeIndex++;
@@ -269,7 +406,7 @@ void Creator::addCube(int x, int y, int z) {
             indexCount + 0+12, indexCount + 1+12, indexCount + 2+12, // BOTTOM
             indexCount + 2+12, indexCount + 3+12, indexCount + 0+12,
             indexCount + 0+16, indexCount + 1+16, indexCount + 2+16, // RIGHT
-            indexCount + 2+16, indexCount + 3, indexCount + 0,
+            indexCount + 2+16, indexCount + 3+16, indexCount + 0+16,
             indexCount + 0+20, indexCount + 1+20, indexCount + 2+20, // LEFT
             indexCount + 2+20, indexCount + 3+20, indexCount + 0+20,
     }; // Foreach face, the indexCount is increment 4 unities
@@ -287,6 +424,13 @@ void Creator::addCube(int x, int y, int z) {
         newNormalColors[i+1] = green_vec;
         newNormalColors[i+2] = blue_vec;
     } // All vertices with the same color
+
+    cubesPositions.push_back(x);
+    cubesPositions.push_back(y);
+    cubesPositions.push_back(z);
+    cubesColors.push_back(red_vec);
+    cubesColors.push_back(green_vec);
+    cubesColors.push_back(blue_vec);
 
     float newColors[4*6*3];
     // 4 vertices in each face, 6 faces, 3 colors per vector
@@ -395,7 +539,7 @@ void Creator::removeCube(unsigned int index) {
 }
 
 void Creator::render(){
-    glClearColor(0, 0, 0, 0.0f);
+    glClearColor(1, 1, 1, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -416,9 +560,7 @@ void Creator::render(){
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
-    float fps;
-    int time;
-    char s[64];
+    renderText();
 
     // End of frame
     glutSwapBuffers();
@@ -462,28 +604,37 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
 {
     printf("%d %d\n", xx, yy);
     if (state == GLUT_DOWN) {
-        if (button == GLUT_MIDDLE_BUTTON) {
+        if (button == GLUT_RIGHT_BUTTON) {
             unsigned char *result = picking(xx, yy);
             if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
-                printf("Mode: %d\n", minecraftMode);
-                if (minecraftMode == 0) { // Construct
-                    printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                    printf("Bloco deve ser colocado em %f %f %f", nextPosX[result[0]][result[1]][result[2]],
-                           nextPosY[result[0]][result[1]][result[2]],
-                           nextPosZ[result[0]][result[1]][result[2]]);
-                    addCube(nextPosX[result[0]][result[1]][result[2]],
-                            nextPosY[result[0]][result[1]][result[2]],
-                            nextPosZ[result[0]][result[1]][result[2]]);
-                } else { // Destruct
-                    printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                    printf("Bloco deve ser removido em %f %f %f", currPosX[result[0]][result[1]][result[2]],
-                           currPosY[result[0]][result[1]][result[2]],
-                           currPosZ[result[0]][result[1]][result[2]]);
-                    removeCube(mapPointIndex[std::make_tuple(
-                            currPosX[result[0]][result[1]][result[2]],
-                            currPosY[result[0]][result[1]][result[2]],
-                            currPosZ[result[0]][result[1]][result[2]])]);
-                }
+                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                printf("Bloco deve ser colocado em %f %f %f", nextPosX[result[0]][result[1]][result[2]],
+                       nextPosY[result[0]][result[1]][result[2]],
+                       nextPosZ[result[0]][result[1]][result[2]]);
+                addCube(nextPosX[result[0]][result[1]][result[2]],
+                        nextPosY[result[0]][result[1]][result[2]],
+                        nextPosZ[result[0]][result[1]][result[2]]);
+            } else
+                printf("Nothing selected\n");
+        }
+        else if (button == GLUT_LEFT_BUTTON){
+            unsigned char *result = picking(xx, yy);
+            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
+                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                printf("Bloco deve ser removido em %f %f %f", currPosX[result[0]][result[1]][result[2]],
+                       currPosY[result[0]][result[1]][result[2]],
+                       currPosZ[result[0]][result[1]][result[2]]);
+                int index = mapPointIndex[std::make_tuple(
+                        currPosX[result[0]][result[1]][result[2]],
+                        currPosY[result[0]][result[1]][result[2]],
+                        currPosZ[result[0]][result[1]][result[2]])];
+                removeCube(index);
+                cubesPositions[index*3] = 1000000;
+                cubesPositions[index*3+1] = 1000000;
+                cubesPositions[index*3+2] = 1000000;
+                cubesColors[index*3] = -1;
+                cubesColors[index*3+1] = -1;
+                cubesColors[index*3+1] = -1;
             } else
                 printf("Nothing selected\n");
         }
