@@ -20,6 +20,8 @@ public:
     void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv);
     void getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float *pos, float *deriv);
     void renderCatmullRomCurve();
+private:
+    float getTranslationT();
 };
 
 #endif //ENGINE_TRANSLATION_H

@@ -20,9 +20,9 @@
 #include "group.hpp"
 #include "Transformations/translation.hpp"
 #include "Transformations/rotation.hpp"
+#include "creator.h"
 
 using namespace std;
-
 
 int width, height;
 Camera* camera;
@@ -34,11 +34,20 @@ float frames;
 
 bool axis = true; // Is axis shown
 bool cameraInfo = false;
+bool fixedMode = false;
+string fixedLabel = "";
 int polygonMode = GL_LINE;
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
 vector<string> keys; // To make mapping from number to label easier
+
+bool vboActive = true;
+
+
+// MINECRAFT
+bool isMinecraftActive = false;
+Creator* minecraftCreator;
 
 /**
  * Callback called when the window is resized
@@ -110,55 +119,83 @@ void renderText() {
  * Calls the drawGroup function from the group class
  */
 void renderScene() {
-	// clear buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (!isMinecraftActive) {
+        // clear buffers
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// set the camera
-	glLoadIdentity();
-    camera->placeCamera();
+        // set the camera
+        glLoadIdentity();
+        if (fixedLabel.empty())
+            camera->placeCamera();
 
-    renderText();
+        if (fixedMode == true && !fixedLabel.empty()) {
+            vector<Transformation *> transforms;
+            teleports = globalGroup->initializeTps(&transforms);
+            transforms.clear();
+            camera->setLookAtPosition(get<0>(teleports[fixedLabel]));
+            camera->setCameraRadius(get<1>(teleports[fixedLabel]));
+            camera->placeCamera();
+        }
 
-    if (axis){
-        // put axis drawing in here
-        glBegin(GL_LINES);
+        glColor3f(1.0f, 1.0f, 1.0f);
 
-        // X-axis in red
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex3f(-100.0f, 0.0f, 0.0f);
-        glVertex3f( 100.0f, 0.0f, 0.0f);
+        globalGroup->drawGroup(vboActive);
 
-        // Y Axis in Green
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(0.0f,-100.0f, 0.0f);
-        glVertex3f(0.0f, 100.0f, 0.0f);
+        renderText();
 
-        // Z Axis in Blue
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(0.0f, 0.0f,-100.0f);
-        glVertex3f(0.0f, 0.0f, 100.0f);
-        glEnd();
+        if (axis) {
+            // put axis drawing in here
+            glBegin(GL_LINES);
+
+            // X-axis in red
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glVertex3f(-100.0f, 0.0f, 0.0f);
+            glVertex3f(100.0f, 0.0f, 0.0f);
+
+            // Y Axis in Green
+            glColor3f(0.0f, 1.0f, 0.0f);
+            glVertex3f(0.0f, -100.0f, 0.0f);
+            glVertex3f(0.0f, 100.0f, 0.0f);
+
+            // Z Axis in Blue
+            glColor3f(0.0f, 0.0f, 1.0f);
+            glVertex3f(0.0f, 0.0f, -100.0f);
+            glVertex3f(0.0f, 0.0f, 100.0f);
+            glEnd();
+        }
+
+        frames++;
+        int time = glutGet(GLUT_ELAPSED_TIME);
+        int fps;
+
+        if (time - timebase > 1000) {
+            fps = frames * 1000.0 / (time - timebase);
+            timebase = time;
+            frames = 0;
+            char s[15];
+            sprintf(s, "FPS: %d", fps);
+            glutSetWindowTitle(s);
+        }
+        glPolygonMode(GL_FRONT, polygonMode);
+        // End of frame
+        glutSwapBuffers();
     }
+    else{
+        minecraftCreator->render();
 
-    glColor3f(1.0f, 1.0f, 1.0f);
+        frames++;
+        int time = glutGet(GLUT_ELAPSED_TIME);
+        int fps;
 
-    globalGroup->drawGroup();
-
-    frames++;
-    int time = glutGet(GLUT_ELAPSED_TIME);
-    int fps;
-
-    if (time - timebase > 1000) {
-        fps = frames * 1000.0 / (time - timebase);
-        timebase = time;
-        frames = 0;
-        char s[15];
-        sprintf(s, "FPS: %d", fps);
-        glutSetWindowTitle(s);
+        if (time - timebase > 1000) {
+            fps = frames * 1000.0 / (time - timebase);
+            timebase = time;
+            frames = 0;
+            char s[15];
+            sprintf(s, "FPS: %d", fps);
+            glutSetWindowTitle(s);
+        }
     }
-    glPolygonMode(GL_FRONT, polygonMode);
-    // End of frame
-    glutSwapBuffers();
 }
 
 /**
@@ -183,10 +220,14 @@ void menu(int id)
             camera->changeMode(2); // Mouse motion
             break;
         case 6:
+            if (fixedMode == true) { fixedMode = false; fixedLabel = ""; }
+            else if (fixedMode == false) fixedMode = true;
             break;
         case 7:
             break;
         case 8:
+            if (vboActive == true) vboActive = false;
+            else if (vboActive == false) vboActive = true;
             break;
         case 9:
             if (cameraInfo) cameraInfo = false;
@@ -214,12 +255,20 @@ void menu(int id)
             camera->setMode(0);
             break;
         default:
-            camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
-            camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
-            camera->setAlpha(0.785); // ~ 45º
-            camera->setBeta(0.785); // ~ 45º
-            camera->spherical2Cartesian();
-            camera->setMode(0);
+            vector<Transformation*> transforms;
+            if (fixedMode == true){
+                fixedLabel = keys[id-15];
+            }
+            else{
+                teleports = globalGroup->initializeTps(&transforms);
+                transforms.clear();
+                camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
+                camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
+                camera->setAlpha(0.785); // ~ 45º
+                camera->setBeta(0.785); // ~ 45º
+                camera->spherical2Cartesian();
+                camera->setMode(0);
+            }
             break;
     }
     glutPostRedisplay();
@@ -241,8 +290,10 @@ void createMenu(void){
     submenu3 = glutCreateMenu(menu);
     int i=0;
     glutAddMenuEntry("Origin", 14);
-    for (auto it = teleports.begin(); it != teleports.end(); ++it, i++) {
-        glutAddMenuEntry(it->first.c_str(), 15+i);
+    for (string label:keys) {
+        const char* l = label.c_str();
+        glutAddMenuEntry(l, 15+i);
+        i++;
     }
 
     submenu4 = glutCreateMenu(menu);
@@ -253,10 +304,12 @@ void createMenu(void){
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
+    glutAddMenuEntry("Change Teleport Mode", 6);
     glutAddSubMenu("Camera mode", submenu4);
 
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Show camera info", 9);
+    glutAddMenuEntry("Toggle vbo mode", 8);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
@@ -269,6 +322,9 @@ void createMenu(void){
  * @param yy
  */
 void processMouseButtons(int button, int state, int xx, int yy) {
+    if (isMinecraftActive == true && button == GLUT_MIDDLE_BUTTON){
+        minecraftCreator->processMouseButtons(button, state, xx, yy);
+    }
     camera->updateMouseAngles(button, state, xx, yy);
 }
 
@@ -306,7 +362,13 @@ void keyboard_events(unsigned char key, int x, int y) {
     else if (key == '2'){
         camera->incrementIncrement();
     }
-
+    else if (key == 'm'){
+        if (isMinecraftActive == true) isMinecraftActive = false;
+        else {
+            isMinecraftActive = true;
+            minecraftCreator = new Creator(camera);
+        }
+    }
     glutPostRedisplay();
 }
 
@@ -351,7 +413,7 @@ void processSpecialKeys(int key, int xx, int yy) {
  * @param filePath the PATH of the XML
  * @return an error code (0 - ok, > 0 - something has gone wrong)
  */
-int readXML(char* filePath){
+int readXML(char* filePath, vector<string>* keys){
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError error = doc.LoadFile(filePath);
     tinyxml2::XMLNode* world = doc.FirstChildElement("world");
@@ -407,15 +469,7 @@ int readXML(char* filePath){
         }
 
         globalGroup = new Group();
-        globalGroup->readXML(world->FirstChildElement("group"));
-
-        vector<Transformation*> transforms;
-        teleports = globalGroup->initializeTps(&transforms);
-        for (auto & teleport : teleports) {
-            keys.push_back(teleport.first);
-        }
-
-        transforms.clear();
+        globalGroup->readXML(world->FirstChildElement("group"), keys);
     }
 
     return (int) error;
@@ -450,24 +504,26 @@ int main(int argc, char **argv) {
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        int error = readXML(argv[1]);
+        if (isMinecraftActive == false) {
 
-        if (!error) {
-            createMenu();
+            int error = readXML(argv[1], &keys);
 
-            // 	OpenGL settings
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_CULL_FACE);
-            glPolygonMode(GL_FRONT, polygonMode);
+            if (!error) {
+                createMenu();
 
-            // enter GLUT's main cycle
-            glutMainLoop();
+                // 	OpenGL settings
+                glEnable(GL_DEPTH_TEST);
+                glEnable(GL_CULL_FACE);
+                glPolygonMode(GL_FRONT, polygonMode);
 
-            globalGroup->freeGroup();
-            delete globalGroup;
-        }
-        else {
-            cout << "Error" << endl;
+                // enter GLUT's main cycle
+                glutMainLoop();
+
+                globalGroup->freeGroup();
+                delete globalGroup;
+            } else {
+                cout << "Error" << endl;
+            }
         }
     }
     else {

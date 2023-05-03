@@ -35,8 +35,8 @@ private:
 public:
     Group();
     map<string, tuple<Point, float>> initializeTps(vector<Transformation*> *appliedTransforms);
-    void drawGroup();
-    void readXML(XMLElement* group);
+    void drawGroup(bool vboActive);
+    void readXML(XMLElement* group, vector<string>* keys);
     void freeGroup();
 
 private:

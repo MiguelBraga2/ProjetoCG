@@ -83,25 +83,30 @@ void Translation::renderCatmullRomCurve() {
 
 }
 
+float Translation::getTranslationT(){
+    if (startCounter == 0) {
+        startCounter = glutGet(GLUT_ELAPSED_TIME); // Time since the beginning of the program
+    }
+
+    double currentTime = glutGet(GLUT_ELAPSED_TIME); // Current time
+    double translationTime = (currentTime - startCounter) / 1000; // In seconds
+
+    if (translationTime > duration) {
+        int iterationsPassed = (int) (translationTime / duration);
+        translationTime = translationTime - iterationsPassed * this->duration;
+        startCounter = glutGet(GLUT_ELAPSED_TIME); // Set the counter to the current moment
+    }
+
+    float t = translationTime / duration;
+    return t;
+}
+
 void Translation::applyTransformation(){
     if (this->duration == 0){
         glTranslatef(this->getX(), this->getY(), this->getZ());
     }
     else {
-        if (startCounter == 0) {
-            startCounter = glutGet(GLUT_ELAPSED_TIME); // Time since the beginning of the program
-        }
-
-        double currentTime = glutGet(GLUT_ELAPSED_TIME); // Current time
-        double translationTime = (currentTime - startCounter) / 1000; // In seconds
-
-        if (translationTime > duration) {
-            int iterationsPassed = (int) (translationTime / duration);
-            translationTime = translationTime - iterationsPassed * this->duration;
-            startCounter = glutGet(GLUT_ELAPSED_TIME); // Set the counter to the current moment
-        }
-
-        float t = translationTime / duration;
+        float t = getTranslationT();
 
         if (show) {
             renderCatmullRomCurve();
@@ -134,7 +139,18 @@ void Translation::applyTransformation(){
 }
 
 void Translation::applyTransformationToPoint(Point* base, float* radius) {
-    base->setX(base->getX() + this->getX());
-    base->setY(base->getY() + this->getY());
-    base->setZ(base->getZ() + this->getZ());
+        if (this->duration == 0){
+        base->setX(base->getX() + this->getX());
+        base->setY(base->getY() + this->getY());
+        base->setZ(base->getZ() + this->getZ());
+    }
+    else{
+            float t = getTranslationT();
+            float pos[3];
+            float deriv[3];
+            getGlobalCatmullRomPoint(t, pos, deriv);
+        base->setX(base->getX() + pos[0]);
+        base->setY(base->getY() + pos[1]);
+        base->setZ(base->getZ() + pos[2]);
+    }
 }

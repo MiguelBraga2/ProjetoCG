@@ -49,7 +49,6 @@ Point Group::calculateCameraTeleport(vector<Transformation*> appliedTransforms, 
 map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *appliedTransforms){
     map<string, tuple<Point, float>> teleports;
 
-
     for (int i=0; i < this->transformations.size(); i++) {
         if (appliedTransforms != NULL)
             appliedTransforms->push_back(this->transformations[i]);
@@ -82,7 +81,7 @@ map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *a
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup() {
+void Group::drawGroup(bool vboActive) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
@@ -91,12 +90,12 @@ void Group::drawGroup() {
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        this->models[i].drawModel();
+        this->models[i].drawModel(vboActive);
     }
 
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup();
+        this->subgroups[i].drawGroup(vboActive);
     }
 
     glPopMatrix(); // Restore the transformations
@@ -110,7 +109,7 @@ void Group::drawGroup() {
  * - the subgroups
  * @param group XMLElement of a group and its children
  */
-void Group::readXML(XMLElement *group) {
+void Group::readXML(XMLElement *group, vector<string>* keys) {
     if (group) {
         /* Transformations */
         XMLElement* transformationsElem = group->FirstChildElement("transform");
@@ -265,6 +264,7 @@ void Group::readXML(XMLElement *group) {
 
                 if (model->Attribute("label")){
                     m.setLabel(model->Attribute("label"));
+                    keys->push_back(model->Attribute("label"));
                 }
                 else {
                     m.setLabel("undefined");
@@ -277,7 +277,7 @@ void Group::readXML(XMLElement *group) {
         /* Groups */
         for (XMLElement* gr = group->FirstChildElement("group"); gr != NULL; gr = gr->NextSiblingElement("group")) {
             Group g;
-            g.readXML(gr);
+            g.readXML(gr, keys);
             this->subgroups.push_back(g);
         }
     }
