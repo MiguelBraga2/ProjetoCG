@@ -181,7 +181,7 @@ void renderScene() {
         glutSwapBuffers();
     }
     else{
-        minecraftCreator->render();
+        minecraftCreator->render(height, width);
 
         frames++;
         int time = glutGet(GLUT_ELAPSED_TIME);
@@ -370,6 +370,7 @@ void keyboard_events(unsigned char key, int x, int y) {
         }
         else {
             isMinecraftActive = true;
+            camera->changeMode(1);
             minecraftCreator = new Creator(camera);
         }
     }

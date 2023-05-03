@@ -191,19 +191,19 @@ Creator::~Creator() {
     }
 }
 
-void Creator::renderText() {
+void Creator::renderText(int height, int width) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     // set projection so that coordinates match window pixels
-    gluOrtho2D(0, tw, 0, th);
+    gluOrtho2D(0, width, 0, height);
     glMatrixMode(GL_MODELVIEW);
 
     glDisable(GL_DEPTH_TEST);
 
     glPushMatrix();
     glLoadIdentity();
-    glRasterPos2d(2, 2); // text position in pixels
+    glRasterPos2d(0.0f*(float)width, 0*(float)height); // text position in pixels
 
     glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
 
@@ -269,7 +269,7 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             indexCount + 0+12, indexCount + 1+12, indexCount + 2+12, // BOTTOM
             indexCount + 2+12, indexCount + 3+12, indexCount + 0+12,
             indexCount + 0+16, indexCount + 1+16, indexCount + 2+16, // RIGHT
-            indexCount + 2+16, indexCount + 3, indexCount + 0,
+            indexCount + 2+16, indexCount + 3+16, indexCount + 0+16,
             indexCount + 0+20, indexCount + 1+20, indexCount + 2+20, // LEFT
             indexCount + 2+20, indexCount + 3+20, indexCount + 0+20,
     }; // Foreach face, the indexCount is increment 4 unities
@@ -538,13 +538,15 @@ void Creator::removeCube(unsigned int index) {
     glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 }
 
-void Creator::render(){
-    glClearColor(1, 1, 1, 0.0f);
+void Creator::render(int height, int width){
+    glClearColor(0, 0, 0, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     globalCamera->placeCamera();
+
+    renderText(height, width);
 
     //glColor3f(1,0,0);
     // put drawing instructions here
@@ -559,8 +561,6 @@ void Creator::render(){
     glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-
-    renderText();
 
     // End of frame
     glutSwapBuffers();

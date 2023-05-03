@@ -53,7 +53,7 @@ public:
     void drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue);
     void addCube(int x, int y, int z);
     void removeCube(unsigned int index);
-    void render();
+    void render(int height, int width);
     void processMouseButtons(int button, int state, int xx, int yy);
     unsigned char* picking(int x, int y);
     void changeBlockColor();
@@ -61,7 +61,7 @@ public:
     void exportScene(string filename);
 private:
     void incrementColors();
-    void renderText();
+    void renderText(int height, int width);
 };
 
 
