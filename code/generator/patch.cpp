@@ -25,13 +25,32 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                    -3, 3, 0, 0,
                    1, 0, 0, 0};
 
+    if (patchesIndexes.size() == 0){
+        pSize = controlPoints.size();
+    }
+
     for(int k=0; k< pSize; k+=16){
-
-        Point p[16] = {controlPoints[patchesIndexes[k]], controlPoints[patchesIndexes[k+4]], controlPoints[patchesIndexes[k+8]], controlPoints[patchesIndexes[k+12]],
-                       controlPoints[patchesIndexes[k+1]], controlPoints[patchesIndexes[k+5]], controlPoints[patchesIndexes[k+9]], controlPoints[patchesIndexes[k+13]],
-                       controlPoints[patchesIndexes[k+2]], controlPoints[patchesIndexes[k+6]], controlPoints[patchesIndexes[k+10]], controlPoints[patchesIndexes[k+14]],
-                       controlPoints[patchesIndexes[k+3]], controlPoints[patchesIndexes[k+7]], controlPoints[patchesIndexes[k+11]], controlPoints[patchesIndexes[k+15]]};
-
+        Point p[16];
+        if (patchesIndexes.size() > 0) {
+            p[0] = controlPoints[patchesIndexes[k]]; p[1] = controlPoints[patchesIndexes[k + 4]];
+            p[2] = controlPoints[patchesIndexes[k + 8]]; p[3] = controlPoints[patchesIndexes[k + 12]];
+            p[4] = controlPoints[patchesIndexes[k + 1]]; p[5] = controlPoints[patchesIndexes[k + 5]];
+            p[6] = controlPoints[patchesIndexes[k + 9]]; p[7] = controlPoints[patchesIndexes[k + 13]];
+            p[8] = controlPoints[patchesIndexes[k + 2]]; p[9] = controlPoints[patchesIndexes[k + 6]];
+            p[10] = controlPoints[patchesIndexes[k + 10]]; p[11] = controlPoints[patchesIndexes[k + 14]];
+            p[12] = controlPoints[patchesIndexes[k + 3]]; p[13] = controlPoints[patchesIndexes[k + 7]];
+            p[14] = controlPoints[patchesIndexes[k + 11]]; p[15] = controlPoints[patchesIndexes[k + 15]];
+        }
+        else{
+            p[0] = controlPoints[k]; p[1] = controlPoints[k+4];
+            p[2] = controlPoints[k+8]; p[3] = controlPoints[k+12];
+            p[4] = controlPoints[k+1]; p[5] = controlPoints[k+5];
+            p[6] = controlPoints[k+9]; p[7] = controlPoints[k+13];
+            p[8] = controlPoints[k+2]; p[9] = controlPoints[k+6];
+            p[10] = controlPoints[k+10]; p[11] = controlPoints[k+14];
+            p[12] = controlPoints[k+3]; p[13] = controlPoints[k+7];
+            p[14] = controlPoints[k+11]; p[15] = controlPoints[k+15];
+        }
         Point a[16]; Point b[16]; // a = M * P, b = a * Mt
         multiplyMatrixPointMatrix(m, p, a);
         multiplyPointMatrixMatrix(a, m, b);
@@ -86,6 +105,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
 vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes){
     ifstream file("../patches/" + fileName);
     vector<Point> controlPoints;
+    int format = 0; // 0 - normal (with Indexes) 1 - Rhino (without indexes and y->z)
 
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
@@ -94,30 +114,42 @@ vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes){
         string line;
         regex r("\\s+");
         getline(file, line); // Read the first line (number of patches)
-        line = regex_replace(line, r, "");
-        int nPatches = stoi(line);
-
-        for(int i = 0; i < nPatches && getline(file, line); i++) {
-            line = regex_replace(line, r, "");
-
-            string first;
-            stringstream ss(line);
-            for(int j = 0; j < 16 && getline(ss, first, ','); j++) {
-                indexes->push_back(stoi(first));
-            }
+        if (line[0] == 'r'){
+            format = 1;
         }
+        else {
+            line = regex_replace(line, r, "");
+            int nPatches = stoi(line);
 
-        getline(file, line); // Read the number of points
-        line = regex_replace(line, r, "");
-        int nPoints = stoi(line);
+            for (int i = 0; i < nPatches && getline(file, line); i++) {
+                line = regex_replace(line, r, "");
+
+                string first;
+                stringstream ss(line);
+                for (int j = 0; j < 16 && getline(ss, first, ','); j++) {
+                    indexes->push_back(stoi(first));
+                }
+            }
+
+            getline(file, line); // Read the number of points
+            line = regex_replace(line, r, "");
+            int nPoints = stoi(line);
+        }
 
         regex re(R"(\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*)");
         smatch match;
 
-        for(int i = 0; i < nPoints && getline(file, line); i++) {
+        for(int i = 0; getline(file, line); i++) {
             if (regex_search(line, match, re)) {
-                Point p(stof(match.str(1)), stof(match.str(2)), stof(match.str(3)));
-                controlPoints.push_back(p);
+                if (format == 1){
+                    Point p(stof(match.str(1)), stof(match.str(3)), stof(match.str(2)));
+                    controlPoints.push_back(p);
+                }
+                else if (format == 0){
+                    Point p(stof(match.str(1)), stof(match.str(2)), stof(match.str(3)));
+                    controlPoints.push_back(p);
+                }
+
             }
         }
     }
