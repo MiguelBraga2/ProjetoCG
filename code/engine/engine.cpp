@@ -205,7 +205,6 @@ void renderScene() {
  */
 void menu(int id)
 {
-    cout << id << endl;
     switch(id)
     {
         case 1:
@@ -280,6 +279,7 @@ void createMenu(void){
     glutAddMenuEntry("GL_POINT", 13);
 
     submenu3 = glutCreateMenu(menu);
+    glutAddMenuEntry("", 1);
     glutAddMenuEntry("Origin", 14);
     int i=0;
     for (string label:keys) {

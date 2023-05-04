@@ -44,6 +44,18 @@ void multiplyMatrixVector(float *m, float *v, float *res) {
 
 }
 
+void multiplyMatrixMatrix(float *m1, float *m2, float *res) {
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                res[i * 4 + j] += m1[i * 4 + k] * m2[k * 4 +j];
+            }
+        }
+    }
+}
+
+
 void multiplyMatrixPointMatrix(float *m1, Point *m2, Point *res) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
