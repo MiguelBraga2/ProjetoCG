@@ -119,6 +119,7 @@ void renderText() {
  * Calls the drawGroup function from the group class
  */
 void renderScene() {
+    glPolygonMode(GL_FRONT, polygonMode);
     if (!isMinecraftActive) {
         // clear buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,12 +178,11 @@ void renderScene() {
             sprintf(s, "FPS: %d", fps);
             glutSetWindowTitle(s);
         }
-        glPolygonMode(GL_FRONT, polygonMode);
         // End of frame
         glutSwapBuffers();
     }
     else{
-        minecraftCreator->render();
+        minecraftCreator->render(height, width);
 
         frames++;
         int time = glutGet(GLUT_ELAPSED_TIME);
@@ -314,10 +314,11 @@ void createMenu(void){
  * @param yy
  */
 void processMouseButtons(int button, int state, int xx, int yy) {
-    if (isMinecraftActive == true && button == GLUT_MIDDLE_BUTTON){
+    if (isMinecraftActive == true){
         minecraftCreator->processMouseButtons(button, state, xx, yy);
+    } else {
+        camera->updateMouseAngles(button, state, xx, yy);
     }
-    camera->updateMouseAngles(button, state, xx, yy);
 }
 
 /**
@@ -355,11 +356,19 @@ void keyboard_events(unsigned char key, int x, int y) {
         camera->incrementIncrement();
     }
     else if (key == 'm'){
-        if (isMinecraftActive == true) isMinecraftActive = false;
+        if (isMinecraftActive == true) {
+            isMinecraftActive = false;
+            minecraftCreator->~Creator();
+        }
         else {
             isMinecraftActive = true;
+            polygonMode = GL_FILL;
+            camera->changeMode(1);
             minecraftCreator = new Creator(camera);
         }
+    }
+    else if (key == 'v'){
+        minecraftCreator->changeBlockColor();
     }
     glutPostRedisplay();
 }
