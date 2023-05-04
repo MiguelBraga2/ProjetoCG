@@ -370,6 +370,7 @@ void keyboard_events(unsigned char key, int x, int y) {
         }
         else {
             isMinecraftActive = true;
+            polygonMode = GL_FILL;
             camera->changeMode(1);
             minecraftCreator = new Creator(camera);
         }

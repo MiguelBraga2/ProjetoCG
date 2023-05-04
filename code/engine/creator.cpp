@@ -539,7 +539,7 @@ void Creator::removeCube(unsigned int index) {
 }
 
 void Creator::render(int height, int width){
-    glClearColor(0, 0, 0, 0.0f);
+    glClearColor(1, 1, 1, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -597,6 +597,8 @@ unsigned char* Creator::picking(int x, int y) {
     //glEnable(GL_LIGHTING);
     //glEnable(GL_TEXTURE_2D);
 
+    //glutSwapBuffers();
+
     return res;
 }
 
@@ -619,7 +621,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         }
         else if (button == GLUT_LEFT_BUTTON){
             unsigned char *result = picking(xx, yy);
-            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
+            if (result[0] != 255 || result[1] != 255 || result[2] != 255) {
                 printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
                 printf("Bloco deve ser removido em %f %f %f", currPosX[result[0]][result[1]][result[2]],
                        currPosY[result[0]][result[1]][result[2]],
