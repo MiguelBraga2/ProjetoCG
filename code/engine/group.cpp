@@ -25,60 +25,6 @@ Group::Group() {
 }
 
 /**
- * Calculate where the camera must me teleported in explorer mode (and with which radius) if we want to teleport
- * to the center of this group
- * @param appliedTransfs all the transformations these models are subject to
- * @param radius pointer to the radius we want to calculate
- * @return the center we calculated
- */
-Point Group::calculateCameraTeleport(vector<Transformation*> appliedTransforms, float* radius){
-    Point base(0,0,0);
-
-    for (int i=appliedTransforms.size()-1 ; i>=0; i--) {
-        appliedTransforms[i]->applyTransformationToPoint(&base, radius); // Apply the transformation to a point
-    }
-
-    return base;
-}
-
-/**
- * Calculate the teleport position for all the models present in the group
- * @param appliedTransfs all the transformations these models are subject to
- * @return a map with a label as a key and a tuple containing the center and the radius of the model related of the label
- */
-map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *appliedTransforms){
-    map<string, tuple<Point, float>> teleports;
-
-    for (int i=0; i < this->transformations.size(); i++) {
-        if (appliedTransforms != NULL)
-            appliedTransforms->push_back(this->transformations[i]);
-    }
-
-    for (int i = 0; i < this->models.size(); i++) {
-        if (appliedTransforms != NULL && this->models[i].getLabel().compare("undefined") != 0){
-            float radius = 4;
-            Point cameraTeleport = calculateCameraTeleport(*appliedTransforms, &radius);
-            teleports[this->models[i].getLabel()] = make_tuple(cameraTeleport, radius);
-        }
-    }
-
-    for (int i = 0; i < this->subgroups.size(); i++) {
-        map<string, tuple<Point, float>> newTeleports = this->subgroups[i].initializeTps(appliedTransforms);
-
-        for (auto it = newTeleports.begin(); it != newTeleports.end(); ++it) {
-            teleports[it->first] = it->second;
-        }
-
-        appliedTransforms->clear();
-        for (int j = 0; j < this->transformations.size(); j++) {
-            if (appliedTransforms != NULL)
-                appliedTransforms->push_back(this->transformations[j]);
-        }
-    }
-    return teleports;
-}
-
-/**
  * Draws all the models in a group, after being applied all the transformations
  */
 void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {

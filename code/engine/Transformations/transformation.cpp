@@ -4,8 +4,7 @@ void Transformation::applyTransformation(float *matrix)
 {
 }
 
-void Transformation::applyTransformationToPoint(Point *base, float *radius) {
-}
+
 
 Transformation::Transformation(float x, float y, float z) {
     this->x = x;

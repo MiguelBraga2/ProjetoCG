@@ -14,7 +14,7 @@ public:
     float getAngle();
     void setAngle(float angle);
     void applyTransformation(float *matrix) override;
-    void applyTransformationToPoint(Point* base, float* radius) override;
+    void applyTransformationToPoint(Point* base, float* radius);
 private:
     double getRotationAngle();
 };
