@@ -1,6 +1,6 @@
 #include "transformation.hpp"
 
-void Transformation::applyTransformation()
+void Transformation::applyTransformation(float *matrix)
 {
 }
 

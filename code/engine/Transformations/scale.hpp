@@ -6,8 +6,7 @@
 class Scale : public Transformation {
 public:
     Scale(float x, float y, float z);
-    void applyTransformation() override;
-    void applyTransformationToPoint(Point* base, float* radius) override;
+    void applyTransformation(float *matrix) override;
 };
 
 #endif //ENGINE_SCALE_H

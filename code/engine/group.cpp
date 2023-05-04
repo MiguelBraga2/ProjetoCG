@@ -81,21 +81,28 @@ map<string, tuple<Point, float>> Group::initializeTps(vector<Transformation*> *a
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup(bool vboActive) {
+void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
     for (int i=0; i < this->transformations.size(); i++) {
-        this->transformations[i]->applyTransformation();
+        this->transformations[i]->applyTransformation(matrix);
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        this->models[i].drawModel(vboActive);
+        this->models[i].drawModel(vboActive, matrix, teleports);
     }
 
+    float matrixCopy[16];
+    for(int i = 0; i < 16; i++) {
+        matrixCopy[i] = matrix[i];
+    }
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup(vboActive);
+        this->subgroups[i].drawGroup(vboActive, matrix, teleports);
+        for(int j = 0; j < 16; j++) {
+            matrix[j] = matrixCopy[j];
+        }
     }
 
     glPopMatrix(); // Restore the transformations

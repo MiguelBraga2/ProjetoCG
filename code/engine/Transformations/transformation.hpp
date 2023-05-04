@@ -8,7 +8,7 @@ private:
     float x, y, z;
 
 public:
-    virtual void applyTransformation();
+    virtual void applyTransformation(float *matrix);
     virtual void applyTransformationToPoint(Point* base, float* radius);
     Transformation(float x, float y, float z);
     float getX();

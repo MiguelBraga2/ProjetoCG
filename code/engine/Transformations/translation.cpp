@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "../../shared/matrixOp.hpp"
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -101,9 +102,22 @@ float Translation::getTranslationT(){
     return t;
 }
 
-void Translation::applyTransformation(){
+void Translation::applyTransformation(float *matrix){
     if (this->duration == 0){
         glTranslatef(this->getX(), this->getY(), this->getZ());
+        float m2[16] = { 1, 0, 0, this->getX(),
+                         0, 1, 0, this->getY(),
+                         0, 0, 1, this->getZ(),
+                         0, 0, 0, 1};
+
+        float res[16] = {0, 0, 0, 0,
+                         0,0, 0, 0,
+                         0,0,0,0,
+                         0,0, 0,0};
+        multiplyMatrixMatrix(matrix, m2, res);
+        for(int i = 0; i < 16; i++) {
+            matrix[i] = res[i];
+        }
     }
     else {
         float t = getTranslationT();
@@ -116,6 +130,19 @@ void Translation::applyTransformation(){
         float deriv[3];
         getGlobalCatmullRomPoint(t, pos, deriv);
         glTranslatef(pos[0], pos[1], pos[2]);
+        float m2[16] = { 1, 0, 0, pos[0],
+                         0, 1, 0, pos[1],
+                         0, 0, 1, pos[2],
+                         0, 0, 0, 1};
+
+        float res[16] = {0, 0, 0, 0,
+                         0,0, 0, 0,
+                          0,0,0,0,
+                          0,0, 0,0};
+        multiplyMatrixMatrix(matrix, m2, res);
+        for(int i = 0; i < 16; i++) {
+            matrix[i] = res[i];
+        }
 
         if(align) {
             Point X(deriv[0], deriv[1], deriv[2]);
@@ -138,19 +165,3 @@ void Translation::applyTransformation(){
 
 }
 
-void Translation::applyTransformationToPoint(Point* base, float* radius) {
-        if (this->duration == 0){
-        base->setX(base->getX() + this->getX());
-        base->setY(base->getY() + this->getY());
-        base->setZ(base->getZ() + this->getZ());
-    }
-    else{
-            float t = getTranslationT();
-            float pos[3];
-            float deriv[3];
-            getGlobalCatmullRomPoint(t, pos, deriv);
-        base->setX(base->getX() + pos[0]);
-        base->setY(base->getY() + pos[1]);
-        base->setZ(base->getZ() + pos[2]);
-    }
-}

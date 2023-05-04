@@ -125,21 +125,22 @@ void renderScene() {
 
         // set the camera
         glLoadIdentity();
-        if (fixedLabel.empty())
-            camera->placeCamera();
-
-        if (fixedMode == true && !fixedLabel.empty()) {
-            vector<Transformation *> transforms;
-            teleports = globalGroup->initializeTps(&transforms);
-            transforms.clear();
+        if (fixedMode == true && fixedLabel.compare("") != 0) {
             camera->setLookAtPosition(get<0>(teleports[fixedLabel]));
             camera->setCameraRadius(get<1>(teleports[fixedLabel]));
-            camera->placeCamera();
+            camera->spherical2Cartesian();
+            camera->setMode(0);
         }
+        camera->placeCamera();
 
         glColor3f(1.0f, 1.0f, 1.0f);
 
-        globalGroup->drawGroup(vboActive);
+        float position[16] = { 1, 0, 0, 0,
+                               0, 1, 0, 0,
+                               0, 0, 1, 0,
+                               0, 0, 0, 1,
+        };
+        globalGroup->drawGroup(vboActive, position, &teleports);
 
         renderText();
 
@@ -204,6 +205,7 @@ void renderScene() {
  */
 void menu(int id)
 {
+    cout << id << endl;
     switch(id)
     {
         case 1:
@@ -220,22 +222,19 @@ void menu(int id)
             camera->changeMode(2); // Mouse motion
             break;
         case 6:
-            if (fixedMode == true) { fixedMode = false; fixedLabel = ""; }
-            else if (fixedMode == false) fixedMode = true;
+            fixedMode = !fixedMode;
+            fixedLabel = "";
             break;
         case 7:
             break;
         case 8:
-            if (vboActive == true) vboActive = false;
-            else if (vboActive == false) vboActive = true;
+            vboActive = !vboActive;
             break;
         case 9:
-            if (cameraInfo) cameraInfo = false;
-            else if (!cameraInfo) cameraInfo = true;
+            cameraInfo = !cameraInfo;
             break;
         case 10:
-            if (!axis) axis = true;
-            else if (axis) axis = false;
+            axis = !axis;
             break;
         case 11:
             polygonMode = GL_FILL;
@@ -248,27 +247,20 @@ void menu(int id)
             break;
         case 14:
             camera->setLookAtPosition(Point(0,0,0));
-            camera->setCameraRadius(10000);
+            camera->setCameraRadius(5000);
             camera->setAlpha(0.785); // ~ 45º
             camera->setBeta(0.785); // ~ 45º
             camera->spherical2Cartesian();
             camera->setMode(0);
             break;
         default:
-            vector<Transformation*> transforms;
-            if (fixedMode == true){
-                fixedLabel = keys[id-15];
-            }
-            else{
-                teleports = globalGroup->initializeTps(&transforms);
-                transforms.clear();
-                camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
-                camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
-                camera->setAlpha(0.785); // ~ 45º
-                camera->setBeta(0.785); // ~ 45º
-                camera->spherical2Cartesian();
-                camera->setMode(0);
-            }
+            fixedLabel = keys[id-15];
+            camera->setLookAtPosition(get<0>(teleports[keys[id-15]]));
+            camera->setCameraRadius(get<1>(teleports[keys[id-15]]));
+            camera->setAlpha(0.785); // ~ 45º
+            camera->setBeta(0.785); // ~ 45º
+            camera->spherical2Cartesian();
+            camera->setMode(0);
             break;
     }
     glutPostRedisplay();
@@ -288,8 +280,8 @@ void createMenu(void){
     glutAddMenuEntry("GL_POINT", 13);
 
     submenu3 = glutCreateMenu(menu);
-    int i=0;
     glutAddMenuEntry("Origin", 14);
+    int i=0;
     for (string label:keys) {
         const char* l = label.c_str();
         glutAddMenuEntry(l, 15+i);
@@ -304,9 +296,9 @@ void createMenu(void){
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
-    glutAddMenuEntry("Change Teleport Mode", 6);
     glutAddSubMenu("Camera mode", submenu4);
 
+    glutAddMenuEntry("Change Teleport Mode", 6);
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Show camera info", 9);
     glutAddMenuEntry("Toggle vbo mode", 8);
@@ -504,26 +496,23 @@ int main(int argc, char **argv) {
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        if (isMinecraftActive == false) {
+        int error = readXML(argv[1], &keys);
 
-            int error = readXML(argv[1], &keys);
+        if (!error) {
+            createMenu();
 
-            if (!error) {
-                createMenu();
+            // 	OpenGL settings
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glPolygonMode(GL_FRONT, polygonMode);
 
-                // 	OpenGL settings
-                glEnable(GL_DEPTH_TEST);
-                glEnable(GL_CULL_FACE);
-                glPolygonMode(GL_FRONT, polygonMode);
+            // enter GLUT's main cycle
+            glutMainLoop();
 
-                // enter GLUT's main cycle
-                glutMainLoop();
-
-                globalGroup->freeGroup();
-                delete globalGroup;
-            } else {
-                cout << "Error" << endl;
-            }
+            globalGroup->freeGroup();
+            delete globalGroup;
+        } else {
+            cout << "Error" << endl;
         }
     }
     else {

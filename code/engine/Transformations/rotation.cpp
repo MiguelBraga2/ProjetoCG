@@ -6,6 +6,7 @@
 #endif
 
 #include "rotation.hpp"
+#include "../../shared/matrixOp.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -33,8 +34,20 @@ double Rotation::getRotationAngle(){
     return rAngle;
 }
 
-void Rotation::applyTransformation() {
+void Rotation::applyTransformation(float *matrix) {
     glRotatef(this->getRotationAngle(), this->getX(), this->getY(), this->getZ());
+    float m2[16] = { this->getX()*this->getX() + 1 * (1- this->getX()*this->getX()) * (float) cos(this->getRotationAngle()), this->getX()*this->getY() * (1-(float)cos(this->getRotationAngle())) - this->getZ() * (float) sin(this->getRotationAngle()), this->getX()*this->getZ() * (1-(float)cos(this->getRotationAngle())) + this->getY() * (float) sin(this->getRotationAngle()), 0,
+                     this->getX()*this->getY() * (1-(float)cos(this->getRotationAngle())) + this->getZ() * (float) sin(this->getRotationAngle()), this->getY()*this->getY() + 1 * (1- this->getY()*this->getY()) * (float) cos(this->getRotationAngle()), this->getY()*this->getZ() * (1-(float)cos(this->getRotationAngle())) - this->getX() * (float) sin(this->getRotationAngle()), 0,
+                     this->getX()*this->getZ() * (1-(float)cos(this->getRotationAngle())) - this->getY() * (float) sin(this->getRotationAngle()), this->getY()*this->getZ() * (1-(float)cos(this->getRotationAngle())) + this->getX() * (float) sin(this->getRotationAngle()), this->getZ()*this->getZ() + 1 * (1- this->getZ()*this->getZ()) * (float) cos(this->getRotationAngle()), 0,
+                     0, 0, 0, 1};
+    float res[16] = {0, 0, 0, 0,
+                     0,0, 0, 0,
+                     0,0,0,0,
+                     0,0, 0,0};
+    multiplyMatrixMatrix(matrix, m2, res);
+    for(int i = 0; i < 16; i++) {
+        matrix[i] = res[i];
+    }
 }
 
 float Rotation::getAngle() {

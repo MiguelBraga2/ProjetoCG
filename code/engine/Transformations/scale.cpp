@@ -6,15 +6,25 @@
 #endif
 
 #include "scale.hpp"
+#include "../../shared/matrixOp.hpp"
 
 Scale::Scale(float x, float y, float z) : Transformation(x,y,z) {
 
 }
 
-void Scale::applyTransformation(){
+void Scale::applyTransformation(float *matrix){
     glScalef(this->getX(), this->getY(), this->getZ());
-}
+    float m2[16] = { this->getX(), 0, 0, 0,
+                     0, this->getX(), 0, 0,
+                     0, 0, this->getZ(), 0,
+                     0, 0, 0, 1};
 
-void Scale::applyTransformationToPoint(Point* base, float* radius) {
-    *radius *= this->getX(); // Assumir que x=y=z (da escala)
+    float res[16] = {0, 0, 0, 0,
+                     0,0, 0, 0,
+                     0,0,0,0,
+                     0,0, 0,0};
+    multiplyMatrixMatrix(matrix, m2, res);
+    for(int i = 0; i < 16; i++) {
+        matrix[i] = res[i];
+    }
 }

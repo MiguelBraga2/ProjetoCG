@@ -18,8 +18,11 @@
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <map>
+
 #endif
 #include "../shared/point.hpp"
+
 
 using namespace std;
 
@@ -36,7 +39,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
-    void drawModel(bool vboActive);
+    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports);
     string getLabel();
     void setLabel(string label);
     tuple<float, float, float> getRgb();

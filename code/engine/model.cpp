@@ -1,5 +1,8 @@
 #include "model.hpp"
 #include "../shared/IO.hpp" // reader function
+#include "../shared/matrixOp.hpp"
+#include <map>
+#include <cmath>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -12,7 +15,15 @@ Model::Model() {
 
 }
 
-void Model::drawModel(bool vboActive) {
+void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
+    if (this->label.compare("undefined") != 0) {
+        Point p1(matrix[3], matrix[7], matrix[11]);
+        float res[4];
+        float p[4] = {2,2,2,1};
+        multiplyMatrixVector(matrix, p, res);
+        float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
+        (*teleports)[this->label] = make_tuple(p1, radius);
+    }
     if (vboActive){
         glColor3f(get<0>(this->rgb), get<1>(this->rgb), get<2>(this->rgb));
         glBindBuffer(GL_ARRAY_BUFFER,this->vertices);

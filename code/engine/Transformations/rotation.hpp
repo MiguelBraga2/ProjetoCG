@@ -13,7 +13,7 @@ public:
     Rotation(float x, float y, float z, float angle, double startCounter, float duration360);
     float getAngle();
     void setAngle(float angle);
-    void applyTransformation() override;
+    void applyTransformation(float *matrix) override;
     void applyTransformationToPoint(Point* base, float* radius) override;
 private:
     double getRotationAngle();
