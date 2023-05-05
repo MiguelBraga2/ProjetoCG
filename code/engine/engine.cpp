@@ -122,6 +122,7 @@ void renderScene() {
     glPolygonMode(GL_FRONT, polygonMode);
     if (!isMinecraftActive) {
         // clear buffers
+        glClearColor(0, 0, 0, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // set the camera
@@ -141,6 +142,7 @@ void renderScene() {
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
+        //glColor3f(0,0,1);
         globalGroup->drawGroup(vboActive, position, &teleports);
 
         renderText();
@@ -358,6 +360,7 @@ void keyboard_events(unsigned char key, int x, int y) {
     else if (key == 'm'){
         if (isMinecraftActive == true) {
             isMinecraftActive = false;
+            glDisableClientState(GL_COLOR_ARRAY);
             minecraftCreator->~Creator();
         }
         else {

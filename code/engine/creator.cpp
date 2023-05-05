@@ -131,16 +131,26 @@ Creator::Creator(Camera* camera) {
         int h = (int) th - 1, w = (int) tw - 1;
 
         int side = h;
+        int cubeHeight = 3;
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 //drawCube(i, getHeight(i, j) / 2, j, -1, -1, -1);
-                float height = getHeight(i,j)/2;
-                for(int k=height-3; k < height; k++) drawCube(i-w/2,k, j-h/2, -1, -1, -1);
+                int height = (int)getHeight(i,j)/2;
+                float colorRed=-1, colorGreen=-1, colorBlue=-1;
+
+                for(int k=height-cubeHeight; k < height+1; k++) {
+                    if (k == 0) {
+                        colorRed = 1;
+                        colorBlue = 0;
+                        colorGreen = 0;
+                    }
+                    drawCube(i - w / 2, k, j - h / 2, colorRed, colorGreen, colorBlue);
+                }
             }
         }
 
-        vertexCount += side * side * 6 * 4;
+        vertexCount += side * side * (cubeHeight+1) * 6 * 4;
     }
     else if (option == 3){
         std::cout << "Qual o nome do ficheiro a importar? " << std::endl;
@@ -150,7 +160,7 @@ Creator::Creator(Camera* camera) {
         this->importScene(filename);
     }
 
-    int maxPlacedBlocks = 1000;
+    int maxPlacedBlocks = 10000;
 
     for (int i = 0; i < maxPlacedBlocks; i++) {
         for (int j = 0; j < 24; j++) {
@@ -610,7 +620,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
             unsigned char *result = picking(xx, yy);
             if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
                 printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                printf("Bloco deve ser colocado em %f %f %f", nextPosX[result[0]][result[1]][result[2]],
+                printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
                        nextPosY[result[0]][result[1]][result[2]],
                        nextPosZ[result[0]][result[1]][result[2]]);
                 addCube(nextPosX[result[0]][result[1]][result[2]],
@@ -623,7 +633,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
             unsigned char *result = picking(xx, yy);
             if (result[0] != 255 || result[1] != 255 || result[2] != 255) {
                 printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                printf("Bloco deve ser removido em %f %f %f", currPosX[result[0]][result[1]][result[2]],
+                printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
                        currPosY[result[0]][result[1]][result[2]],
                        currPosZ[result[0]][result[1]][result[2]]);
                 int index = mapPointIndex[std::make_tuple(
