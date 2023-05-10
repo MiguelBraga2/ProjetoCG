@@ -477,25 +477,36 @@ int readXML(char* filePath, vector<string>* keys){
                 string type = light->Attribute("type");
 
                 if (type.compare("point") == 0){
-                    string posX = light->Attribute("posX");
-                    string posY = light->Attribute("posY");
-                    string posZ = light->Attribute("posZ");
+                    const char* posX = light->Attribute("posX");
+                    if (!posX) posX = light->Attribute("posx");
+                    const char* posY = light->Attribute("posY");
+                    if (!posY) posY = light->Attribute("posy");
+                    const char* posZ = light->Attribute("posZ");
+                    if (!posZ) posZ = light->Attribute("posz");
                     cout << "PARSER::Read light point. Pos - " << posX << ", " << posY << ", " << posZ << endl;
                 }
                 else if (type.compare("directional") == 0){
-                    string dirX = light->Attribute("dirX");
-                    string dirY = light->Attribute("dirY");
-                    string dirZ = light->Attribute("dirZ");
+                    const char* dirX = light->Attribute("dirX");
+                    if (!dirX) dirX = light->Attribute("dirx");
+                    const char* dirY = light->Attribute("dirY");
+                    if (!dirY) dirY = light->Attribute("diry");
+                    const char* dirZ = light->Attribute("dirZ");
+                    if (!dirZ) dirZ = light->Attribute("dirz");
                     cout << "PARSER::Read light directional. Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
                 }
                 else if (type.compare("spotlight") == 0){
-                    string posX = light->Attribute("posX");
-                    string posY = light->Attribute("posY");
-                    string posZ = light->Attribute("posZ");
-                    string dirX = light->Attribute("dirX");
-                    string dirY = light->Attribute("dirY");
-                    string dirZ = light->Attribute("dirZ");
-                    string cutoff = light->Attribute("cutoff");
+                    const char* posX = light->Attribute("posX");
+                    if (!posX) posX = light->Attribute("posx");
+                    const char* posY = light->Attribute("posY");
+                    if (!posY) posY = light->Attribute("posy");
+                    const char* posZ = light->Attribute("posZ");
+                    if (!posZ) posZ = light->Attribute("posz");
+                    const char* dirX = light->Attribute("dirX");
+                    const char* dirY = light->Attribute("dirY");
+                    if (!dirY) dirY = light->Attribute("diry");
+                    const char* dirZ = light->Attribute("dirZ");
+                    if (!dirZ) dirZ = light->Attribute("dirz");
+                    const char* cutoff = light->Attribute("cutoff");
                     cout << "PARSER::Read spotlight. " << endl
                          << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
                     cout << "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;

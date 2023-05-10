@@ -202,6 +202,7 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
 
                 Model m;
                 m.readModel(model->Attribute("file"));
+                // Being deprecated
                 float red = 1, green = 1, blue = 1;
                 if (model->Attribute("red")){
                     red = stof(model->Attribute("red"));
@@ -214,13 +215,51 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                 }
                 tuple <float, float, float> tup = make_tuple(red, green, blue);
                 m.setRgb(tup);
-
+                //
                 if (model->Attribute("label")){
                     m.setLabel(model->Attribute("label"));
                     keys->push_back(model->Attribute("label"));
                 }
                 else {
                     m.setLabel("undefined");
+                }
+
+                XMLElement* color = model->FirstChildElement("color");
+                if (color){
+                    XMLElement* diffuse = color->FirstChildElement("diffuse");
+                    XMLElement* ambient = color->FirstChildElement("ambient");
+                    XMLElement* specular = color->FirstChildElement("specular");
+                    XMLElement* emissive = color->FirstChildElement("emissive");
+                    XMLElement* shininess = color->FirstChildElement("shininess");
+
+                    if (diffuse){
+                        string red = diffuse->Attribute("R");
+                        string green = diffuse->Attribute("G");
+                        string blue = diffuse->Attribute("B");
+                        cout << "PARSER::Read color diffuse. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
+                    }
+                    if (ambient){
+                        string red = ambient->Attribute("R");
+                        string green = ambient->Attribute("G");
+                        string blue = ambient->Attribute("B");
+                        cout << "PARSER::Read color ambient. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
+                    }
+                    if (specular){
+                        string red = specular->Attribute("R");
+                        string green = specular->Attribute("G");
+                        string blue = specular->Attribute("B");
+                        cout << "PARSER::Read color specular. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
+                    }
+                    if (emissive){
+                        string red = emissive->Attribute("R");
+                        string green = emissive->Attribute("G");
+                        string blue = emissive->Attribute("B");
+                        cout << "PARSER::Read color emissive. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
+                    }
+                    if (shininess){
+                        string value = shininess->Attribute("value");
+                        cout << "PARSER::Read shininess. Value - " << value << endl;
+                    }
                 }
 
                 this->models.push_back(m);
