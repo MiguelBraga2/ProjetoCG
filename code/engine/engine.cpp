@@ -471,7 +471,43 @@ int readXML(char* filePath, vector<string>* keys){
           
             camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
+        tinyxml2::XMLElement* lightsElem = world->FirstChildElement("lights");
+        if (lightsElem) {
+            for (XMLElement* light = lightsElem->FirstChildElement(); light != NULL; light = light->NextSiblingElement()) {
+                string type = light->Attribute("type");
 
+                if (type.compare("point") == 0){
+                    string posX = light->Attribute("posX");
+                    string posY = light->Attribute("posY");
+                    string posZ = light->Attribute("posZ");
+                    cout << "PARSER::Read light point. Pos - " << posX << ", " << posY << ", " << posZ << endl;
+                }
+                else if (type.compare("directional") == 0){
+                    string dirX = light->Attribute("dirX");
+                    string dirY = light->Attribute("dirY");
+                    string dirZ = light->Attribute("dirZ");
+                    cout << "PARSER::Read light directional. Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
+                }
+                else if (type.compare("spotlight") == 0){
+                    string posX = light->Attribute("posX");
+                    string posY = light->Attribute("posY");
+                    string posZ = light->Attribute("posZ");
+                    string dirX = light->Attribute("dirX");
+                    string dirY = light->Attribute("dirY");
+                    string dirZ = light->Attribute("dirZ");
+                    string cutoff = light->Attribute("cutoff");
+                    cout << "PARSER::Read spotlight. " << endl
+                         << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
+                    cout << "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
+                    cout << "Cutoff - " << cutoff << endl;
+                }
+                else {
+                    cout << "PARSER::Light type inexistent" << endl;
+                }
+            }
+
+
+        }
         globalGroup = new Group();
         globalGroup->readXML(world->FirstChildElement("group"), keys);
     }

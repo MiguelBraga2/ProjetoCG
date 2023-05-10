@@ -5,6 +5,8 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <unistd.h>
+
 
 /////// MINECRAFT /////////
 
@@ -585,10 +587,9 @@ unsigned char* Creator::picking(int x, int y) {
 
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
-
+    globalCamera->placeCamera();
     glDepthFunc(GL_LEQUAL);
     // Draw
-    globalCamera->placeCamera();
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -604,10 +605,8 @@ unsigned char* Creator::picking(int x, int y) {
     glGetIntegerv(GL_VIEWPORT, viewport);
     glReadPixels(x, viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, res);
 
-    //glEnable(GL_LIGHTING);
-    //glEnable(GL_TEXTURE_2D);
-
     //glutSwapBuffers();
+    //sleep(10);
 
     return res;
 }
