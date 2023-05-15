@@ -21,6 +21,10 @@
 #include "Transformations/translation.hpp"
 #include "Transformations/rotation.hpp"
 #include "creator.h"
+#include "Lights/Light.h"
+#include "Lights/LightPoint.h"
+#include "Lights/LightDirectional.h"
+#include "Lights/LightSpot.h"
 
 using namespace std;
 
@@ -48,6 +52,9 @@ bool vboActive = true;
 // MINECRAFT
 bool isMinecraftActive = false;
 Creator* minecraftCreator;
+
+// Lights
+vector<Light> lightSources;
 
 /**
  * Callback called when the window is resized
@@ -471,7 +478,64 @@ int readXML(char* filePath, vector<string>* keys){
           
             camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
+        tinyxml2::XMLElement* lightsElem = world->FirstChildElement("lights");
+        if (lightsElem) {
+            for (XMLElement* light = lightsElem->FirstChildElement(); light != NULL; light = light->NextSiblingElement()) {
+                string type = light->Attribute("type");
 
+                if (type.compare("point") == 0){
+                    const char* posX = light->Attribute("posX");
+                    if (!posX) posX = light->Attribute("posx");
+                    const char* posY = light->Attribute("posY");
+                    if (!posY) posY = light->Attribute("posy");
+                    const char* posZ = light->Attribute("posZ");
+                    if (!posZ) posZ = light->Attribute("posz");
+                    cout << "PARSER::Read light point. "
+                         << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
+                    LightPoint lp (stof(posX), stof(posY), stof(posZ));
+                    lightSources.push_back(lp);
+                }
+                else if (type.compare("directional") == 0){
+                    const char* dirX = light->Attribute("dirX");
+                    if (!dirX) dirX = light->Attribute("dirx");
+                    const char* dirY = light->Attribute("dirY");
+                    if (!dirY) dirY = light->Attribute("diry");
+                    const char* dirZ = light->Attribute("dirZ");
+                    if (!dirZ) dirZ = light->Attribute("dirz");
+                    cout << "PARSER::Read light directional. " <<
+                            "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
+                    LightDirectional ld (stof(dirX), stof(dirY), stof(dirZ));
+                    lightSources.push_back(ld);
+                }
+                else if (type.compare("spotlight") == 0){
+                    const char* posX = light->Attribute("posX");
+                    if (!posX) posX = light->Attribute("posx");
+                    const char* posY = light->Attribute("posY");
+                    if (!posY) posY = light->Attribute("posy");
+                    const char* posZ = light->Attribute("posZ");
+                    if (!posZ) posZ = light->Attribute("posz");
+                    const char* dirX = light->Attribute("dirX");
+                    const char* dirY = light->Attribute("dirY");
+                    if (!dirY) dirY = light->Attribute("diry");
+                    const char* dirZ = light->Attribute("dirZ");
+                    if (!dirZ) dirZ = light->Attribute("dirz");
+                    const char* cutoff = light->Attribute("cutoff");
+                    cout << "PARSER::Read spotlight. " << endl
+                         << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
+                    cout << "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
+                    cout << "Cutoff - " << cutoff << endl;
+                    LightSpot ls (stof(posX), stof(posY), stof(posZ),
+                                  stof(dirX), stof(dirY), stof(dirZ),
+                                  stof(cutoff));
+                    lightSources.push_back(ls);
+                }
+                else {
+                    cout << "PARSER::Light type inexistent" << endl;
+                }
+            }
+
+
+        }
         globalGroup = new Group();
         globalGroup->readXML(world->FirstChildElement("group"), keys);
     }
@@ -517,6 +581,13 @@ int main(int argc, char **argv) {
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
             glPolygonMode(GL_FRONT, polygonMode);
+
+            // Activate lightning
+            glEnable(GL_LIGHTING);
+            for(int i=0; i<lightSources.size(); i++){
+                cout << i << endl;
+            }
+
 
             // enter GLUT's main cycle
             glutMainLoop();
