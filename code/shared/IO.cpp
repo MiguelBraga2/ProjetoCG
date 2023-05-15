@@ -1,10 +1,11 @@
 #include "IO.hpp"
 #include <fstream>
 #include <string>
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <regex>
 #include <sstream>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 using namespace std;
 
@@ -156,3 +157,64 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes) {
     }
     return vertices;
 }
+
+/*
+* Read the primitives files
+*/
+vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vector<float>* normals, vector<unsigned int>* normalsIndexes) {
+    ifstream file("../../figures/" + fileName);
+    vector<float> vertices;
+
+    if (!file) {
+        cout << "Não é possível abrir o ficheiro " << fileName << endl;
+    }
+    else {
+        string line;
+        regex r(R"((\d+)\/(\d+))");
+
+        while (getline(file, line, '\n')) {
+
+            vector<string> strings;
+            stringstream ss(line);
+            string word;
+            while (ss >> word) {
+                strings.push_back(word);
+            }
+
+            if (strings[0] == "v") {
+                // FORMAT: v x y z
+                vertices.push_back(stof(strings[1]));
+                vertices.push_back(stof(strings[2]));
+                vertices.push_back(stof(strings[3]));
+
+            }
+            else if (strings[0] == "vn") {
+                // FORMAT: vn x y z
+                normals->push_back(stof(strings[1]));
+                normals->push_back(stof(strings[2]));
+                normals->push_back(stof(strings[3]));
+            }
+            else if (strings[0] == "f") {
+                // FORMAT: f vi/ni vi/ni vi/ni
+                smatch match;
+
+                if (regex_search(strings[1], match, r)) {
+                    indexes->push_back(stoi(match.str(1)));
+                    normalsIndexes->push_back(stoi(match.str(2)));
+                }
+
+                if (regex_search(strings[2], match, r)) {
+                    indexes->push_back(stoi(match.str(1)));
+                    normalsIndexes->push_back(stoi(match.str(2)));
+                }
+
+                if (regex_search(strings[3], match, r)) {
+                    indexes->push_back(stoi(match.str(1)));
+                    normalsIndexes->push_back(stoi(match.str(2)));
+                }
+            }
+        }
+    }
+    return vertices;
+}
+

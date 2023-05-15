@@ -124,7 +124,6 @@ int main(int argc, char** argv) {
             }
         }
         else if (strcmp(argv[1], "patch") == 0){
-            /* generator patch teapot.patch 10 bezier_10.3d */
             if (argc == 5){
                 vector<unsigned int> indexes;
                 vector<float> normals;
