@@ -37,8 +37,11 @@ int main(int argc, char** argv) {
         else if (strcmp(argv[1], "cone") == 0) {
             if (argc == 7) {
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
-                writer(argv[6], indexes, vertices);
+                vector<float> normals;
+                vector<unsigned int> normalsIndexes;
+
+                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &normalsIndexes);
+                writer(argv[6], vertices, indexes, normals, normalsIndexes);
             }
             else {
                 cout << "Cone: número de argumentos inválido." << endl;
@@ -93,8 +96,10 @@ int main(int argc, char** argv) {
         else if (strcmp(argv[1], "torus") == 0) {
             if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
                 vector<unsigned int> indexes;
-                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes);
-                writer(argv[6], indexes, vertices);
+                vector<float> normals;
+                vector<unsigned int> normalsIndexes;
+                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &normalsIndexes);
+                writer(argv[6], vertices, indexes, normals, normalsIndexes);
             }
             else {
                 cout << "Torus: número de argumentos inválido." << endl;
