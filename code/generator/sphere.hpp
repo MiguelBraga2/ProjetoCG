@@ -4,6 +4,6 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-std::vector<float> generateSphere(float radius, int slices, int stacks, std::vector<unsigned int> *indexes, Point start, int *index);
+std::vector<float> generateSphere(float radius, int slices, int stacks, vector<unsigned int> *verticesIndexes, vector<float> *normals, vector<unsigned int> *normalsIndexes, Point start, int *index);
 
 #endif

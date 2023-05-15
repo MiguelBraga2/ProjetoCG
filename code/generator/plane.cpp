@@ -10,11 +10,37 @@
  * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
  * @return a list of generated triangles
  */
-vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index){
+vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index, std::vector<float>* normals, std::vector<unsigned int>* normalsIndexes, int *normalIndex){
     vector<float> vertices;
     float step = length / (float) grid; // side of each of the smaller squares
 
     Point base (initial.getX(), initial.getY(), initial.getZ());
+
+    if(direction.getY() == 0 && !clockWiseDir) {
+        normals->push_back(0);
+        normals->push_back(1);
+        normals->push_back(0);
+    } else if (direction.getY() == 0) {
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+    } else if (direction.getX() == 0 && !clockWiseDir) {
+        normals->push_back(1);
+        normals->push_back(0);
+        normals->push_back(0);
+    } else if (direction.getX() == 0) {
+        normals->push_back(-1);
+        normals->push_back(0);
+        normals->push_back(0);
+    } else if (direction.getX() == 0 && !clockWiseDir) {
+        normals->push_back(0);
+        normals->push_back(0);
+        normals->push_back(1);
+    } else if (direction.getX() == 0 && !clockWiseDir) {
+        normals->push_back(0);
+        normals->push_back(0);
+        normals->push_back(-1);
+    }
 
     for(int i=0; i<grid; i++) {
 
@@ -26,6 +52,7 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
             vertices.push_back(base.getX());
             vertices.push_back(base.getY());
             vertices.push_back(base.getZ() + step * direction.getZ());
+
         }
         else {
             vertices.push_back(base.getX() + step * direction.getX());
@@ -68,6 +95,14 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
                 indexes->push_back((*index) + 2);
             }
 
+            normalsIndexes->push_back(*normalIndex);
+            normalsIndexes->push_back(*normalIndex);
+            normalsIndexes->push_back(*normalIndex);
+
+            normalsIndexes->push_back(*normalIndex);
+            normalsIndexes->push_back(*normalIndex);
+            normalsIndexes->push_back(*normalIndex);
+
             // Move the base point
             if (direction.getY() == 0) {
                 base.setZ(base.getZ() + step * direction.getZ());
@@ -91,6 +126,8 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
         (*index) += 2;
     }
+
+    (*normalIndex)++;
 
     return vertices;
 }

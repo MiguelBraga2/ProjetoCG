@@ -13,7 +13,43 @@ void getVectorF(float f, float *v) {
     v[3] = 1;
 }
 
-vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes) {
+void getVectorFDeriv(float f, float *v) {
+    v[0] = 3 * f * f;
+    v[1] = 2 * f;
+    v[2] = 1;
+    v[3] = 0;
+}
+
+void getDerivU(float u, float v, Point *p, Point *res) {
+    float vecV[4], vecUDeriv[4];
+    getVectorF(v, vecV);
+
+    Point pn[4];
+    getVectorFDeriv(u, vecUDeriv);
+    multiplyVectorPointMatrix(vecUDeriv, p, pn);
+    multiplyPointVectorVector(pn, vecV, res);
+}
+
+void getDerivV(float u, float v, Point *p, Point *res) {
+    float vecU[4], vecVDeriv[4];
+    getVectorF(u, vecU);
+
+    Point pn[4];
+    getVectorFDeriv(v, vecVDeriv);
+    multiplyVectorPointMatrix(vecU, p, pn);
+    multiplyPointVectorVector(pn, vecVDeriv, res);
+}
+
+Point getNormal(float u, float v, Point *p) {
+    Point derivU, derivV;
+    getDerivU(u, 0, p, &derivU);
+    getDerivV(u, 0, p, &derivV);
+
+    return Point::crossProduct(derivV, derivU);
+}
+
+
+vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals,  vector<unsigned int>* normalsIndexes) {
     vector<float> points;
     int index = 0;
     size_t pSize = patchesIndexes.size();
@@ -73,6 +109,18 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             points.push_back(f1.getX());points.push_back(f1.getY());points.push_back(f1.getZ());
             points.push_back(f2.getX());points.push_back(f2.getY());points.push_back(f2.getZ());
 
+            Point normal1 = getNormal(u, 0, a);
+
+            normals->push_back(normal1.getX());
+            normals->push_back(normal1.getY());
+            normals->push_back(normal1.getZ());
+
+            Point normal2 = getNormal(nextU, 0, a);
+
+            normals->push_back(normal2.getX());
+            normals->push_back(normal2.getY());
+            normals->push_back(normal2.getZ());
+
             for(int j = 1; j <= tesselation; j++) {
                 float v = delta * (float) j;
 
@@ -84,13 +132,33 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 points.push_back(f3.getX());points.push_back(f3.getY());points.push_back(f3.getZ());
                 points.push_back(f4.getX());points.push_back(f4.getY());points.push_back(f4.getZ());
 
+                Point normal3 = getNormal(u, v, a);
+
+                normals->push_back(normal3.getX());
+                normals->push_back(normal3.getY());
+                normals->push_back(normal3.getZ());
+
+                Point normal4 = getNormal(nextU, v, a);
+
+                normals->push_back(normal4.getX());
+                normals->push_back(normal4.getY());
+                normals->push_back(normal4.getZ());
+
                 indexes->push_back(index);
                 indexes->push_back(index+1);
                 indexes->push_back(index+2);
 
+                normalsIndexes->push_back(index);
+                normalsIndexes->push_back(index + 1);
+                normalsIndexes->push_back(index + 2);
+
                 indexes->push_back(index+3);
                 indexes->push_back(index+2);
                 indexes->push_back(index+1);
+
+                normalsIndexes->push_back(index + 3);
+                normalsIndexes->push_back(index + 2);
+                normalsIndexes->push_back(index + 1);
 
                 index += 2;
             }

@@ -35,6 +35,31 @@ void writer(const string& fileName, vector<unsigned int> indexes, vector<float> 
     }
 }
 
+void writer(const string& fileName, vector<float> vertices, vector<unsigned int> verticesIndexes, vector<float> normals, vector<unsigned int> normalsIndexes) {
+
+    ofstream file("../../figures/" + fileName);
+    if (!file)
+    {
+        cout << "Não é possível abrir o ficheiro " << fileName << endl;
+    }
+    else
+    {
+        for (int i = 0; i < vertices.size(); i += 3) {
+            file << "v " << vertices[i] << " " << vertices[i + 1] << " " << vertices[i + 2] << endl;
+        }
+
+        for (int i = 0; i < normals.size(); i += 3) {
+            file << "vn " << normals[i] << " " << normals[i + 1] << " " << normals[i + 2] << endl;
+        }
+
+        for (int i = 0; i < verticesIndexes.size() && i < normalsIndexes.size(); i += 3)
+        {
+            file << "f " << verticesIndexes[i] << "/" << normalsIndexes[i] << " " << verticesIndexes[i + 1] << "/" << normalsIndexes[i + 1] << " " << verticesIndexes[i + 2] << "/" << normalsIndexes[i + 2] << endl;
+        }
+    }
+}
+
+
 void crossProduct(float vectAX, float vectAY, float vectAZ, float vectBX, float vectBY, float vectBZ, float cross_P[])
 {
     cross_P[0] = vectAY * vectBZ - vectAZ * vectBY;
