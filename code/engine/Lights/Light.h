@@ -7,7 +7,8 @@
 
 
 class Light {
-
+public:
+    virtual ~Light() {}
 };
 
 

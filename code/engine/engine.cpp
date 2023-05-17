@@ -54,7 +54,11 @@ bool isMinecraftActive = false;
 Creator* minecraftCreator;
 
 // Lights
-vector<Light> lightSources;
+vector<Light*> lightSources;
+// Colors
+float dark[4] = {0.2, 0.2, 0.2, 1.0};
+float white[4] = {1.0, 1.0, 1.0, 1.0};
+float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 /**
  * Callback called when the window is resized
@@ -142,6 +146,58 @@ void renderScene() {
         }
         camera->placeCamera();
 
+        // Place lights
+        int index = 0;
+        int light;
+        for(Light* l : lightSources){
+            switch (index){
+                case 0:
+                    light = GL_LIGHT0;
+                    break;
+                case 1:
+                    light = GL_LIGHT1;
+                    break;
+                case 2:
+                    light = GL_LIGHT2;
+                    break;
+                case 3:
+                    light = GL_LIGHT3;
+                    break;
+                case 4:
+                    light = GL_LIGHT4;
+                    break;
+                case 5:
+                    light = GL_LIGHT5;
+                    break;
+                case 6:
+                    light = GL_LIGHT6;
+                    break;
+                case 7:
+                    light = GL_LIGHT7;
+                    break;
+            }
+            LightDirectional* lightDirectional = dynamic_cast<LightDirectional*>(l);
+            if (lightDirectional){
+                float pos[4] = {lightDirectional->getDirX(), lightDirectional->getDirY(), lightDirectional->getDirZ(), 0};
+                glLightfv(light, GL_POSITION, pos);
+            }
+            LightPoint* lightPoint = dynamic_cast<LightPoint*>(l);
+            if (lightPoint){
+                float pos[4] = {lightPoint->getPosX(), lightPoint->getPosY(), lightPoint->getPosZ(), 1};
+                glLightfv(light, GL_POSITION, pos);
+            }
+            LightSpot* lightSpot = dynamic_cast<LightSpot*>(l);
+            if (lightSpot){
+                float pos[4] = {lightSpot->getPosX(), lightSpot->getPosY(), lightSpot->getPosZ(), 1};
+                glLightfv(light, GL_POSITION, pos);
+                float dir[4] = {lightSpot->getDirX(), lightSpot->getDirY(), lightSpot->getDirZ(), 0};
+                glLightfv(light, GL_SPOT_DIRECTION, dir);
+                float cutoff[1] = {lightSpot->getCutoff()};
+                glLightfv(light, GL_SPOT_CUTOFF, cutoff);
+            }
+            index++;
+        }
+
         glColor3f(1.0f, 1.0f, 1.0f);
 
         float position[16] = { 1, 0, 0, 0,
@@ -150,7 +206,8 @@ void renderScene() {
                                0, 0, 0, 1,
         };
         //glColor3f(0,0,1);
-        globalGroup->drawGroup(vboActive, position, &teleports);
+        //globalGroup->drawGroup(vboActive, position, &teleports);
+        glutSolidCube(1);
 
         renderText();
 
@@ -492,7 +549,7 @@ int readXML(char* filePath, vector<string>* keys){
                     if (!posZ) posZ = light->Attribute("posz");
                     cout << "PARSER::Read light point. "
                          << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
-                    LightPoint lp (stof(posX), stof(posY), stof(posZ));
+                    LightPoint* lp = new LightPoint(stof(posX), stof(posY), stof(posZ));
                     lightSources.push_back(lp);
                 }
                 else if (type.compare("directional") == 0){
@@ -504,7 +561,7 @@ int readXML(char* filePath, vector<string>* keys){
                     if (!dirZ) dirZ = light->Attribute("dirz");
                     cout << "PARSER::Read light directional. " <<
                             "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
-                    LightDirectional ld (stof(dirX), stof(dirY), stof(dirZ));
+                    LightDirectional* ld = new LightDirectional (stof(dirX), stof(dirY), stof(dirZ));
                     lightSources.push_back(ld);
                 }
                 else if (type.compare("spotlight") == 0){
@@ -524,7 +581,7 @@ int readXML(char* filePath, vector<string>* keys){
                          << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
                     cout << "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
                     cout << "Cutoff - " << cutoff << endl;
-                    LightSpot ls (stof(posX), stof(posY), stof(posZ),
+                    LightSpot* ls = new LightSpot(stof(posX), stof(posY), stof(posZ),
                                   stof(dirX), stof(dirY), stof(dirZ),
                                   stof(cutoff));
                     lightSources.push_back(ls);
@@ -584,10 +641,42 @@ int main(int argc, char **argv) {
 
             // Activate lightning
             glEnable(GL_LIGHTING);
+            int light;
             for(int i=0; i<lightSources.size(); i++){
-                cout << i << endl;
+                switch (i){
+                    case 0:
+                        light = GL_LIGHT0;
+                        break;
+                    case 1:
+                        light = GL_LIGHT1;
+                        break;
+                    case 2:
+                        light = GL_LIGHT2;
+                        break;
+                    case 3:
+                        light = GL_LIGHT3;
+                        break;
+                    case 4:
+                        light = GL_LIGHT4;
+                        break;
+                    case 5:
+                        light = GL_LIGHT5;
+                        break;
+                    case 6:
+                        light = GL_LIGHT6;
+                        break;
+                    case 7:
+                        light = GL_LIGHT7;
+                        break;
+                }
+
+                glEnable(light);
+                glLightfv(light, GL_AMBIENT, dark);
+                glLightfv(light, GL_DIFFUSE, white);
+                glLightfv(light, GL_SPECULAR, white);
             }
 
+            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
 
             // enter GLUT's main cycle
             glutMainLoop();
