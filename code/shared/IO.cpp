@@ -36,8 +36,7 @@ void writer(const string& fileName, vector<unsigned int> indexes, vector<float> 
     }
 }
 
-void writer(const string& fileName, vector<float> vertices, vector<unsigned int> verticesIndexes, vector<float> normals, vector<unsigned int> normalsIndexes) {
-
+void writer(const string& fileName, vector<float> vertices, vector<unsigned int> verticesIndexes, vector<float> normals, vector<unsigned int> normalsIndexes, vector<float> textCoord, vector<unsigned int> textIndexes) {
     ofstream file("../../figures/" + fileName);
     if (!file)
     {
@@ -49,13 +48,17 @@ void writer(const string& fileName, vector<float> vertices, vector<unsigned int>
             file << "v " << vertices[i] << " " << vertices[i + 1] << " " << vertices[i + 2] << endl;
         }
 
+        for(int i = 0; i<textCoord.size(); i+=2){
+            file << "vt " << textCoord[i] << " " << textCoord[i+1] << endl;
+        }
+
         for (int i = 0; i < normals.size(); i += 3) {
             file << "vn " << normals[i] << " " << normals[i + 1] << " " << normals[i + 2] << endl;
         }
 
         for (int i = 0; i < verticesIndexes.size() && i < normalsIndexes.size(); i += 3)
         {
-            file << "f " << verticesIndexes[i] << "/" << normalsIndexes[i] << " " << verticesIndexes[i + 1] << "/" << normalsIndexes[i + 1] << " " << verticesIndexes[i + 2] << "/" << normalsIndexes[i + 2] << endl;
+            file << "f " << verticesIndexes[i] << "/" << normalsIndexes[i] << "/" << textIndexes[i] << " " << verticesIndexes[i + 1] << "/" << normalsIndexes[i + 1] << "/" << textIndexes[i+1] << " " << verticesIndexes[i + 2] << "/" << normalsIndexes[i + 2] << "/" << textIndexes[i+2] << endl;
         }
     }
 }
@@ -161,16 +164,20 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes) {
 /*
 * Read the primitives files
 */
-vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vector<float>* normals, vector<unsigned int>* normalsIndexes) {
+vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoords) {
     ifstream file("../../figures/" + fileName);
     vector<float> vertices;
+
+    // AUX structures
+    vector<float> auxNormals;
+    vector<float> auxTextures;
 
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
     }
     else {
         string line;
-        regex r(R"((\d+)\/(\d+))");
+        regex r(R"((\d+)\/(\d+)\/(\d+)");
 
         while (getline(file, line, '\n')) {
 
@@ -188,29 +195,32 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
                 vertices.push_back(stof(strings[3]));
 
             }
+            else if (strings[0] == "vt") {
+                // FORMAT: vt x y
+                auxTextures.push_back(stof(strings[1]));
+                auxTextures.push_back(stof(strings[2]));
+            }
             else if (strings[0] == "vn") {
                 // FORMAT: vn x y z
-                normals->push_back(stof(strings[1]));
-                normals->push_back(stof(strings[2]));
-                normals->push_back(stof(strings[3]));
+                auxNormals.push_back(stof(strings[1]));
+                auxNormals.push_back(stof(strings[2]));
+                auxNormals.push_back(stof(strings[3]));
             }
             else if (strings[0] == "f") {
-                // FORMAT: f vi/ni vi/ni vi/ni
+                // FORMAT: f vi/ti/ni vi/ti/ni vi/ti/ni
                 smatch match;
 
-                if (regex_search(strings[1], match, r)) {
-                    indexes->push_back(stoi(match.str(1)));
-                    normalsIndexes->push_back(stoi(match.str(2)));
-                }
-
-                if (regex_search(strings[2], match, r)) {
-                    indexes->push_back(stoi(match.str(1)));
-                    normalsIndexes->push_back(stoi(match.str(2)));
-                }
-
-                if (regex_search(strings[3], match, r)) {
-                    indexes->push_back(stoi(match.str(1)));
-                    normalsIndexes->push_back(stoi(match.str(2)));
+                for(int i=1; i<=3; i++) {
+                    if (regex_search(strings[i], match, r)) {
+                        indexes->push_back(stoi(match.str(1)));
+                        int textureIndex = stoi(match.str(2));
+                        int normalIndex = stoi(match.str(3));
+                        textCoords->push_back(auxTextures[textureIndex * 2]);
+                        textCoords->push_back(auxTextures[textureIndex * 2 + 1]);
+                        normals->push_back(auxNormals[normalIndex * 3]);
+                        normals->push_back(auxNormals[normalIndex * 3 + 1]);
+                        normals->push_back(auxNormals[normalIndex * 3 + 2]);
+                    }
                 }
             }
         }

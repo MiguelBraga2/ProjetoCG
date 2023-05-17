@@ -24,6 +24,9 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
+    if (texture){
+        // Materials
+    }
     if (vboActive){
         glColor3f(get<0>(this->rgb), get<1>(this->rgb), get<2>(this->rgb));
         glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
@@ -83,6 +86,46 @@ string Model::getLabel() {
 
 void Model::setLabel(string label) {
     this->label = label;
+}
+
+Point Model::getDiffuse() {
+    return diffuse;
+}
+
+void Model::setDiffuse(Point diffuse) {
+    Model::diffuse = diffuse;
+}
+
+Point Model::getAmbient() {
+    return ambient;
+}
+
+void Model::setAmbient(Point ambient) {
+    Model::ambient = ambient;
+}
+
+Point Model::getSpecular() {
+    return specular;
+}
+
+void Model::setSpecular(Point specular) {
+    Model::specular = specular;
+}
+
+Point Model::getEmissive() {
+    return emissive;
+}
+
+void Model::setEmissive(Point emissive) {
+    Model::emissive = emissive;
+}
+
+float Model::getShininess() {
+    return shininess;
+}
+
+void Model::setShininess(float shininess) {
+    Model::shininess = shininess;
 }
 
 tuple<float, float, float> Model::getRgb(){

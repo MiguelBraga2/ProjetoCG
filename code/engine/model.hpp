@@ -35,6 +35,13 @@ private:
     GLuint vertices;
     GLuint indexes;
     int indexCount;
+    // Material colors
+    Point diffuse;
+    Point ambient;
+    Point specular;
+    Point emissive;
+    float shininess;
+    bool texture;
 
 public:
     Model();
@@ -44,6 +51,21 @@ public:
     void setLabel(string label);
     tuple<float, float, float> getRgb();
     void setRgb(tuple<float, float, float> rgb);
+
+    Point getDiffuse();
+    void setDiffuse(Point diffuse);
+
+    Point getAmbient();
+    void setAmbient(Point ambient);
+
+    Point getSpecular();
+    void setSpecular(Point specular);
+
+    Point getEmissive();
+    void setEmissive(Point emissive);
+
+    float getShininess();
+    void setShininess(float shininess);
 };
 
 
