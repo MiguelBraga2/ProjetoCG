@@ -642,45 +642,46 @@ int main(int argc, char **argv) {
             glEnable(GL_TEXTURE_2D);
             glPolygonMode(GL_FRONT, polygonMode);
 
-            // Activate lightning
-            glEnable(GL_LIGHTING);
-            int light;
-            for(int i=0; i<lightSources.size(); i++){
-                switch (i){
-                    case 0:
-                        light = GL_LIGHT0;
-                        break;
-                    case 1:
-                        light = GL_LIGHT1;
-                        break;
-                    case 2:
-                        light = GL_LIGHT2;
-                        break;
-                    case 3:
-                        light = GL_LIGHT3;
-                        break;
-                    case 4:
-                        light = GL_LIGHT4;
-                        break;
-                    case 5:
-                        light = GL_LIGHT5;
-                        break;
-                    case 6:
-                        light = GL_LIGHT6;
-                        break;
-                    case 7:
-                        light = GL_LIGHT7;
-                        break;
+            if (lightSources.size() > 0) {
+                // Activate lightning
+                glEnable(GL_LIGHTING);
+                int light;
+                for (int i = 0; i < lightSources.size(); i++) {
+                    switch (i) {
+                        case 0:
+                            light = GL_LIGHT0;
+                            break;
+                        case 1:
+                            light = GL_LIGHT1;
+                            break;
+                        case 2:
+                            light = GL_LIGHT2;
+                            break;
+                        case 3:
+                            light = GL_LIGHT3;
+                            break;
+                        case 4:
+                            light = GL_LIGHT4;
+                            break;
+                        case 5:
+                            light = GL_LIGHT5;
+                            break;
+                        case 6:
+                            light = GL_LIGHT6;
+                            break;
+                        case 7:
+                            light = GL_LIGHT7;
+                            break;
+                    }
+
+                    glEnable(light);
+                    glLightfv(light, GL_AMBIENT, dark);
+                    glLightfv(light, GL_DIFFUSE, white);
+                    glLightfv(light, GL_SPECULAR, white);
                 }
 
-                glEnable(light);
-                glLightfv(light, GL_AMBIENT, dark);
-                glLightfv(light, GL_DIFFUSE, white);
-                glLightfv(light, GL_SPECULAR, white);
+                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
             }
-
-            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
-
             // enter GLUT's main cycle
             glutMainLoop();
 
