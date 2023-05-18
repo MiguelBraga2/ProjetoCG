@@ -90,37 +90,37 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
 
             if (!clockWiseDir) {
                 indexes->push_back(*index);
-                indexes->push_back((*index) + 3);
                 indexes->push_back((*index) + 1);
+                indexes->push_back((*index) + 3);
 
                 indexes->push_back(*index);
-                indexes->push_back((*index) + 2);
                 indexes->push_back((*index) + 3);
+                indexes->push_back((*index) + 2);
 
                 textCoordIndexes->push_back(*textCoordIndex);
-                textCoordIndexes->push_back(*textCoordIndex+ 3);
                 textCoordIndexes->push_back(*textCoordIndex+ 1);
+                textCoordIndexes->push_back(*textCoordIndex+ 3);
 
                 textCoordIndexes->push_back(*textCoordIndex);
-                textCoordIndexes->push_back(*textCoordIndex + 2);
                 textCoordIndexes->push_back(*textCoordIndex + 3);
+                textCoordIndexes->push_back(*textCoordIndex + 2);
 
             } else {
                 indexes->push_back(*index);
-                indexes->push_back((*index) + 1);
                 indexes->push_back((*index) + 3);
+                indexes->push_back((*index) + 1);
 
                 indexes->push_back(*index);
-                indexes->push_back((*index) + 3);
                 indexes->push_back((*index) + 2);
+                indexes->push_back((*index) + 3);
 
                 textCoordIndexes->push_back(*textCoordIndex);
-                textCoordIndexes->push_back(*textCoordIndex+ 1);
                 textCoordIndexes->push_back(*textCoordIndex+ 3);
+                textCoordIndexes->push_back(*textCoordIndex+ 1);
 
                 textCoordIndexes->push_back(*textCoordIndex);
-                textCoordIndexes->push_back(*textCoordIndex + 3);
                 textCoordIndexes->push_back(*textCoordIndex + 2);
+                textCoordIndexes->push_back(*textCoordIndex + 3);
             }
 
             normalsIndexes->push_back(*normalIndex);

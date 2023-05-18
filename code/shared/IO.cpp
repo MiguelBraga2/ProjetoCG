@@ -197,8 +197,10 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
             }
             else if (strings[0] == "vt") {
                 // FORMAT: vt x y
-                auxTextures.push_back(stof(strings[1]));
-                auxTextures.push_back(stof(strings[2]));
+                //auxTextures.push_back(stof(strings[1]));
+                //auxTextures.push_back(stof(strings[2]));
+                textCoords->push_back(stof(strings[1]));
+                textCoords->push_back(stof(strings[2]));
             }
             else if (strings[0] == "vn") {
                 // FORMAT: vn x y z
@@ -215,8 +217,8 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
                         indexes->push_back(stoi(match.str(1))-1);
                         int textureIndex = stoi(match.str(2))-1;
                         int normalIndex = stoi(match.str(3))-1;
-                        textCoords->push_back(auxTextures[textureIndex * 2]);
-                        textCoords->push_back(auxTextures[textureIndex * 2 + 1]);
+                        //textCoords->push_back(auxTextures[textureIndex * 2]);
+                        //textCoords->push_back(auxTextures[textureIndex * 2 + 1]);
                         normals->push_back(auxNormals[normalIndex * 3]);
                         normals->push_back(auxNormals[normalIndex * 3 + 1]);
                         normals->push_back(auxNormals[normalIndex * 3 + 2]);
