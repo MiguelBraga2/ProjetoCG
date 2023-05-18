@@ -6,11 +6,12 @@
 #include "box.hpp"
 #include <string>
 
-std::vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, std::vector<unsigned int>* indexes, std::vector<float>* normals, std::vector<unsigned int>* normalIndexes, char** args){
-    std::vector<float> vertices;
-    std::vector<float> aux;
-    int index = 0;
-    int normalIndex = 0;
+vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, vector<unsigned int>* indexes, vector<float>* normals, vector<unsigned int>* normalIndexes, vector<float>* textCoord, vector<unsigned int>* textCoordIndexes, char** args){
+    vector<float> vertices;
+    vector<float> aux;
+    int index = 1;
+    int normalIndex = 1;
+    int textCoordIndex = 1;
 
     // For each object to be generated in a ring
     for(int j = 0; j < n; j++) {
@@ -27,7 +28,7 @@ std::vector<float> generateRing (float outerRadius, float innerRadius, int n, fl
         if (strcmp(args[0], "sphere") == 0) {
             aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), indexes, normals, normalIndexes, start, &index);
         } else if (strcmp(args[0], "box") == 0) {
-            aux = generateBox(scaleF, stoi(args[1]), indexes, start, &index, normals, normalIndexes, &normalIndex);
+            aux = generateBox(scaleF, stoi(args[1]), indexes, start, &index, normals, normalIndexes, &normalIndex, textCoord, textCoordIndexes, &textCoordIndex);
         }
         vertices.insert(vertices.end(), aux.begin(), aux.end());
     }

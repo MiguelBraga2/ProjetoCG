@@ -10,7 +10,7 @@
  * @param clockWiseDir true if direction is set to clockwise, false if direction is set to counterclockwise
  * @return a list of generated triangles
  */
-vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index, std::vector<float>* normals, std::vector<unsigned int>* normalsIndexes, int *normalIndex){
+vector<float> generatePlane(float length, int grid, Point direction, Point initial, bool clockWiseDir, vector<unsigned int> *indexes, int *index, vector<float>* normals, vector<unsigned int>* normalsIndexes, int *normalIndex, vector<float>* textCoord, vector<unsigned int>* textCoordIndexes, int *textCoordIndex){
     vector<float> vertices;
     float step = length / (float) grid; // side of each of the smaller squares
 
@@ -32,11 +32,11 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
         normals->push_back(-1);
         normals->push_back(0);
         normals->push_back(0);
-    } else if (direction.getX() == 0 && !clockWiseDir) {
+    } else if (direction.getZ() == 0 && !clockWiseDir) {
         normals->push_back(0);
         normals->push_back(0);
         normals->push_back(1);
-    } else if (direction.getX() == 0 && !clockWiseDir) {
+    } else if (direction.getZ() == 0) {
         normals->push_back(0);
         normals->push_back(0);
         normals->push_back(-1);
@@ -47,35 +47,46 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
         vertices.push_back(base.getX());
         vertices.push_back(base.getY());
         vertices.push_back(base.getZ());
+        textCoord->push_back(i);
+        textCoord->push_back(grid);
 
-        if (direction.getX() == 0) {
-            vertices.push_back(base.getX());
-            vertices.push_back(base.getY());
-            vertices.push_back(base.getZ() + step * direction.getZ());
-
-        }
-        else {
+        if (direction.getZ() == 0) {
             vertices.push_back(base.getX() + step * direction.getX());
             vertices.push_back(base.getY());
             vertices.push_back(base.getZ());
+            textCoord->push_back(i+1);
+            textCoord->push_back(grid);
+        }
+        else {
+            vertices.push_back(base.getX());
+            vertices.push_back(base.getY());
+            vertices.push_back(base.getZ() + step * direction.getZ());
+            textCoord->push_back(i+1);
+            textCoord->push_back(grid);
         }
 
         for (int j = 0; j < grid; j++) {
 
             if (direction.getY() == 0) {
-                vertices.push_back(base.getX());
+                vertices.push_back(base.getX() + step * direction.getX());
                 vertices.push_back(base.getY());
-                vertices.push_back(base.getZ() + step * direction.getZ());
+                vertices.push_back(base.getZ());
+                textCoord->push_back(i);
+                textCoord->push_back(grid-j-1);
             }
             else {
                 vertices.push_back(base.getX());
                 vertices.push_back(base.getY() + step * direction.getY());
                 vertices.push_back(base.getZ());
+                textCoord->push_back(i);
+                textCoord->push_back(grid-j-1);
             }
 
             vertices.push_back(base.getX() + step * direction.getX());
             vertices.push_back(base.getY() + step * direction.getY());
             vertices.push_back(base.getZ() + step * direction.getZ());
+            textCoord->push_back(i+1);
+            textCoord->push_back(grid-j-1);
 
             if (!clockWiseDir) {
                 indexes->push_back(*index);
@@ -85,6 +96,15 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
                 indexes->push_back(*index);
                 indexes->push_back((*index) + 2);
                 indexes->push_back((*index) + 3);
+
+                textCoordIndexes->push_back(*textCoordIndex);
+                textCoordIndexes->push_back(*textCoordIndex+ 3);
+                textCoordIndexes->push_back(*textCoordIndex+ 1);
+
+                textCoordIndexes->push_back(*textCoordIndex);
+                textCoordIndexes->push_back(*textCoordIndex + 2);
+                textCoordIndexes->push_back(*textCoordIndex + 3);
+
             } else {
                 indexes->push_back(*index);
                 indexes->push_back((*index) + 1);
@@ -93,6 +113,14 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
                 indexes->push_back(*index);
                 indexes->push_back((*index) + 3);
                 indexes->push_back((*index) + 2);
+
+                textCoordIndexes->push_back(*textCoordIndex);
+                textCoordIndexes->push_back(*textCoordIndex+ 1);
+                textCoordIndexes->push_back(*textCoordIndex+ 3);
+
+                textCoordIndexes->push_back(*textCoordIndex);
+                textCoordIndexes->push_back(*textCoordIndex + 3);
+                textCoordIndexes->push_back(*textCoordIndex + 2);
             }
 
             normalsIndexes->push_back(*normalIndex);
@@ -103,28 +131,31 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
             normalsIndexes->push_back(*normalIndex);
             normalsIndexes->push_back(*normalIndex);
 
+
             // Move the base point
             if (direction.getY() == 0) {
-                base.setZ(base.getZ() + step * direction.getZ());
+                base.setX(base.getX() + step * direction.getX());
             }
             else {
                 base.setY(base.getY() + step * direction.getY());
             }
 
             (*index) += 2;
+            (*textCoordIndex) += 2;
         }
         if (direction.getX() == 0) {
             base.setZ(base.getZ() + step * direction.getZ());
             base.setY(initial.getY());
         } else if (direction.getY() == 0) {
-            base.setX(base.getX() + step * direction.getX());
-            base.setZ(initial.getZ());
+            base.setZ(base.getZ() + step * direction.getZ());
+            base.setX(initial.getX());
         } else if (direction.getZ() == 0) {
             base.setX(base.getX() + step * direction.getX());
             base.setY(initial.getY());
         }
 
         (*index) += 2;
+        (*textCoordIndex) += 2;
     }
 
     (*normalIndex)++;
