@@ -58,7 +58,7 @@ void writer(const string& fileName, vector<float> vertices, vector<unsigned int>
 
         for (int i = 0; i < verticesIndexes.size() && i < normalsIndexes.size(); i += 3)
         {
-            file << "f " << verticesIndexes[i] << "/" << normalsIndexes[i] << "/" << textIndexes[i] << " " << verticesIndexes[i + 1] << "/" << normalsIndexes[i + 1] << "/" << textIndexes[i+1] << " " << verticesIndexes[i + 2] << "/" << normalsIndexes[i + 2] << "/" << textIndexes[i+2] << endl;
+            file << "f " << verticesIndexes[i] << "/" << textIndexes[i] << "/" << normalsIndexes[i] << " " << verticesIndexes[i + 1] << "/" << textIndexes[i+1] << "/" << normalsIndexes[i + 1] << " " << verticesIndexes[i + 2] << "/" << textIndexes[i+2] << "/" << normalsIndexes[i + 2] << endl;
         }
     }
 }
@@ -207,7 +207,7 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
                 auxNormals.push_back(stof(strings[3]));
             }
             else if (strings[0] == "f") {
-                // FORMAT: f vi/ti/ni vi/ti/ni vi/ti/ni
+                // FORMAT: f vi/ni/ti vi/ni/ti vi/ni/ti
                 smatch match;
 
                 for(int i=1; i<=3; i++) {
@@ -222,6 +222,7 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
                         normals->push_back(auxNormals[normalIndex * 3 + 2]);
                     }
                 }
+
             }
         }
     }
