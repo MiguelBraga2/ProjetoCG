@@ -6,12 +6,10 @@
 #include "box.hpp"
 #include <string>
 
-vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, vector<unsigned int>* indexes, vector<float>* normals, vector<unsigned int>* normalIndexes, vector<float>* textCoord, vector<unsigned int>* textCoordIndexes, char** args){
+vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoord, char** args){
     vector<float> vertices;
     vector<float> aux;
-    int index = 1;
-    int normalIndex = 1;
-    int textCoordIndex = 1;
+    int index = 0;
 
     // For each object to be generated in a ring
     for(int j = 0; j < n; j++) {
@@ -26,7 +24,7 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
         Point start(distance * cos(verticalAngle) * sin(angle), distance * sin(verticalAngle), distance * cos(verticalAngle) * cos(angle));
 
         if (strcmp(args[0], "sphere") == 0) {
-            aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), indexes, normals, normalIndexes, start, &index);
+            aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), start, &index, indexes, normals, textCoord);
         } else if (strcmp(args[0], "box") == 0) {
             aux = generateBox(scaleF, stoi(args[1]), start, indexes, &index, normals, textCoord);
         }

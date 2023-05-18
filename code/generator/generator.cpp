@@ -23,12 +23,12 @@ int main(int argc, char** argv) {
             if (argc == 6) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
+                vector<float> texCoords;
 
                 int index = 0;
                 Point p1(0,0,0);
-                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), &indexes, &normals, &normalsIndexes, p1, &index);
-                //writer(argv[5], vertices, indexes, normals, normalsIndexes);
+                vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), p1, &index, &indexes, &normals, &texCoords);
+                writer(argv[5], vertices, indexes, normals, texCoords);
             }
             else {
                 cout << "Sphere: número de argumentos inválido." << endl;
@@ -111,14 +111,12 @@ int main(int argc, char** argv) {
                 } else {
                     vector<unsigned int> indexes;
                     vector<float> normals;
-                    vector<unsigned int> normalsIndexes;
                     vector<float> textCoord;
-                    vector<unsigned int> textCoordIndexes;
 
                     vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]),
-                                                          stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &normals, &normalsIndexes, &textCoord, &textCoordIndexes,
+                                                          stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &normals, &textCoord,
                                                           &argv[10]);
-                    //writer(argv[9], vertices, indexes, normals, normalsIndexes);
+                    writer(argv[9], vertices, indexes, normals, textCoord);
                 }
             }
             else {
