@@ -9,94 +9,126 @@
  * @param slices vertical divisions of the sphere
  * @return a list of generated triangles
  */
-std::vector<float> generateCylinder(float radius, float height, int slices,std::vector<unsigned int>* verticesIndexes, std::vector<float>* normals,  std::vector<unsigned int>* normalsIndexes) {
+std::vector<float> generateCylinder(float radius, float height, int slices,std::vector<unsigned int>* indexes, std::vector<float>* normals, std::vector<float>* texCoords) {
     std::vector<float> vertices;
     float aux = height / 2;
-    double sliceStep = (2 * M_PI) / slices;
+    float delta = 1.0f / slices;
+    float sliceStep = (2 * M_PI) / slices;
     int index = 0;
-    int nIndex = 0;
 
     for (int i = 0; i < slices; i++) {
-        /* normal vector for the vertices of the base triangle */
-        normals->push_back(0);
-        normals->push_back(-1);
-        normals->push_back(0);
 
-        /* normals vectors for the vertices of the lateral triangle */
-        normals->push_back((float) sin(i * sliceStep));
-        normals->push_back(0);
-        normals->push_back((float) cos(i * sliceStep));
-
-        normals->push_back((float) sin((i+1) * sliceStep));
-        normals->push_back(0);
-        normals->push_back((float) cos((i+1) * sliceStep));
-
-        /* normal vector for the vertices of the top triangle */
-        normals->push_back(0);
-        normals->push_back(1);
-        normals->push_back(0);
-
-        /* Base vertices */
+        /* Base */
         vertices.push_back(0);
         vertices.push_back(-aux);
         vertices.push_back(0);
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        texCoords->push_back(0.8125f);
+        texCoords->push_back(0.1875f);
 
         vertices.push_back(radius * (float) sin(i * sliceStep));
         vertices.push_back(-aux);
         vertices.push_back(radius * (float) cos(i * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        texCoords->push_back(0.8125f + 0.1875f * sin( i * sliceStep));
+        texCoords->push_back(0.1875f + 0.1875f * cos(i * sliceStep));
 
         vertices.push_back(radius * (float)sin((i + 1) * sliceStep));
         vertices.push_back(-aux);
         vertices.push_back(radius * (float) cos((i + 1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        texCoords->push_back(0.8125f + 0.1875f * sin( (i+1) * sliceStep));
+        texCoords->push_back(0.1875f + 0.1875f * cos((i+1) * sliceStep));
 
-        /* Top vertices */
+        /* Lateral */
+        vertices.push_back(radius * (float) sin(i * sliceStep));
+        vertices.push_back(-aux);
+        vertices.push_back(radius * (float) cos(i * sliceStep));
+        normals->push_back((float) sin(i * sliceStep));
+        normals->push_back(0);
+        normals->push_back((float) cos(i * sliceStep));
+        texCoords->push_back(i * delta);
+        texCoords->push_back(0.375f);
+
+        vertices.push_back(radius * (float)sin((i + 1) * sliceStep));
+        vertices.push_back(-aux);
+        vertices.push_back(radius * (float) cos((i + 1) * sliceStep));
+        normals->push_back((float) sin((i+1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back((float) cos((i+1) * sliceStep));
+        texCoords->push_back((i+1) * delta);
+        texCoords->push_back(0.375f);
+
         vertices.push_back(radius * (float) sin(i * sliceStep));
         vertices.push_back(aux);
         vertices.push_back(radius * (float) cos(i * sliceStep));
+        normals->push_back((float) sin(i * sliceStep));
+        normals->push_back(0);
+        normals->push_back((float) cos(i * sliceStep));
+        texCoords->push_back(i * delta);
+        texCoords->push_back(1);
+
+        vertices.push_back(radius * (float)sin((i + 1) * sliceStep));
+        vertices.push_back(aux);
+        vertices.push_back(radius * (float) cos((i + 1) * sliceStep));
+        normals->push_back((float) sin((i+1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back((float) cos((i+1) * sliceStep));
+        texCoords->push_back((i+1) * delta);
+        texCoords->push_back(1);
+
+        /* Top */
+        vertices.push_back(radius * (float) sin(i * sliceStep));
+        vertices.push_back(aux);
+        vertices.push_back(radius * (float) cos(i * sliceStep));
+        normals->push_back(0);
+        normals->push_back(1);
+        normals->push_back(0);
+        texCoords->push_back(0.4375f + 0.1875f * sin( i * sliceStep));
+        texCoords->push_back(0.1875f + 0.1875f * cos(i * sliceStep));
 
         vertices.push_back(radius * (float) sin((i + 1) * sliceStep));
         vertices.push_back(aux);
         vertices.push_back(radius * (float) cos((i + 1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back(1);
+        normals->push_back(0);
+        texCoords->push_back(0.4375f + 0.1875f * sin((i+1) * sliceStep));
+        texCoords->push_back(0.1875f + 0.1875f * cos((i+1) * sliceStep));
 
         vertices.push_back(0);
         vertices.push_back(aux);
         vertices.push_back(0);
+        normals->push_back(0);
+        normals->push_back(1);
+        normals->push_back(0);
+        texCoords->push_back(0.4375f);
+        texCoords->push_back(0.1875f);
 
         /* Indexes */
-        verticesIndexes->push_back(index);
-        verticesIndexes->push_back(index + 2);
-        verticesIndexes->push_back(index + 1);
+        indexes->push_back(index);
+        indexes->push_back(index + 2);
+        indexes->push_back(index + 1);
 
-        normalsIndexes->push_back(nIndex);
-        normalsIndexes->push_back(nIndex);
-        normalsIndexes->push_back(nIndex);
+        indexes->push_back(index + 3);
+        indexes->push_back(index + 4);
+        indexes->push_back(index + 6);
 
-        verticesIndexes->push_back(index + 1);
-        verticesIndexes->push_back(index + 2);
-        verticesIndexes->push_back(index + 3);
+        indexes->push_back(index + 3);
+        indexes->push_back(index + 6);
+        indexes->push_back(index + 5);
 
-        normalsIndexes->push_back(nIndex + 1);
-        normalsIndexes->push_back(nIndex + 2);
-        normalsIndexes->push_back(nIndex + 1);
+        indexes->push_back(index + 7);
+        indexes->push_back(index + 8);
+        indexes->push_back(index + 9);
 
-        verticesIndexes->push_back(index + 2);
-        verticesIndexes->push_back(index + 4);
-        verticesIndexes->push_back(index + 3);
-
-        normalsIndexes->push_back(nIndex + 1);
-        normalsIndexes->push_back(nIndex + 2);
-        normalsIndexes->push_back(nIndex + 2);
-
-        verticesIndexes->push_back(index + 3);
-        verticesIndexes->push_back(index + 4);
-        verticesIndexes->push_back(index + 5);
-
-        normalsIndexes->push_back(nIndex + 3);
-        normalsIndexes->push_back(nIndex + 3);
-        normalsIndexes->push_back(nIndex + 3);
-
-        index += 6;
-        nIndex += 4;
+        index += 10;
     }
 
     return vertices;

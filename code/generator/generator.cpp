@@ -83,9 +83,10 @@ int main(int argc, char** argv) {
             if (argc == 6) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
-                vector<float> vertices = generateCylinder(stof(argv[2]), stof(argv[3]), stoi(argv[4]), &indexes, &normals, &normalsIndexes);
-                //writer(argv[5], vertices, indexes, normals, normalsIndexes);
+                vector<float> texCoords;
+
+                vector<float> vertices = generateCylinder(stof(argv[2]), stof(argv[3]), stoi(argv[4]), &indexes, &normals, &texCoords);
+                writer(argv[5], vertices, indexes, normals, texCoords);
             }
             else {
                 cout << "Cylinder: número de argumentos inválido." << endl;
