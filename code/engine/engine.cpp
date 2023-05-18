@@ -206,8 +206,8 @@ void renderScene() {
                                0, 0, 0, 1,
         };
         //glColor3f(0,0,1);
-        //globalGroup->drawGroup(vboActive, position, &teleports);
-        glutSolidCube(1);
+        globalGroup->drawGroup(vboActive, position, &teleports);
+        //glutSolidCube(1);
 
         renderText();
 
@@ -628,6 +628,8 @@ int main(int argc, char **argv) {
         // Required for VBOs
         glewInit();
         glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         int error = readXML(argv[1], &keys);
 
@@ -637,6 +639,7 @@ int main(int argc, char **argv) {
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
+            glEnable(GL_TEXTURE_2D);
             glPolygonMode(GL_FRONT, polygonMode);
 
             // Activate lightning

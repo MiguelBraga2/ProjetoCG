@@ -3,6 +3,7 @@
 #include "../shared/matrixOp.hpp"
 #include <map>
 #include <cmath>
+#include <IL/il.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -12,7 +13,7 @@
 #endif
 
 Model::Model() {
-
+    texId = 0;
 }
 
 void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
@@ -24,15 +25,26 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
-    if (texture){
-        // Materials
-    }
+
     if (vboActive){
-        glColor3f(get<0>(this->rgb), get<1>(this->rgb), get<2>(this->rgb));
         glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
         glVertexPointer(3,GL_FLOAT,0,0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
+
+        if (texId != 0){
+            glBindTexture(GL_TEXTURE_2D,texId);
+            // Texture
+            glBindBuffer(GL_ARRAY_BUFFER,this->normals);
+            glNormalPointer(GL_FLOAT,0,0);
+            glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
+            glTexCoordPointer(2,GL_FLOAT,0,0);
+        }
+        else {
+            glColor3f(get<0>(this->rgb), get<1>(this->rgb), get<2>(this->rgb));
+        }
+
         glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
+        glBindTexture(GL_TEXTURE_2D,0);
         glColor3f(1,1,1);
     }
     else{
@@ -67,7 +79,9 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
  */
 void Model::readModel(string fileName) {
     vector<unsigned int> indexes;
-    this->verticesVector = reader(fileName, &this->indexesVector);
+    vector<float> textCoords;
+    vector<float> normals;
+    this->verticesVector = reader(fileName, &this->indexesVector, &normals, &textCoords);
 
     glGenBuffers(1, &(this->vertices));
     glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
@@ -76,6 +90,14 @@ void Model::readModel(string fileName) {
     glGenBuffers(1, &(this->indexes));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(unsigned int) * this->indexesVector.size(),this->indexesVector.data(),GL_STATIC_DRAW);
+
+    glGenBuffers(1, &(this->normals));
+    glBindBuffer(GL_ARRAY_BUFFER,this->normals);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size() , normals.data(),GL_STATIC_DRAW);
+
+    glGenBuffers(1, &(this->texCoord));
+    glBindBuffer(GL_ARRAY_BUFFER, this->texCoord);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textCoords.size(), textCoords.data(), GL_STATIC_DRAW);
 
     this->indexCount = this->indexesVector.size();
 }
@@ -134,6 +156,41 @@ tuple<float, float, float> Model::getRgb(){
 
 void Model::setRgb(tuple<float, float, float> rgb) {
     this->rgb = rgb;
+}
+
+void Model::setTextureFile(string textureFile) {
+    loadImage(textureFile);
+}
+
+void Model::loadImage(string textFile) {
+    unsigned int t,tw,th;
+    unsigned char *texData;
+
+    ilInit();
+    ilEnable(IL_ORIGIN_SET);
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+    ilGenImages(1,&t);
+    ilBindImage(t);
+    ilLoadImage((ILstring)textFile.c_str());
+    tw = ilGetInteger(IL_IMAGE_WIDTH);
+    th = ilGetInteger(IL_IMAGE_HEIGHT);
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+    texData = ilGetData();
+
+    glGenTextures(1,&this->texId);
+
+    glBindTexture(GL_TEXTURE_2D,texId);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 

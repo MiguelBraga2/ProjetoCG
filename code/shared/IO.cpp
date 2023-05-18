@@ -177,7 +177,7 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
     }
     else {
         string line;
-        regex r(R"((\d+)\/(\d+)\/(\d+)");
+        regex r(R"((\d+)\/(\d+)\/(\d+))");
 
         while (getline(file, line, '\n')) {
 
@@ -212,9 +212,9 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
 
                 for(int i=1; i<=3; i++) {
                     if (regex_search(strings[i], match, r)) {
-                        indexes->push_back(stoi(match.str(1)));
-                        int textureIndex = stoi(match.str(2));
-                        int normalIndex = stoi(match.str(3));
+                        indexes->push_back(stoi(match.str(1))-1);
+                        int textureIndex = stoi(match.str(2))-1;
+                        int normalIndex = stoi(match.str(3))-1;
                         textCoords->push_back(auxTextures[textureIndex * 2]);
                         textCoords->push_back(auxTextures[textureIndex * 2 + 1]);
                         normals->push_back(auxNormals[normalIndex * 3]);

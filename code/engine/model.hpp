@@ -34,6 +34,8 @@ private:
     vector<unsigned int> indexesVector;
     GLuint vertices;
     GLuint indexes;
+    GLuint normals;
+    GLuint texCoord;
     int indexCount;
     // Material colors
     Point diffuse;
@@ -41,7 +43,7 @@ private:
     Point specular;
     Point emissive;
     float shininess;
-    bool texture;
+    GLuint texId;
 
 public:
     Model();
@@ -66,6 +68,11 @@ public:
 
     float getShininess();
     void setShininess(float shininess);
+
+    string getTextureFile();
+    void setTextureFile(string textureFile);
+private:
+    void loadImage(string textFile);
 };
 
 

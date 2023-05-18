@@ -224,6 +224,12 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                     m.setLabel("undefined");
                 }
 
+                XMLElement* textureFile = model->FirstChildElement("texture");
+                if (textureFile) {
+                    string fileName = textureFile->Attribute("file");
+                    m.setTextureFile("../Textures/" + fileName);
+                }
+
                 XMLElement* color = model->FirstChildElement("color");
                 if (color){
                     XMLElement* diffuse = color->FirstChildElement("diffuse");
