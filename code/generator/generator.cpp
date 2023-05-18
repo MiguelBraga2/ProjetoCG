@@ -38,10 +38,10 @@ int main(int argc, char** argv) {
             if (argc == 7) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
+                vector<float> textCoords;
 
-                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &normalsIndexes);
-                //writer(argv[6], vertices, indexes, normals, normalsIndexes);
+                vector<float> vertices = generateCone(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &textCoords);
+                writer(argv[6], vertices, indexes, normals, textCoords);
             }
             else {
                 cout << "Cone: número de argumentos inválido." << endl;

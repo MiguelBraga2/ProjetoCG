@@ -11,80 +11,102 @@
  * @param stacks vertical divisions of the cone
  * @return a list of generated triangles
  */
-std::vector<float> generateCone(float radius, float height, int slices, int stacks, std::vector<unsigned int>* indexes, std::vector<float>* normals, std::vector<unsigned int>* normalsIndexes) {
+std::vector<float> generateCone(float radius, float height, int slices, int stacks, std::vector<unsigned int>* indexes, std::vector<float>* normals, std::vector<float>* textCoords) {
     std::vector<float> vertices;
     float sliceStep = 2 * (float) M_PI / (float) slices;
     float stackStep = height / (float) stacks;
     float radiusDec = radius / (float) stacks;
+    float deltaX = 1.0f / slices;
+    float deltaY = 1.0f / stacks;
     int index = 0;
-    int normalIndex = 0;
-
 
     for (int i = 0; i < slices; i++) {
         vertices.push_back(0);
         vertices.push_back(0);
         vertices.push_back(0);
-
         normals->push_back(0);
         normals->push_back(-1);
         normals->push_back(0);
+        textCoords->push_back(0.5f);
+        textCoords->push_back(0.5f);
 
         vertices.push_back(radius * sin((float) i * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) i * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        textCoords->push_back(0.5f + 0.5 * sin(i * sliceStep));
+        textCoords->push_back(0.5f + 0.5 * cos(i * sliceStep));
 
         vertices.push_back(radius * sin((float) (i + 1) * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) (i + 1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        textCoords->push_back(0.5f + 0.5 * sin((i + 1) * sliceStep));
+        textCoords->push_back(0.5f + 0.5 * cos((i + 1) * sliceStep));
 
         indexes->push_back(index);
         indexes->push_back(index + 2);
         indexes->push_back(index + 1);
 
-        Point p1(0, height, 0);
-        Point p2(sin((float) i * sliceStep), 0, cos((float) i * sliceStep));
-        Point p3(sin((float) (i + 1) * sliceStep), 0, cos((float) (i + 1) * sliceStep));
+        Point p1(radius * sin((float) i * sliceStep), 0, radius * cos((float) i * sliceStep));
+        Point p2((radius + height) * sin((float) i * sliceStep), radius, (radius + height) * cos((float) i  * sliceStep));
 
-        Point v1(p1.getX()-p2.getX(), p1.getY()-p2.getY(), p1.getZ()-p2.getZ());
-        Point v2(p3.getX()-p2.getX(), p3.getY()-p2.getY(), p3.getZ()-p2.getZ());
+        Point p3(radius * sin((float) (i+1) * sliceStep), 0, radius * cos((float) (i+1) * sliceStep));
+        Point p4((radius + height) * sin((float) (i+1) * sliceStep), radius, (radius + height) * cos((float) (i+1)  * sliceStep));
 
-        Point n = Point::crossProduct(v2, v1);
+        Point n1(p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ()-p1.getZ());
+        Point n2(p4.getX()-p3.getX(), p4.getY()-p3.getY(), p4.getZ()-p3.getZ());
 
-        normals->push_back(n.getX());
-        normals->push_back(n.getY());
-        normals->push_back(n.getZ());
+        index += 3;
 
-        normalsIndexes->push_back(normalIndex);
-        normalsIndexes->push_back(normalIndex);
-        normalsIndexes->push_back(normalIndex);
+        vertices.push_back(radius * sin((float) i * sliceStep));
+        vertices.push_back(0);
+        vertices.push_back(radius * cos((float) i * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        textCoords->push_back(i * deltaX);
+        textCoords->push_back(0);
 
-        index++;
-        normalIndex++;
+        vertices.push_back(radius * sin((float) (i + 1) * sliceStep));
+        vertices.push_back(0);
+        vertices.push_back(radius * cos((float) (i + 1) * sliceStep));
+        normals->push_back(0);
+        normals->push_back(-1);
+        normals->push_back(0);
+        textCoords->push_back((i + 1) * deltaX);
+        textCoords->push_back(0);
 
         for (int j = 0; j < stacks - 1; j++) {
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * sin((float) i * sliceStep));
             vertices.push_back((float) (j + 1) * stackStep);
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * cos((float) i * sliceStep));
+            normals->push_back(n1.getX());
+            normals->push_back(n1.getY());
+            normals->push_back(n1.getZ());
+            textCoords->push_back(i * deltaX);
+            textCoords->push_back((j+1) * deltaY);
 
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * sin((float) (i + 1) * sliceStep));
             vertices.push_back((float) (j + 1) * stackStep);
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * cos((float) (i + 1) * sliceStep));
+            normals->push_back(n2.getX());
+            normals->push_back(n2.getY());
+            normals->push_back(n2.getZ());
+            textCoords->push_back((i+1) * deltaX);
+            textCoords->push_back((j+1) * deltaY);
 
             indexes->push_back(index);
             indexes->push_back(index + 1);
             indexes->push_back(index + 2);
 
-            normalsIndexes->push_back(normalIndex);
-            normalsIndexes->push_back(normalIndex);
-            normalsIndexes->push_back(normalIndex);
-
             indexes->push_back(index + 1);
             indexes->push_back(index + 3);
             indexes->push_back(index + 2);
-
-            normalsIndexes->push_back(normalIndex);
-            normalsIndexes->push_back(normalIndex);
-            normalsIndexes->push_back(normalIndex);
 
             index += 2;
         }
@@ -92,18 +114,17 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
         vertices.push_back(0);
         vertices.push_back(height);
         vertices.push_back(0);
+        normals->push_back(0);
+        normals->push_back(1);
+        normals->push_back(0);
+        textCoords->push_back((i+0.5f) * deltaX);
+        textCoords->push_back(1);
 
         indexes->push_back(index);
         indexes->push_back(index + 1);
         indexes->push_back(index + 2);
 
-        normalsIndexes->push_back(normalIndex);
-        normalsIndexes->push_back(normalIndex);
-        normalsIndexes->push_back(normalIndex);
-
         index += 3;
-
-        normalIndex++;
     }
 
     return vertices;
