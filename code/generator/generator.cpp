@@ -51,38 +51,29 @@ int main(int argc, char** argv) {
             if (argc == 5) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
                 vector<float> textCoord;
-                vector<unsigned int> textCoordIndexes;
 
                 Point start(0,0,0);
-                int index = 1;
-                int normalIndex = 1;
-                int textCoordIndex = 1;
+                int index = 0;
 
-                vector<float> vertices = generateBox(stof(argv[2]), stoi(argv[3]), &indexes, start, &index, &normals, &normalsIndexes, &normalIndex,  &textCoord, &textCoordIndexes, &textCoordIndex);
-                writer(argv[4], vertices, indexes, normals, normalsIndexes, textCoord, textCoordIndexes);
+                vector<float> vertices = generateBox(stof(argv[2]), stoi(argv[3]), start, &indexes, &index, &normals, &textCoord);
+                writer(argv[4], vertices, indexes, normals,  textCoord);
             }
             else {
                 cout << "Box: número de argumentos inválido." << endl;
             }
-
         }
         else if (strcmp(argv[1], "plane") == 0) {
             if (argc == 5) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
                 vector<float> textCoord;
-                vector<unsigned int> textCoordIndexes;
 
                 float length = stof(argv[2]);
-                int index = 1;
-                int normalIndex = 1;
-                int textCoordIndex = 1;
+                int index = 0;
 
-                vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index, &normals, &normalsIndexes, &normalIndex, &textCoord, &textCoordIndexes, &textCoordIndex);
-                writer(argv[4], vertices, indexes, normals, normalsIndexes, textCoord, textCoordIndexes);
+                vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index, &normals, &textCoord);
+                writer(argv[4], vertices, indexes, normals, textCoord);
             }
             else {
                 cout << "Plane: número de argumentos inválido." << endl;

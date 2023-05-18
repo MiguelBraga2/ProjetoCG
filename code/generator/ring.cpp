@@ -28,7 +28,7 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
         if (strcmp(args[0], "sphere") == 0) {
             aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), indexes, normals, normalIndexes, start, &index);
         } else if (strcmp(args[0], "box") == 0) {
-            aux = generateBox(scaleF, stoi(args[1]), indexes, start, &index, normals, normalIndexes, &normalIndex, textCoord, textCoordIndexes, &textCoordIndex);
+            aux = generateBox(scaleF, stoi(args[1]), start, indexes, &index, normals, textCoord);
         }
         vertices.insert(vertices.end(), aux.begin(), aux.end());
     }
