@@ -31,16 +31,17 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
         normal.setPoint(0,0,-1);
     }
 
+    float textInc = 1.0f/(float)grid;
+    // Gerado a partir do canto superior esquerdo, depois coluna a coluna
     for(int i=0; i<grid; i++) {
-
         vertices.push_back(base.getX());
         vertices.push_back(base.getY());
         vertices.push_back(base.getZ());
         normals->push_back(normal.getX());
         normals->push_back(normal.getY());
         normals->push_back(normal.getZ());
-        textCoord->push_back(i);
-        textCoord->push_back(grid);
+        textCoord->push_back(textInc*i);
+        textCoord->push_back(1);
 
         if (direction.getX() == 0) {
             vertices.push_back(base.getX());
@@ -49,8 +50,6 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
             normals->push_back(normal.getX());
             normals->push_back(normal.getY());
             normals->push_back(normal.getZ());
-            textCoord->push_back(i+1);
-            textCoord->push_back(grid);
         }
         else {
             vertices.push_back(base.getX() + step * direction.getX());
@@ -59,9 +58,10 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
             normals->push_back(normal.getX());
             normals->push_back(normal.getY());
             normals->push_back(normal.getZ());
-            textCoord->push_back(i+1);
-            textCoord->push_back(grid);
         }
+
+        textCoord->push_back(textInc*(i+1));
+        textCoord->push_back(1);
 
         for (int j = 0; j < grid; j++) {
 
@@ -72,8 +72,6 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
                 normals->push_back(normal.getX());
                 normals->push_back(normal.getY());
                 normals->push_back(normal.getZ());
-                textCoord->push_back(i);
-                textCoord->push_back(grid-j-1);
             }
             else {
                 vertices.push_back(base.getX());
@@ -82,9 +80,10 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
                 normals->push_back(normal.getX());
                 normals->push_back(normal.getY());
                 normals->push_back(normal.getZ());
-                textCoord->push_back(i);
-                textCoord->push_back(grid-j-1);
             }
+
+            textCoord->push_back(textInc*i);
+            textCoord->push_back(1-textInc*(j+1));
 
             vertices.push_back(base.getX() + step * direction.getX());
             vertices.push_back(base.getY() + step * direction.getY());
@@ -92,8 +91,8 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
             normals->push_back(normal.getX());
             normals->push_back(normal.getY());
             normals->push_back(normal.getZ());
-            textCoord->push_back(i+1);
-            textCoord->push_back(grid-j-1);
+            textCoord->push_back(textInc*(i+1));
+            textCoord->push_back(1-textInc*(j+1));
 
             if (direction.getZ() == 0 && !clockWiseDir) {
                 indexes->push_back(*index);

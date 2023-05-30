@@ -130,8 +130,9 @@ int main(int argc, char** argv) {
                 vector<unsigned int> normalsIndexes;
                 vector<Point> controlPoints = readPatch(argv[2], &indexes);
                 vector<unsigned int> figureIndexes;
-                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &normalsIndexes);
-                //writer(argv[4], vertices, figureIndexes, normals, normalsIndexes);
+                vector<float> textCoord;
+                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &normalsIndexes, &textCoord);
+                writer(argv[4], vertices, figureIndexes, normals, textCoord);
             }
             else {
                 cout << "Patch: número de argumentos inválido." << endl;

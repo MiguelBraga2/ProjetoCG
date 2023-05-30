@@ -49,7 +49,7 @@ Point getNormal(float u, float v, Point *p) {
 }
 
 
-vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals,  vector<unsigned int>* normalsIndexes) {
+vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals,  vector<unsigned int>* normalsIndexes, vector<float>* textCoord) {
     vector<float> points;
     int index = 0;
     size_t pSize = patchesIndexes.size();
@@ -91,6 +91,8 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
         multiplyMatrixPointMatrix(m, p, a);
         multiplyPointMatrixMatrix(a, m, b);
 
+        float textInc = 1.0f/(float)tesselation;
+
         for (int i = 0; i < tesselation; i++) {
             float u = delta * (float) i;
             float nextU = delta * (float) (i+1);
@@ -107,7 +109,11 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             multiplyPointVectorVector(nc, vecV, &f2);
 
             points.push_back(f1.getX());points.push_back(f1.getY());points.push_back(f1.getZ());
+            textCoord->push_back(0);
+            textCoord->push_back(1-i*textInc);
             points.push_back(f2.getX());points.push_back(f2.getY());points.push_back(f2.getZ());
+            textCoord->push_back(0);
+            textCoord->push_back(1-(i+1)*textInc);
 
             Point normal1 = getNormal(u, 0, a);
 
@@ -130,7 +136,14 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 multiplyPointVectorVector(nc, vecV, &f4);
 
                 points.push_back(f3.getX());points.push_back(f3.getY());points.push_back(f3.getZ());
+                textCoord->push_back(j*textInc);
+                textCoord->push_back(1-i*textInc);
+
                 points.push_back(f4.getX());points.push_back(f4.getY());points.push_back(f4.getZ());
+                textCoord->push_back(j*textInc);
+                textCoord->push_back(1-(i+1)*textInc);
+
+
 
                 Point normal3 = getNormal(u, v, a);
 

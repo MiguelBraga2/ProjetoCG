@@ -5,7 +5,7 @@
 #ifndef PATCH_H
 #define PATCH_H
 
-vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals,  vector<unsigned int>* normalsIndexes);
+vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals,  vector<unsigned int>* normalsIndexes, vector<float>* textCoord);
 vector<Point> readPatch(const std::string& fileName, std::vector<unsigned int>* indexes);
 
 #endif
