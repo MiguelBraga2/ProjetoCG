@@ -242,32 +242,31 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                         string red = diffuse->Attribute("R");
                         string green = diffuse->Attribute("G");
                         string blue = diffuse->Attribute("B");
-                        m.setDiffuse(Point(stof(red)/255, stof(green)/255, stof(blue)/255));
+                        m.setDiffuse(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (ambient){
                         string red = ambient->Attribute("R");
                         string green = ambient->Attribute("G");
                         string blue = ambient->Attribute("B");
-                        m.setAmbient(Point(stof(red)/255, stof(green)/255, stof(blue)/255));
+                        m.setAmbient(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (specular){
                         string red = specular->Attribute("R");
                         string green = specular->Attribute("G");
                         string blue = specular->Attribute("B");
-                        m.setSpecular(Point(stof(red)/255, stof(green)/255, stof(blue)/255));
+                        m.setSpecular(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (emissive){
                         string red = emissive->Attribute("R");
                         string green = emissive->Attribute("G");
                         string blue = emissive->Attribute("B");
-                        m.setEmissive(Point(stof(red)/255, stof(green)/255, stof(blue)/255));
+                        m.setEmissive(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (shininess){
                         string value = shininess->Attribute("value");
                         m.setShininess(stof(value));
                     }
                 }
-
                 this->models.push_back(m);
             }
         }
