@@ -11,6 +11,7 @@
 class LightSpot : public Light {
 public:
     LightSpot(float posX, float posY, float posZ, float dirX, float dirY, float dirZ, float cutoff);
+    void doAction(int light);
 
     float getPosX();
     float getPosY();

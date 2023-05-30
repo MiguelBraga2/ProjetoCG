@@ -3,6 +3,12 @@
 //
 
 #include "LightPoint.h"
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
 
 LightPoint::LightPoint(float posX, float posY, float posZ) : posX(posX), posY(posY), posZ(posZ) {}
 
@@ -16,4 +22,9 @@ float LightPoint::getPosY() {
 
 float LightPoint::getPosZ() {
     return posZ;
+}
+
+void LightPoint::doAction(int light) {
+    float pos[4] = {this->getPosX(), this->getPosY(), this->getPosZ(), 1};
+    glLightfv(light, GL_POSITION, pos);
 }

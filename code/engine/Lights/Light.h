@@ -8,7 +8,8 @@
 
 class Light {
 public:
-    virtual ~Light() {}
+    Light();
+    virtual void doAction(int light);
 };
 
 
