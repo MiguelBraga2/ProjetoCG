@@ -13,7 +13,29 @@
 #endif
 
 Model::Model() {
-    texId = 0;
+    this->texId = 0;
+    this->diffuse[0] = 200.0f / 255.0f;
+    this->diffuse[1] = 200.0f / 255.0f;
+    this->diffuse[2] = 200.0f / 255.0f;
+    this->diffuse[3] = 1;
+
+    this->ambient[0] = 50.0f / 255.0f;
+    this->ambient[1] = 50.0f / 255.0f;
+    this->ambient[2] = 50.0f / 255.0f;
+    this->ambient[3] = 1;
+
+    this->specular[0] = 0;
+    this->specular[1] = 0;
+    this->specular[2] = 0;
+    this->specular[3] = 1;
+
+    this->emissive[0] = 0;
+    this->emissive[1] = 0;
+    this->emissive[2] = 0;
+    this->emissive[3] = 1;
+
+    this->shininess = 0;
+
 }
 
 void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
@@ -26,9 +48,10 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
 
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse.data());
-    glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient.data());
-    glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular.data());
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
 
     if (vboActive){
@@ -115,32 +138,32 @@ void Model::setLabel(string label) {
     this->label = label;
 }
 
+void setMaterial() {
+
+};
+
 void Model::setDiffuse(Point diffuse) {
-    this->diffuse.push_back(diffuse.getX()/255);
-    this->diffuse.push_back(diffuse.getY()/255);
-    this->diffuse.push_back(diffuse.getZ()/255);
-    this->diffuse.push_back(1.0);
+    this->diffuse[0] = diffuse.getX() / 255;
+    this->diffuse[1] = diffuse.getY() / 255;
+    this->diffuse[2] = diffuse.getZ() / 255;
 }
 
 void Model::setAmbient(Point ambient) {
-    this->ambient.push_back(ambient.getX()/255);
-    this->ambient.push_back(ambient.getY()/255);
-    this->ambient.push_back(ambient.getZ()/255);
-    this->ambient.push_back(1.0);
+    this->ambient[0] = ambient.getX() / 255;
+    this->ambient[1] = ambient.getY() / 255;
+    this->ambient[2] = ambient.getZ() / 255;
 }
 
 void Model::setSpecular(Point specular) {
-    this->specular.push_back(specular.getX()/255);
-    this->specular.push_back(specular.getY()/255);
-    this->specular.push_back(specular.getZ()/255);
-    this->specular.push_back(1.0);
+    this->specular[0] = specular.getX() / 255;
+    this->specular[1] = specular.getY() / 255;
+    this->specular[2] = specular.getZ() / 255;
 }
 
 void Model::setEmissive(Point emissive) {
-    this->emissive.push_back(emissive.getX()/255);
-    this->emissive.push_back(emissive.getY()/255);
-    this->emissive.push_back(emissive.getZ()/255);
-    this->emissive.push_back(1.0);
+    this->emissive[0] = emissive.getX() / 255;
+    this->emissive[1] = emissive.getY() / 255;
+    this->emissive[2] = emissive.getZ() / 255;
 }
 
 Point Model::getDiffuse() {

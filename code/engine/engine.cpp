@@ -483,30 +483,30 @@ int readXML(char* filePath, vector<string>* keys){
                 string type = light->Attribute("type");
 
                 if (type.compare("point") == 0){
-                    const char* posX = light->Attribute("posx");
-                    const char* posY = light->Attribute("posy");
-                    const char* posZ = light->Attribute("posz");
+                    const char* posX = light->Attribute("posx") ? light->Attribute("posx") : light->Attribute("posX");
+                    const char* posY = light->Attribute("posy") ? light->Attribute("posy") : light->Attribute("posY");
+                    const char* posZ = light->Attribute("posz") ? light->Attribute("posz") : light->Attribute("posZ");
                     if (posX && posY && posZ) {
                         LightPoint* lp = new LightPoint(stof(posX), stof(posY), stof(posZ));
                         lightSources.push_back(lp);
                     }
                 }
                 else if (type.compare("directional") == 0){
-                    const char* dirX = light->Attribute("dirx");
-                    const char* dirY = light->Attribute("diry");
-                    const char* dirZ = light->Attribute("dirz");
+                    const char* dirX = light->Attribute("dirx") ? light->Attribute("dirx") : light->Attribute("dirX");
+                    const char* dirY = light->Attribute("diry") ? light->Attribute("diry") : light->Attribute("dirY");
+                    const char* dirZ = light->Attribute("dirz") ? light->Attribute("dirz") : light->Attribute("dirZ");
                     if (dirX && dirY && dirZ) {
                         LightDirectional* ld = new LightDirectional (stof(dirX), stof(dirY), stof(dirZ));
                         lightSources.push_back(ld);
                     }
                 }
                 else if (type.compare("spotlight") == 0){
-                    const char* posX = light->Attribute("posx");
-                    const char* posY = light->Attribute("posy");
-                    const char* posZ = light->Attribute("posz");
-                    const char* dirX = light->Attribute("dirx");
-                    const char* dirY = light->Attribute("diry");
-                    const char* dirZ = light->Attribute("dirz");
+                    const char* posX = light->Attribute("posx") ? light->Attribute("posx") : light->Attribute("posX");
+                    const char* posY = light->Attribute("posy") ? light->Attribute("posy") : light->Attribute("posY");
+                    const char* posZ = light->Attribute("posz") ? light->Attribute("posz") : light->Attribute("posZ");
+                    const char* dirX = light->Attribute("dirx") ? light->Attribute("dirx") : light->Attribute("dirX");
+                    const char* dirY = light->Attribute("diry") ? light->Attribute("diry") : light->Attribute("dirY");
+                    const char* dirZ = light->Attribute("dirz") ? light->Attribute("dirz") : light->Attribute("dirZ");
                     const char* cutoff = light->Attribute("cutoff");
                     if (posX && posY && posZ && dirX && dirY && dirZ && cutoff) {
                         LightSpot* ls = new LightSpot(stof(posX), stof(posY), stof(posZ), stof(dirX), stof(dirY), stof(dirZ), stof(cutoff));

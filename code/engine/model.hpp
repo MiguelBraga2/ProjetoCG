@@ -38,10 +38,10 @@ private:
     GLuint texCoord;
     int indexCount;
     // Material colors
-    vector<float> diffuse;
-    vector<float> ambient;
-    vector<float> specular;
-    vector<float> emissive;
+    float diffuse[4];
+    float ambient[4];
+    float specular[4];
+    float emissive[4];
     float shininess;
     GLuint texId;
 
@@ -53,22 +53,16 @@ public:
     void setLabel(string label);
     tuple<float, float, float> getRgb();
     void setRgb(tuple<float, float, float> rgb);
-
     Point getDiffuse();
     void setDiffuse(Point diffuse);
-
     Point getAmbient();
     void setAmbient(Point ambient);
-
     Point getSpecular();
     void setSpecular(Point specular);
-
     Point getEmissive();
     void setEmissive(Point emissive);
-
     float getShininess();
     void setShininess(float shininess);
-
     string getTextureFile();
     void setTextureFile(string textureFile);
 private:
