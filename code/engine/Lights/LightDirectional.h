@@ -12,7 +12,7 @@ class LightDirectional : public Light {
 private:
 public:
     LightDirectional(float dirX, float dirY, float dirZ);
-
+    void doAction(int light);
     float getDirX();
     float getDirY();
     float getDirZ();

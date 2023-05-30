@@ -11,7 +11,7 @@
 class LightPoint : public Light {
 public:
     LightPoint(float posX, float posY, float posZ);
-
+    void doAction(int light);
     float getPosX();
     float getPosY();
     float getPosZ();

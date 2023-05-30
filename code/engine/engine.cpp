@@ -55,10 +55,6 @@ Creator* minecraftCreator;
 
 // Lights
 vector<Light*> lightSources;
-// Colors
-float dark[4] = {0.2, 0.2, 0.2, 1.0};
-float white[4] = {1.0, 1.0, 1.0, 1.0};
-float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 /**
  * Callback called when the window is resized
@@ -125,6 +121,46 @@ void renderText() {
     glEnable(GL_DEPTH_TEST);
 }
 
+
+void showFPS() {
+    frames++;
+    int time = glutGet(GLUT_ELAPSED_TIME);
+    int fps;
+
+    if (time - timebase > 1000) {
+        fps = frames * 1000.0 / (time - timebase);
+        timebase = time;
+        frames = 0;
+        char s[15];
+        sprintf(s, "FPS: %d", fps);
+        glutSetWindowTitle(s);
+    }
+}
+
+
+void drawAxis() {
+    if (axis) {
+        glDisable(GL_LIGHTING);
+        // put axis drawing in here
+        glBegin(GL_LINES);
+        // X-axis in red
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(-100.0f, 0.0f, 0.0f);
+        glVertex3f(100.0f, 0.0f, 0.0f);
+        // Y Axis in Green
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, -100.0f, 0.0f);
+        glVertex3f(0.0f, 100.0f, 0.0f);
+        // Z Axis in Blue
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(0.0f, 0.0f, -100.0f);
+        glVertex3f(0.0f, 0.0f, 100.0f);
+        glEnd();
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glEnable(GL_LIGHTING);
+    }
+}
+
 /**
  * Function to display the scene elements:
  * Calls the drawGroup function from the group class
@@ -147,122 +183,27 @@ void renderScene() {
         camera->placeCamera();
 
         // Place lights
-        int index = 0;
-        int light;
-        for(Light* l : lightSources){
-            switch (index){
-                case 0:
-                    light = GL_LIGHT0;
-                    break;
-                case 1:
-                    light = GL_LIGHT1;
-                    break;
-                case 2:
-                    light = GL_LIGHT2;
-                    break;
-                case 3:
-                    light = GL_LIGHT3;
-                    break;
-                case 4:
-                    light = GL_LIGHT4;
-                    break;
-                case 5:
-                    light = GL_LIGHT5;
-                    break;
-                case 6:
-                    light = GL_LIGHT6;
-                    break;
-                case 7:
-                    light = GL_LIGHT7;
-                    break;
-            }
-            LightDirectional* lightDirectional = dynamic_cast<LightDirectional*>(l);
-            if (lightDirectional){
-                float pos[4] = {lightDirectional->getDirX(), lightDirectional->getDirY(), lightDirectional->getDirZ(), 0};
-                glLightfv(light, GL_POSITION, pos);
-            }
-            LightPoint* lightPoint = dynamic_cast<LightPoint*>(l);
-            if (lightPoint){
-                float pos[4] = {lightPoint->getPosX(), lightPoint->getPosY(), lightPoint->getPosZ(), 1};
-                glLightfv(light, GL_POSITION, pos);
-            }
-            LightSpot* lightSpot = dynamic_cast<LightSpot*>(l);
-            if (lightSpot){
-                float pos[4] = {lightSpot->getPosX(), lightSpot->getPosY(), lightSpot->getPosZ(), 1};
-                glLightfv(light, GL_POSITION, pos);
-                float dir[4] = {lightSpot->getDirX(), lightSpot->getDirY(), lightSpot->getDirZ(), 0};
-                glLightfv(light, GL_SPOT_DIRECTION, dir);
-                float cutoff[1] = {lightSpot->getCutoff()};
-                glLightfv(light, GL_SPOT_CUTOFF, cutoff);
-            }
-            index++;
+        for (int i = 0; i < lightSources.size(); i++) {
+            lightSources[i]->doAction(GL_LIGHT0 + i);
         }
-
-        glColor3f(1.0f, 1.0f, 1.0f);
 
         float position[16] = { 1, 0, 0, 0,
                                0, 1, 0, 0,
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
-        //glColor3f(0,0,1);
         globalGroup->drawGroup(vboActive, position, &teleports);
-        //glutSolidCube(1);
 
         renderText();
-        if (axis) {
-            glDisable(GL_LIGHTING);
-            // put axis drawing in here
-            glBegin(GL_LINES);
-
-            // X-axis in red
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glVertex3f(-100.0f, 0.0f, 0.0f);
-            glVertex3f(100.0f, 0.0f, 0.0f);
-
-            // Y Axis in Green
-            glColor3f(0.0f, 1.0f, 0.0f);
-            glVertex3f(0.0f, -100.0f, 0.0f);
-            glVertex3f(0.0f, 100.0f, 0.0f);
-
-            // Z Axis in Blue
-            glColor3f(0.0f, 0.0f, 1.0f);
-            glVertex3f(0.0f, 0.0f, -100.0f);
-            glVertex3f(0.0f, 0.0f, 100.0f);
-            glEnd();
-            glEnable(GL_LIGHTING);
-        }
-
-        frames++;
-        int time = glutGet(GLUT_ELAPSED_TIME);
-        int fps;
-
-        if (time - timebase > 1000) {
-            fps = frames * 1000.0 / (time - timebase);
-            timebase = time;
-            frames = 0;
-            char s[15];
-            sprintf(s, "FPS: %d", fps);
-            glutSetWindowTitle(s);
-        }
+        drawAxis();
+        showFPS();
+         
         // End of frame
         glutSwapBuffers();
     }
     else{
         minecraftCreator->render(height, width);
-
-        frames++;
-        int time = glutGet(GLUT_ELAPSED_TIME);
-        int fps;
-
-        if (time - timebase > 1000) {
-            fps = frames * 1000.0 / (time - timebase);
-            timebase = time;
-            frames = 0;
-            char s[15];
-            sprintf(s, "FPS: %d", fps);
-            glutSetWindowTitle(s);
-        }
+        showFPS();
     }
 }
 
@@ -543,52 +484,34 @@ int readXML(char* filePath, vector<string>* keys){
 
                 if (type.compare("point") == 0){
                     const char* posX = light->Attribute("posX");
-                    if (!posX) posX = light->Attribute("posx");
                     const char* posY = light->Attribute("posY");
-                    if (!posY) posY = light->Attribute("posy");
                     const char* posZ = light->Attribute("posZ");
-                    if (!posZ) posZ = light->Attribute("posz");
-                    cout << "PARSER::Read light point. "
-                         << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
-                    LightPoint* lp = new LightPoint(stof(posX), stof(posY), stof(posZ));
-                    lightSources.push_back(lp);
+                    if (posX && posY && posZ) {
+                        LightPoint* lp = new LightPoint(stof(posX), stof(posY), stof(posZ));
+                        lightSources.push_back(lp);
+                    }
                 }
                 else if (type.compare("directional") == 0){
                     const char* dirX = light->Attribute("dirX");
-                    if (!dirX) dirX = light->Attribute("dirx");
                     const char* dirY = light->Attribute("dirY");
-                    if (!dirY) dirY = light->Attribute("diry");
                     const char* dirZ = light->Attribute("dirZ");
-                    if (!dirZ) dirZ = light->Attribute("dirz");
-                    cout << "PARSER::Read light directional. " <<
-                            "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
-                    LightDirectional* ld = new LightDirectional (stof(dirX), stof(dirY), stof(dirZ));
-                    lightSources.push_back(ld);
+                    if (dirX && dirY && dirZ) {
+                        LightDirectional* ld = new LightDirectional (stof(dirX), stof(dirY), stof(dirZ));
+                        lightSources.push_back(ld);
+                    }
                 }
                 else if (type.compare("spotlight") == 0){
                     const char* posX = light->Attribute("posX");
-                    if (!posX) posX = light->Attribute("posx");
                     const char* posY = light->Attribute("posY");
-                    if (!posY) posY = light->Attribute("posy");
                     const char* posZ = light->Attribute("posZ");
-                    if (!posZ) posZ = light->Attribute("posz");
                     const char* dirX = light->Attribute("dirX");
                     const char* dirY = light->Attribute("dirY");
-                    if (!dirY) dirY = light->Attribute("diry");
                     const char* dirZ = light->Attribute("dirZ");
-                    if (!dirZ) dirZ = light->Attribute("dirz");
                     const char* cutoff = light->Attribute("cutoff");
-                    cout << "PARSER::Read spotlight. " << endl
-                         << "Pos - " << posX << ", " << posY << ", " << posZ << endl;
-                    cout << "Dir - " << dirX << ", " << dirY << ", " << dirZ << endl;
-                    cout << "Cutoff - " << cutoff << endl;
-                    LightSpot* ls = new LightSpot(stof(posX), stof(posY), stof(posZ),
-                                  stof(dirX), stof(dirY), stof(dirZ),
-                                  stof(cutoff));
-                    lightSources.push_back(ls);
-                }
-                else {
-                    cout << "PARSER::Light type inexistent" << endl;
+                    if (posX && posY && posZ && dirX && dirY && dirZ && cutoff) {
+                        LightSpot* ls = new LightSpot(stof(posX), stof(posY), stof(posZ), stof(dirX), stof(dirY), stof(dirZ), stof(cutoff));
+                        lightSources.push_back(ls);
+                    }
                 }
             }
 
@@ -640,49 +563,27 @@ int main(int argc, char **argv) {
             // 	OpenGL settings
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
+            glEnable(GL_RESCALE_NORMAL);
             glEnable(GL_TEXTURE_2D);
+
             glPolygonMode(GL_FRONT, polygonMode);
 
-            if (lightSources.size() > 0) {
-                // Activate lightning
-                glEnable(GL_LIGHTING);
-                int light;
-                for (int i = 0; i < lightSources.size(); i++) {
-                    switch (i) {
-                        case 0:
-                            light = GL_LIGHT0;
-                            break;
-                        case 1:
-                            light = GL_LIGHT1;
-                            break;
-                        case 2:
-                            light = GL_LIGHT2;
-                            break;
-                        case 3:
-                            light = GL_LIGHT3;
-                            break;
-                        case 4:
-                            light = GL_LIGHT4;
-                            break;
-                        case 5:
-                            light = GL_LIGHT5;
-                            break;
-                        case 6:
-                            light = GL_LIGHT6;
-                            break;
-                        case 7:
-                            light = GL_LIGHT7;
-                            break;
-                    }
-
-                    glEnable(light);
-                    glLightfv(light, GL_AMBIENT, dark);
-                    glLightfv(light, GL_DIFFUSE, white);
-                    glLightfv(light, GL_SPECULAR, white);
-                }
-
-                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
+            // Colors
+            float dark[4] = {0.2, 0.2, 0.2, 1.0};
+            float white[4] = {1.0, 1.0, 1.0, 1.0};
+            float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+                
+            // Activate lightning
+            glEnable(GL_LIGHTING);
+            for (int i = 0; i < lightSources.size(); i++) {
+                glEnable(GL_LIGHT0 + i);
+                glLightfv(GL_LIGHT0 + i, GL_AMBIENT, dark);
+                glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, white);
+                glLightfv(GL_LIGHT0 + i, GL_SPECULAR, white);
             }
+            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
+
+            
             // enter GLUT's main cycle
             glutMainLoop();
 

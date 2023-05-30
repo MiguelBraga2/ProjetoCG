@@ -242,37 +242,31 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                         string red = diffuse->Attribute("R");
                         string green = diffuse->Attribute("G");
                         string blue = diffuse->Attribute("B");
-                        cout << "PARSER::Read color diffuse. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
                         m.setDiffuse(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (ambient){
                         string red = ambient->Attribute("R");
                         string green = ambient->Attribute("G");
                         string blue = ambient->Attribute("B");
-                        cout << "PARSER::Read color ambient. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
                         m.setAmbient(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (specular){
                         string red = specular->Attribute("R");
                         string green = specular->Attribute("G");
                         string blue = specular->Attribute("B");
-                        cout << "PARSER::Read color specular. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
                         m.setSpecular(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (emissive){
                         string red = emissive->Attribute("R");
                         string green = emissive->Attribute("G");
                         string blue = emissive->Attribute("B");
-                        cout << "PARSER::Read color emissive. Red - " << red << ", Green - " << green << ", Blue - " << blue << endl;
                         m.setEmissive(Point(stof(red), stof(green), stof(blue)));
                     }
                     if (shininess){
                         string value = shininess->Attribute("value");
-                        cout << "PARSER::Read shininess. Value - " << value << endl;
                         m.setShininess(stof(value));
                     }
                 }
-
                 this->models.push_back(m);
             }
         }
@@ -283,9 +277,6 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
             g.readXML(gr, keys);
             this->subgroups.push_back(g);
         }
-    }
-    else{
-        cout << "Group is NULL" << endl;
     }
 }
 

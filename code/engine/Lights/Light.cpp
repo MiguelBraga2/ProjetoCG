@@ -3,3 +3,11 @@
 //
 
 #include "Light.h"
+
+Light::Light() {
+
+}
+
+void Light::doAction(int light) {
+
+}
