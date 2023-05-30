@@ -116,30 +116,30 @@ void Model::setLabel(string label) {
 }
 
 void Model::setDiffuse(Point diffuse) {
-    this->diffuse.push_back(diffuse.getX());
-    this->diffuse.push_back(diffuse.getY());
-    this->diffuse.push_back(diffuse.getZ());
+    this->diffuse.push_back(diffuse.getX()/255);
+    this->diffuse.push_back(diffuse.getY()/255);
+    this->diffuse.push_back(diffuse.getZ()/255);
     this->diffuse.push_back(1.0);
 }
 
 void Model::setAmbient(Point ambient) {
-    this->ambient.push_back(ambient.getX());
-    this->ambient.push_back(ambient.getY());
-    this->ambient.push_back(ambient.getZ());
+    this->ambient.push_back(ambient.getX()/255);
+    this->ambient.push_back(ambient.getY()/255);
+    this->ambient.push_back(ambient.getZ()/255);
     this->ambient.push_back(1.0);
 }
 
 void Model::setSpecular(Point specular) {
-    this->specular.push_back(specular.getX());
-    this->specular.push_back(specular.getY());
-    this->specular.push_back(specular.getZ());
+    this->specular.push_back(specular.getX()/255);
+    this->specular.push_back(specular.getY()/255);
+    this->specular.push_back(specular.getZ()/255);
     this->specular.push_back(1.0);
 }
 
 void Model::setEmissive(Point emissive) {
-    this->emissive.push_back(emissive.getX());
-    this->emissive.push_back(emissive.getY());
-    this->emissive.push_back(emissive.getZ());
+    this->emissive.push_back(emissive.getX()/255);
+    this->emissive.push_back(emissive.getY()/255);
+    this->emissive.push_back(emissive.getZ()/255);
     this->emissive.push_back(1.0);
 }
 
