@@ -143,6 +143,18 @@ void Model::setEmissive(Point emissive) {
     this->emissive.push_back(1.0);
 }
 
+Point Model::getDiffuse() {
+    return Point(this->diffuse[0], this->diffuse[1], this->diffuse[2]);
+}
+
+Point Model::getAmbient() {
+    return Point(this->ambient[0], this->ambient[1], this->ambient[2]);
+}
+
+Point Model::getSpecular() {
+    return Point(this->specular[0], this->specular[1], this->specular[2]);
+}
+
 float Model::getShininess() {
     return shininess;
 }
