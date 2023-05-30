@@ -40,7 +40,7 @@ bool axis = true; // Is axis shown
 bool cameraInfo = false;
 bool fixedMode = false;
 string fixedLabel = "";
-int polygonMode = GL_LINE;
+int polygonMode = GL_FILL;
 
 // For each label, store the center and the radius
 map<string, tuple<Point, float>> teleports;
@@ -210,8 +210,8 @@ void renderScene() {
         //glutSolidCube(1);
 
         renderText();
-
         if (axis) {
+            glDisable(GL_LIGHTING);
             // put axis drawing in here
             glBegin(GL_LINES);
 
@@ -230,6 +230,7 @@ void renderScene() {
             glVertex3f(0.0f, 0.0f, -100.0f);
             glVertex3f(0.0f, 0.0f, 100.0f);
             glEnd();
+            glEnable(GL_LIGHTING);
         }
 
         frames++;

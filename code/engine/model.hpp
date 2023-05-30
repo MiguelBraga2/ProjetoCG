@@ -38,10 +38,10 @@ private:
     GLuint texCoord;
     int indexCount;
     // Material colors
-    Point diffuse;
-    Point ambient;
-    Point specular;
-    Point emissive;
+    vector<float> diffuse;
+    vector<float> ambient;
+    vector<float> specular;
+    vector<float> emissive;
     float shininess;
     GLuint texId;
 
