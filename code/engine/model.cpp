@@ -34,24 +34,19 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     if (vboActive){
         glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
         glVertexPointer(3,GL_FLOAT,0,0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
 
         glBindBuffer(GL_ARRAY_BUFFER,this->normals);
         glNormalPointer(GL_FLOAT,0,0);
-
+        
         if (texId != 0){
             glBindTexture(GL_TEXTURE_2D,texId);
-            // Texture
             glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
             glTexCoordPointer(2,GL_FLOAT,0,0);
-        }
-        else {
-            glColor3f(get<0>(this->rgb), get<1>(this->rgb), get<2>(this->rgb));
+            glBindTexture(GL_TEXTURE_2D,0);
         }
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
         glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
-        glBindTexture(GL_TEXTURE_2D,0);
-        glColor3f(1,1,1);
     }
     else{
         for(int i=0; i<this->indexesVector.size(); i+=3){
@@ -103,14 +98,11 @@ void Model::readModel(string fileName) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size() , normals.data(),GL_STATIC_DRAW);
     }
 
-
     if (textCoords.size() > 0){
         glGenBuffers(1, &(this->texCoord));
         glBindBuffer(GL_ARRAY_BUFFER, this->texCoord);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textCoords.size(), textCoords.data(), GL_STATIC_DRAW);
     }
-
-
 
     this->indexCount = this->indexesVector.size();
 }
@@ -124,19 +116,31 @@ void Model::setLabel(string label) {
 }
 
 void Model::setDiffuse(Point diffuse) {
-    Model::diffuse = vector{diffuse.getX(), diffuse.getY(), diffuse.getZ()};
+    this->diffuse.push_back(diffuse.getX());
+    this->diffuse.push_back(diffuse.getY());
+    this->diffuse.push_back(diffuse.getZ());
+    this->diffuse.push_back(1.0);
 }
 
 void Model::setAmbient(Point ambient) {
-    Model::ambient = vector{ambient.getX(), ambient.getY(), ambient.getZ()};
+    this->ambient.push_back(ambient.getX());
+    this->ambient.push_back(ambient.getY());
+    this->ambient.push_back(ambient.getZ());
+    this->ambient.push_back(1.0);
 }
 
 void Model::setSpecular(Point specular) {
-    Model::specular = vector{specular.getX(), specular.getY(), specular.getZ()};
+    this->specular.push_back(specular.getX());
+    this->specular.push_back(specular.getY());
+    this->specular.push_back(specular.getZ());
+    this->specular.push_back(1.0);
 }
 
 void Model::setEmissive(Point emissive) {
-    Model::emissive = vector{emissive.getX(), emissive.getY(), emissive.getZ()};
+    this->emissive.push_back(emissive.getX());
+    this->emissive.push_back(emissive.getY());
+    this->emissive.push_back(emissive.getZ());
+    this->emissive.push_back(1.0);
 }
 
 float Model::getShininess() {
@@ -144,7 +148,7 @@ float Model::getShininess() {
 }
 
 void Model::setShininess(float shininess) {
-    Model::shininess = shininess;
+    this->shininess = shininess;
 }
 
 tuple<float, float, float> Model::getRgb(){
