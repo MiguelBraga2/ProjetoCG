@@ -33,18 +33,18 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
         vertices.push_back(radius * sin((float) i * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) i * sliceStep));
-        normals->push_back(0);
-        normals->push_back(-1);
-        normals->push_back(0);
+        normals->push_back(sin((float) i * sliceStep));
+        normals->push_back(-radius / sqrt(height * height + radius * radius));
+        normals->push_back(cos((float) i * sliceStep));
         textCoords->push_back(0.5f + 0.5 * sin(i * sliceStep));
         textCoords->push_back(0.5f + 0.5 * cos(i * sliceStep));
 
         vertices.push_back(radius * sin((float) (i + 1) * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) (i + 1) * sliceStep));
-        normals->push_back(0);
-        normals->push_back(-1);
-        normals->push_back(0);
+        normals->push_back(sin((float) (i + 1) * sliceStep));
+        normals->push_back(-radius / sqrt(height * height + radius * radius));
+        normals->push_back(cos((float) (i + 1) * sliceStep));
         textCoords->push_back(0.5f + 0.5 * sin((i + 1) * sliceStep));
         textCoords->push_back(0.5f + 0.5 * cos((i + 1) * sliceStep));
 
@@ -58,8 +58,10 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
         Point p3(radius * sin((float) (i+1) * sliceStep), 0, radius * cos((float) (i+1) * sliceStep));
         Point p4((radius + height) * sin((float) (i+1) * sliceStep), radius, (radius + height) * cos((float) (i+1)  * sliceStep));
 
-        Point n1(p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ()-p1.getZ());
-        Point n2(p4.getX()-p3.getX(), p4.getY()-p3.getY(), p4.getZ()-p3.getZ());
+        Point n1(sin((float) i * sliceStep), radius / sqrt(height * height + radius * radius), cos((float) i * sliceStep));
+        Point n2(sin((float) (i+1) * sliceStep), radius/ sqrt(height * height + radius * radius), cos((float) (i+1)  * sliceStep));
+        n1.normalize();
+        n2.normalize();
 
         index += 3;
 
