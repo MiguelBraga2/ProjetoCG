@@ -127,11 +127,10 @@ int main(int argc, char** argv) {
             if (argc == 5){
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
                 vector<Point> controlPoints = readPatch(argv[2], &indexes);
                 vector<unsigned int> figureIndexes;
                 vector<float> textCoord;
-                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &normalsIndexes, &textCoord);
+                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &textCoord);
                 writer(argv[4], vertices, figureIndexes, normals, textCoord);
             }
             else {
