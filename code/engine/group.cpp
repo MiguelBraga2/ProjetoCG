@@ -202,20 +202,7 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
 
                 Model m;
                 m.readModel(model->Attribute("file"));
-                // Being deprecated
-                float red = 1, green = 1, blue = 1;
-                if (model->Attribute("red")){
-                    red = stof(model->Attribute("red"));
-                }
-                if (model->Attribute("green")){
-                    green = stof(model->Attribute("green"));
-                }
-                if (model->Attribute("blue")){
-                    blue = stof(model->Attribute("blue"));
-                }
-                tuple <float, float, float> tup = make_tuple(red, green, blue);
-                m.setRgb(tup);
-                //
+                
                 if (model->Attribute("label")){
                     m.setLabel(model->Attribute("label"));
                     keys->push_back(model->Attribute("label"));
