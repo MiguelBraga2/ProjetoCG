@@ -96,9 +96,9 @@ int main(int argc, char** argv) {
             if (argc == 7) { // torus InnerRadius OuterRadius Slices Stacks
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<unsigned int> normalsIndexes;
-                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &normalsIndexes);
-                //writer(argv[6], vertices, indexes, normals, normalsIndexes);
+                vector<float> texCoords;
+                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &texCoords);
+                writer(argv[6], vertices, indexes, normals, texCoords);
             }
             else {
                 cout << "Torus: número de argumentos inválido." << endl;
