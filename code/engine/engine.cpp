@@ -49,7 +49,7 @@ vector<string> keys; // To make mapping from number to label easier
 bool vboActive = true;
 
 
-// MINECRAFT
+// Minecraft
 bool isMinecraftActive = false;
 Creator* minecraftCreator;
 
@@ -122,6 +122,9 @@ void renderText() {
 }
 
 
+/**
+ * Function called for fps calculation
+*/
 void showFPS() {
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
@@ -138,6 +141,9 @@ void showFPS() {
 }
 
 
+/**
+ * Function called to show the axis
+*/
 void drawAxis() {
     if (axis) {
         glDisable(GL_LIGHTING);
@@ -166,13 +172,15 @@ void drawAxis() {
  * Calls the drawGroup function from the group class
  */
 void renderScene() {
+    // Set the polygon mode 
     glPolygonMode(GL_FRONT, polygonMode);
+
     if (!isMinecraftActive) {
         // clear buffers
         glClearColor(0, 0, 0, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // set the camera
+        // Set the camera
         glLoadIdentity();
         if (fixedMode == true && fixedLabel.compare("") != 0) {
             camera->setLookAtPosition(get<0>(teleports[fixedLabel]));
@@ -187,13 +195,11 @@ void renderScene() {
             lightSources[i]->doAction(GL_LIGHT0 + i);
         }
 
-        float position[16] = { 1, 0, 0, 0,
-                               0, 1, 0, 0,
-                               0, 0, 1, 0,
-                               0, 0, 0, 1,
-        };
+        // Draw elements 
+        float position[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
         globalGroup->drawGroup(vboActive, position, &teleports);
 
+        // Auxiliary functions
         renderText();
         drawAxis();
         showFPS();
@@ -500,7 +506,7 @@ int readXML(char* filePath, vector<string>* keys){
                         lightSources.push_back(ld);
                     }
                 }
-                else if (type.compare("spotlight") == 0){
+                else if (type.compare("spotlight") == 0 || type.compare("spot") == 0) {
                     const char* posX = light->Attribute("posx") ? light->Attribute("posx") : light->Attribute("posX");
                     const char* posY = light->Attribute("posy") ? light->Attribute("posy") : light->Attribute("posY");
                     const char* posZ = light->Attribute("posz") ? light->Attribute("posz") : light->Attribute("posZ");
@@ -513,9 +519,10 @@ int readXML(char* filePath, vector<string>* keys){
                         lightSources.push_back(ls);
                     }
                 }
+                else {
+                    cout << "Unknown light type: " << type << endl;
+                }
             }
-
-
         }
         globalGroup = new Group();
         globalGroup->readXML(world->FirstChildElement("group"), keys);
@@ -590,7 +597,7 @@ int main(int argc, char **argv) {
             globalGroup->freeGroup();
             delete globalGroup;
         } else {
-            cout << "Error" << endl;
+            cout << "Error reading the xml." << endl;
         }
     }
     else {
