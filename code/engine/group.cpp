@@ -201,6 +201,13 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
             for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
                 Model m;
+                
+                XMLElement* textureFile = model->FirstChildElement("texture");
+                if (textureFile) {
+                    string fileName = textureFile->Attribute("file");
+                    m.setTextureFile("../Textures/" + fileName);
+                }
+
                 m.readModel(model->Attribute("file"));
                 
                 if (model->Attribute("label")){
@@ -209,12 +216,6 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                 }
                 else {
                     m.setLabel("undefined");
-                }
-
-                XMLElement* textureFile = model->FirstChildElement("texture");
-                if (textureFile) {
-                    string fileName = textureFile->Attribute("file");
-                    m.setTextureFile("../Textures/" + fileName);
                 }
 
                 XMLElement* color = model->FirstChildElement("color");

@@ -95,7 +95,7 @@ void Model::readModel(string fileName) {
     glBindBuffer(GL_ARRAY_BUFFER,this->normals);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normalsVector.size() , normalsVector.data(),GL_STATIC_DRAW);
     
-    if (textCoordsVector.size() > 0) {
+    if (this->texId!=0) {
         glGenBuffers(1, &(this->texCoord));
         glBindBuffer(GL_ARRAY_BUFFER, this->texCoord);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textCoordsVector.size(), textCoordsVector.data(), GL_STATIC_DRAW);
