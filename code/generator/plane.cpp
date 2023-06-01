@@ -20,7 +20,7 @@ vector<float> generatePlane(float length, int grid, Point direction, Point initi
     if(direction.getY() == 0 && !clockWiseDir) {
         normal.setPoint(0,1,0);
     } else if (direction.getY() == 0) {
-        normal.setPoint(0,1,0);
+        normal.setPoint(0,-1,0);
     } else if (direction.getX() == 0 && !clockWiseDir) {
         normal.setPoint(1,0,0);
     } else if (direction.getX() == 0) {
