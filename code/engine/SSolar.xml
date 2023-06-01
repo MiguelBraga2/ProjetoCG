@@ -8,8 +8,8 @@
     </camera>
     <group>
         <models> <!-- Asteroides -->
-            <model file="cintura_de_asteroides.3d"></model> <!-- generator ring 4300 3300 1000 1 2 -10 10 cintura_de_asteroides.3d sphere 10 10 -->
-            <model file="cintura_de_kuiper.3d"></model> <!-- generator ring 50000 30000 20000 20 30 -1 1 cintura_de_kuiper.3d sphere 10 10 -->
+           <!-- <model file="cintura_de_asteroides.3d"></model>--> <!-- generator ring 4300 3300 1000 1 2 -10 10 cintura_de_asteroides.3d sphere 10 10 -->
+		    <!-- <model file="cintura_de_kuiper.3d"></model>--> <!-- generator ring 50000 30000 20000 20 30 -1 1 cintura_de_kuiper.3d sphere 10 10 -->
         </models>
         <group> <!-- Cometa -->
             <transform>
@@ -32,7 +32,16 @@
                 <scale x="1100" y="1100" z="1100"/>
             </transform>
             <models> <!-- SOL -->
-                <model label="Sol" file="sphere_1_30_30.3d" red="1" green="0.85" blue="0.1"/>
+				<model label="Sol" file="sphere_1_30_30.3d"> 
+					<texture file = "sol.jpg"/>
+					<color>
+						<diffuse R="200" G="200" B="000" />
+						<ambient R="50" G="50" B="00" />
+						<specular R="0" G="0" B="0" />
+						<emissive R="255" G="255" B="255" />
+						<shininess value="0" />
+					</color>
+				</model>
             </models>
         </group>
         <group> <!-- Nave -->
@@ -78,8 +87,17 @@
                 <scale x="3.8" y="3.8" z="3.8"/>
             </transform>
             <models>
-                <model label="Mercurio" file="sphere_1_30_30.3d" red="1" green="0.93" blue="0.8" />
-            </models>
+				<model label="Mercurio" file="sphere_1_30_30.3d"> 
+					<texture file = "mercurio.jpg" /> 
+				    <color>
+						<diffuse R="200" G="200" B="000" />
+						<ambient R="50" G="50" B="00" />
+						<specular R="0" G="0" B="0" />
+						<emissive R="255" G="255" B="255" />
+						<shininess value="0" />
+					</color>
+				</model>
+			</models>
         </group>
         <group> <!-- Vénus -->
             <transform>
@@ -90,7 +108,16 @@
                 <scale x="9.5" y="9.5" z="9.5"/>
             </transform>
             <models>
-                <model label="Venus" file="sphere_1_30_30.3d" red="1" green="0.83" blue="0.5" />
+				<model label="Venus" file="sphere_1_30_30.3d"> 
+					<texture file = "venus.jpg" /> 
+				    <color>
+						 <diffuse R="200" G="200" B="000" />
+						 <ambient R="50" G="50" B="00" />
+						 <specular R="0" G="0" B="0" />
+						 <emissive R="255" G="255" B="255" />
+						 <shininess value="0" />
+					</color>
+				</model>
             </models>
         </group>
         <group> <!-- Terra -->
@@ -105,7 +132,16 @@
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
-                    <model label="Terra" file="sphere_1_30_30.3d" red="0" green="0.6" blue="0.5"/>
+					<model label="Terra" file="sphere_1_30_30.3d"> 
+						<texture file = "earth.jpg" /> 
+					    <color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
             <group> <!-- Lua -->
@@ -117,7 +153,16 @@
                     <scale x="2.7" y="2.7" z="2.7"/>
                 </transform>
                 <models>
-                    <model label="Lua" file="sphere_1_30_30.3d" red="0.94" green="0.97" blue="1" />
+					<model label="Lua" file="sphere_1_30_30.3d"> 
+						<texture file = "lua.jpg"/> 
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
         </group>
@@ -133,7 +178,16 @@
                     <scale x="5.3" y="5.3" z="5.3"/>
                 </transform>
                 <models>
-                    <model label="Marte" file="sphere_1_30_30.3d" red="0.7" green="0.23" blue="0" />
+					<model label="Marte" file="sphere_1_30_30.3d">
+						<texture file = "marte.jpg"/>
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
             <group> <!-- Fobos -->
@@ -173,7 +227,16 @@
                     <scale x="112" y="112" z="112"/>
                 </transform>
                 <models>
-                    <model label="Jupiter" file="sphere_1_30_30.3d" red="0.7" green="0.47" blue="0" />
+					<model label="Jupiter" file="sphere_1_30_30.3d">
+						<texture file = "jupiter.jpg"/>
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
             <group> <!-- Europa -->
@@ -237,8 +300,26 @@
                     <rotate angle="45" x="1" y="0" z="1"/>
                 </transform>
                 <models>
-                    <model label="Saturno" file="sphere_1_30_30.3d" red="0.9"  green="0.75" blue="0"/>
-                    <model file="torus_1.2_2_100_0.3d" red="0.8" green="0.53" blue="0" />
+					<model label="Saturno" file="sphere_1_30_30.3d">
+						<texture file = "saturno.jpg"/>
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
+					<model file="torus_1.2_2_100_0.3d"> 
+						<texture file = "ring_saturno.png"/> 
+					    <color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+				    </model>
                 </models>
             </group>
             <group> <!-- Titã -->
@@ -290,7 +371,16 @@
                     <rotate time="0.72" x="0" y="1" z="0"/>
                 </transform>
                 <models>
-                    <model label="Urano" file="sphere_1_30_30.3d" red="0.8" green="1" blue="0.97" />
+					<model label="Urano" file="sphere_1_30_30.3d">
+						<texture file = "urano.jpg"/>
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
             <group> <!-- Titania -->
@@ -330,7 +420,16 @@
                     <scale x="38" y="38" z="38"/>
                 </transform>
                 <models>
-                    <model label="Neptuno" file="sphere_1_30_30.3d" red="0" green="0.5" blue="1" />
+					<model label="Neptuno" file="sphere_1_30_30.3d">
+						<texture file = "neptuno.jpg"/>
+						<color>
+						    <diffuse R="200" G="200" B="000" />
+						    <ambient R="50" G="50" B="00" />
+						    <specular R="0" G="0" B="0" />
+						    <emissive R="255" G="255" B="255" />
+						    <shininess value="0" />
+					    </color>
+					</model>
                 </models>
             </group>
             <group> <!-- Tritão -->
