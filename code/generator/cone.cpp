@@ -52,31 +52,34 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
         indexes->push_back(index + 2);
         indexes->push_back(index + 1);
 
-        Point n1(sin((float) i * sliceStep), radius / sqrt(height * height + radius * radius), cos((float) i * sliceStep));
-        Point n2(sin((float) (i+1) * sliceStep), radius/ sqrt(height * height + radius * radius), cos((float) (i+1)  * sliceStep));
-        n1.normalize();
-        n2.normalize();
+        Point p1(radius * sin((float) i * sliceStep), 0, radius * cos((float) i * sliceStep));
+        Point p2(radius * sin((float) (i+1) * sliceStep), 0, radius * cos((float) (i+1)  * sliceStep));
 
-        cout << n1.toString() << std::endl;
-        cout << n2.toString() << std::endl;
+        Point p3(0, height, 0);
+
+        Point n1(p2.getX()-p1.getX(), p2.getY()-p1.getY(), p2.getZ()-p1.getZ());
+        Point n2(p3.getX()-p1.getX(), p3.getY()-p1.getY(), p3.getZ()-p1.getZ());
+
+        Point r = Point::crossProduct(n1, n2);
+        r.normalize();
 
         index += 3;
 
         vertices.push_back(radius * sin((float) i * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) i * sliceStep));
-        normals->push_back(0);
-        normals->push_back(-1);
-        normals->push_back(0);
+        normals->push_back(r.getX());
+        normals->push_back(r.getY());
+        normals->push_back(r.getZ());
         textCoords->push_back(i * deltaX);
         textCoords->push_back(0);
 
         vertices.push_back(radius * sin((float) (i + 1) * sliceStep));
         vertices.push_back(0);
         vertices.push_back(radius * cos((float) (i + 1) * sliceStep));
-        normals->push_back(0);
-        normals->push_back(-1);
-        normals->push_back(0);
+        normals->push_back(r.getX());
+        normals->push_back(r.getY());
+        normals->push_back(r.getZ());
         textCoords->push_back((i + 1) * deltaX);
         textCoords->push_back(0);
 
@@ -84,18 +87,18 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * sin((float) i * sliceStep));
             vertices.push_back((float) (j + 1) * stackStep);
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * cos((float) i * sliceStep));
-            normals->push_back(n1.getX());
-            normals->push_back(n1.getY());
-            normals->push_back(n1.getZ());
+            normals->push_back(r.getX());
+            normals->push_back(r.getY());
+            normals->push_back(r.getZ());
             textCoords->push_back(i * deltaX);
             textCoords->push_back((j+1) * deltaY);
 
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * sin((float) (i + 1) * sliceStep));
             vertices.push_back((float) (j + 1) * stackStep);
             vertices.push_back((radius - (float) (j + 1) * radiusDec) * cos((float) (i + 1) * sliceStep));
-            normals->push_back(n2.getX());
-            normals->push_back(n2.getY());
-            normals->push_back(n2.getZ());
+            normals->push_back(r.getX());
+            normals->push_back(r.getY());
+            normals->push_back(r.getZ());
             textCoords->push_back((i+1) * deltaX);
             textCoords->push_back((j+1) * deltaY);
 
@@ -113,9 +116,11 @@ std::vector<float> generateCone(float radius, float height, int slices, int stac
         vertices.push_back(0);
         vertices.push_back(height);
         vertices.push_back(0);
-        normals->push_back(n2.getX());
-        normals->push_back(n2.getY());
-        normals->push_back(n2.getZ());
+        Point interp = Point(n1.getX()+n2.getX(), n1.getY()+n2.getY(), n1.getZ()+n2.getZ());
+        interp.normalize();
+        normals->push_back(interp.getX());
+        normals->push_back(interp.getY());
+        normals->push_back(interp.getZ());
         textCoords->push_back((i+0.5f) * deltaX);
         textCoords->push_back(1);
 

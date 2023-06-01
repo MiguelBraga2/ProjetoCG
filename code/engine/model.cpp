@@ -65,11 +65,12 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
             glBindTexture(GL_TEXTURE_2D,texId);
             glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
             glTexCoordPointer(2,GL_FLOAT,0,0);
-            glBindTexture(GL_TEXTURE_2D,0);
+
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
         glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
+        glBindTexture(GL_TEXTURE_2D,0);
     }
     else{
         for(int i=0; i<this->indexesVector.size(); i+=3){
@@ -220,10 +221,10 @@ void Model::loadImage(string textFile) {
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
 
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    //glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }

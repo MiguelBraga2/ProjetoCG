@@ -105,13 +105,13 @@ void renderText() {
         for (const unsigned char *c = camera->toString(); *c != '\0'; c++) {
             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
         }
-    /*
+
     if (camera->getMode() == 1) {
         glRasterPos2d(width/2 - 1, height/2 - 1); // text position in pixels
         for (const char *c = "+"; *c != '\0'; c++) {
             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
         }
-    }*/
+    }
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
