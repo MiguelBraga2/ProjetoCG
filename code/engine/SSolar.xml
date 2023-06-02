@@ -6,6 +6,9 @@
         <up x="0" y="1" z="0" />
         <projection fov="60" near="1" far="100000" />
     </camera>
+	<lights>
+		<light type="point" posx="0" posy="0" posz="0" />
+	</lights>
     <group>
         <models> <!-- Asteroides -->
            <!-- <model file="cintura_de_asteroides.3d"></model>--> <!-- generator ring 4300 3300 1000 1 2 -10 10 cintura_de_asteroides.3d sphere 10 10 -->
@@ -44,40 +47,6 @@
 				</model>
             </models>
         </group>
-        <group> <!-- Nave -->
-            <transform>
-                <translate x="0" y="0" z="5000"/>
-            </transform>
-            <group>
-                <transform>
-                    <translate time="90" align="true" show="false">
-                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="10" angleY="0" angleZ="10"/>
-                    </translate>
-                    <rotate angle="90" x="0" y="1" z="0"/>
-                    <scale x="50" y="50" z="50"/>
-                </transform>
-                    <models>
-                        <model label="Spaceship" file="Fighter_02.obj" red="1" green="1" blue="1"/>
-                    </models>
-            </group>
-        </group>
-        <group> <!-- Tesla -->
-            <transform>
-                <translate x="5000" y="0" z="5000"/>
-            </transform>
-            <group>
-                <transform>
-                    <translate time="500" align="true" show="false">
-                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="10" angleY="0" angleZ="0"/>
-                    </translate>
-                    <scale x="50" y="50" z="50"/>
-                    <rotate angle="90" x="0" y="1" z="0"/>
-                </transform>
-                <models>
-                    <model label="Tesla" file="tesla.obj" red="1" green="1" blue="1"/>
-                </models>
-            </group>
-        </group>
         <group> <!-- Mercúrio -->
             <transform>
                 <translate time="87.97" align="false">
@@ -89,13 +58,6 @@
             <models>
 				<model label="Mercurio" file="sphere_1_30_30.3d"> 
 					<texture file = "mercurio.jpg" /> 
-				    <color>
-						<diffuse R="200" G="200" B="000" />
-						<ambient R="50" G="50" B="00" />
-						<specular R="0" G="0" B="0" />
-						<emissive R="255" G="255" B="255" />
-						<shininess value="0" />
-					</color>
 				</model>
 			</models>
         </group>
@@ -109,14 +71,7 @@
             </transform>
             <models>
 				<model label="Venus" file="sphere_1_30_30.3d"> 
-					<texture file = "venus.jpg" /> 
-				    <color>
-						 <diffuse R="200" G="200" B="000" />
-						 <ambient R="50" G="50" B="00" />
-						 <specular R="0" G="0" B="0" />
-						 <emissive R="255" G="255" B="255" />
-						 <shininess value="0" />
-					</color>
+					<texture file = "venus_atmosphere.jpg" /> 
 				</model>
             </models>
         </group>
@@ -134,13 +89,6 @@
                 <models>
 					<model label="Terra" file="sphere_1_30_30.3d"> 
 						<texture file = "earth.jpg" /> 
-					    <color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 					</model>
                 </models>
             </group>
@@ -154,14 +102,7 @@
                 </transform>
                 <models>
 					<model label="Lua" file="sphere_1_30_30.3d"> 
-						<texture file = "lua.jpg"/> 
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
+						<texture file = "lua_2k.jpg"/> 
 					</model>
                 </models>
             </group>
@@ -179,14 +120,7 @@
                 </transform>
                 <models>
 					<model label="Marte" file="sphere_1_30_30.3d">
-						<texture file = "marte.jpg"/>
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
+						<texture file = "marte_2k.jpg"/>
 					</model>
                 </models>
             </group>
@@ -229,13 +163,6 @@
                 <models>
 					<model label="Jupiter" file="sphere_1_30_30.3d">
 						<texture file = "jupiter.jpg"/>
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 					</model>
                 </models>
             </group>
@@ -297,28 +224,14 @@
             <group>
                 <transform>
                     <scale x="94" y="94" z="94"/>
-                    <rotate angle="45" x="1" y="0" z="1"/>
+                    <rotate time="0.45" x="0" y="1" z="0"/>
                 </transform>
                 <models>
 					<model label="Saturno" file="sphere_1_30_30.3d">
 						<texture file = "saturno.jpg"/>
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 					</model>
 					<model file="torus_1.2_2_100_0.3d"> 
 						<texture file = "ring_saturno.png"/> 
-					    <color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 				    </model>
                 </models>
             </group>
@@ -339,7 +252,7 @@
                     <translate time="4.52" align="false">
                         <pointSet type="ellipse" num_points="16" a="159.3" b="129.3" angleX="0" angleY="0" angleZ="65"/>
                     </translate>
-                    <rotate angle="4.52" x="0" y="1" z="0"/>
+                    <rotate time="4.52" x="0" y="1" z="0"/>
                     <scale x="1.235" y="1.235" z="1.235"/>
                 </transform>
                 <models>
@@ -351,7 +264,7 @@
                     <translate time="1.89" align="false">
                         <pointSet type="ellipse" num_points="16" a="143.7" b="113.7" angleX="15" angleY="0" angleZ="0"/>
                     </translate>
-                    <rotate angle="1.89" x="0" y="1" z="0"/>
+                    <rotate time="1.89" x="0" y="1" z="0"/>
                     <scale x="1.237" y="1.237" z="1.237"/>
                 </transform>
                 <models>
@@ -373,13 +286,6 @@
                 <models>
 					<model label="Urano" file="sphere_1_30_30.3d">
 						<texture file = "urano.jpg"/>
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 					</model>
                 </models>
             </group>
@@ -388,7 +294,7 @@
                     <translate time="8.71" align="false">
                         <pointSet type="ellipse" num_points="16" a="99.2" b="69.2" angleX="0" angleY="0" angleZ="35"/>
                     </translate>
-                    <rotate angle="8.71" x="0" y="1" z="0"/>
+                    <rotate time="8.71" x="0" y="1" z="0"/>
                     <scale x="1.233" y="1.233" z="1.233"/>
                 </transform>
                 <models>
@@ -400,7 +306,7 @@
                     <translate time="13.46" align="false">
                         <pointSet type="ellipse" num_points="16" a="109.1" b="79.1" angleX="35" angleY="0" angleZ="0"/>
                     </translate>
-                    <rotate angle="13.46" x="0" y="1" z="0"/>
+                    <rotate time="13.46" x="0" y="1" z="0"/>
                     <scale x="1.197" y="1.197" z="1.197"/>
                 </transform>
                 <models>
@@ -422,13 +328,6 @@
                 <models>
 					<model label="Neptuno" file="sphere_1_30_30.3d">
 						<texture file = "neptuno.jpg"/>
-						<color>
-						    <diffuse R="200" G="200" B="000" />
-						    <ambient R="50" G="50" B="00" />
-						    <specular R="0" G="0" B="0" />
-						    <emissive R="255" G="255" B="255" />
-						    <shininess value="0" />
-					    </color>
 					</model>
                 </models>
             </group>
