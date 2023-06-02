@@ -51,7 +51,7 @@ bool vboActive = true;
 // TEXTURES
 
 bool mipmap = false;
-bool change = true;
+bool change = false;
 
 // Minecraft
 bool isMinecraftActive = false;
