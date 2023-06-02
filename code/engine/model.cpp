@@ -13,6 +13,12 @@
 #include <GL/glut.h>
 #endif
 
+float diffuse[4] = {};
+float ambient[4] = {};
+float specular[4] = {};
+float emissive[4] = {};
+float shininess = 0;
+
 Model::Model() {
     this->texId = 0;
     this->diffuse[0] = 200.0f / 255.0f;
@@ -52,6 +58,12 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     if (change)// ReLoad the texture
         this->loadImage(this->getTextureFile(), mipmap);
 
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
+    glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
+
     float M[16],P[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,M);
     glGetFloatv(GL_PROJECTION_MATRIX,P);
@@ -59,34 +71,28 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     glPushMatrix();
     glLoadMatrixf(P);
     glMultMatrixf(M);
+
     float A[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, A);
     glPopMatrix();
 
     if (this->v->test(A)) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
 
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
-        glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
-        glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
-        glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
+        glBindBuffer(GL_ARRAY_BUFFER, this->normals);
+        glNormalPointer(GL_FLOAT, 0, 0);
 
-        glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
-        glVertexPointer(3,GL_FLOAT,0,0);
-
-        glBindBuffer(GL_ARRAY_BUFFER,this->normals);
-        glNormalPointer(GL_FLOAT,0,0);
-                
-        if (texId != 0){
-            glBindTexture(GL_TEXTURE_2D,texId);
-            glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
-            glTexCoordPointer(2,GL_FLOAT,0,0);
+        if (texId != 0) {
+            glBindTexture(GL_TEXTURE_2D, texId);
+            glBindBuffer(GL_ARRAY_BUFFER, this->texCoord);
+            glTexCoordPointer(2, GL_FLOAT, 0, 0);
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
-        glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 
-        glBindTexture(GL_TEXTURE_2D,0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
     else {
         cout << "Não desenhou" << endl;

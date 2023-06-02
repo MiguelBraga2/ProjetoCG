@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "camera.hpp"
+#include "Lights/Light.h"
 
 #endif
 
@@ -24,7 +25,7 @@ private:
 
     int minecraftMode = 0; // 0 - Construir, 1 - Destruir
 
-    GLuint buffers[4];
+    GLuint buffers[5];
 
     std::map<std::tuple<float, float, float>, unsigned int> mapPointIndex;
 
@@ -35,6 +36,7 @@ private:
 
     std::vector<float> cubesPositions;
     std::vector<float> cubesColors;
+    std::vector<float> normals;
 
     float nextPosX[255][255][255];
     float nextPosY[255][255][255];
@@ -47,6 +49,7 @@ private:
     int vertexCount = 0, indexCount = 0, numIndex = 0, cubeIndex = 0;
 
     Camera* globalCamera;
+    Light l;
 public:
     Creator(Camera* camera);
     ~Creator();

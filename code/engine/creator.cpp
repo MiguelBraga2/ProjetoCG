@@ -1,4 +1,5 @@
 #include "creator.h"
+#include "Lights/LightPoint.h"
 
 #include <IL/il.h>
 #include <iostream>
@@ -92,9 +93,10 @@ Creator::Creator(Camera* camera) {
     colorsVec.push_back(std::make_tuple(0, 0.2, 0)); // DARK GREEN
     colorsVec.push_back(std::make_tuple(0.2, 0.07, 0)); // ZINNWALDITE BROWN
 
-    glGenBuffers(4, buffers);
+    glGenBuffers(5, buffers);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
     if (option == 1){
         std::cout << "Qual o tamanho do plano? " << std::endl;
         int side;
@@ -169,12 +171,15 @@ Creator::Creator(Camera* camera) {
             vertices.push_back(0);
             colors.push_back(0);
             normalColors.push_back(0);
+            normals.push_back(0);
         }
 
         for (int k = 0; k < 12; k++) {
             indexes.push_back(0);
         }
     }
+
+    l = LightPoint(10,10,10);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -187,6 +192,9 @@ Creator::Creator(Camera* camera) {
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(float), normalColors.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
 }
 
 Creator::~Creator() {
@@ -269,6 +277,33 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             -0.5f + x, -0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, -0.5f + z
+    };
+
+    float normals[] = {
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            1,0,0,
+            1,0,0,
+            1,0,0,
+            1,0,0,
+            -1,0,0,
+            -1,0,0,
+            -1,0,0,
+            -1,0,0
     };
 
     int newIndexes[] = {
@@ -367,6 +402,10 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
         colors.push_back(color);
     }
 
+    for(float n: normals){
+        this->normals.push_back(n);
+    }
+
     cubesPositions.push_back(x);
     cubesPositions.push_back(y);
     cubesPositions.push_back(z);
@@ -406,6 +445,33 @@ void Creator::addCube(int x, int y, int z) {
             -0.5f + x, -0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, -0.5f + z
+    };
+
+    float newNormals[] = {
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            0,0,-1,
+            1,0,0,
+            1,0,0,
+            1,0,0,
+            1,0,0,
+            -1,0,0,
+            -1,0,0,
+            -1,0,0,
+            -1,0,0
     };
 
     int newIndexes[] = {
@@ -500,6 +566,9 @@ void Creator::addCube(int x, int y, int z) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
+    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newNormals), newNormals);
+
     vertexCount += 6 * 4;
     numIndex += 36;
 
@@ -551,16 +620,20 @@ void Creator::removeCube(unsigned int index) {
 }
 
 void Creator::render(int height, int width){
-    glClearColor(1, 1, 1, 0.0f);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glClearColor(0, 0, 0, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     globalCamera->placeCamera();
 
-    //glColor3f(1,0,0);
+    l.doAction(0);
+
+    // glColor3f(1,0,0);
     // put drawing instructions here
-    //glutSolidCube(1);
+    // glutSolidCube(1);
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -569,6 +642,9 @@ void Creator::render(int height, int width){
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
     glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
+    glNormalPointer(GL_FLOAT, 0, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
@@ -582,8 +658,8 @@ unsigned char* Creator::picking(int x, int y) {
     unsigned char* res = (unsigned char*)malloc(4);
     GLint viewport[4];
 
-    //glDisable(GL_LIGHTING);
-    //glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
 
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -630,7 +706,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         }
         else if (button == GLUT_LEFT_BUTTON){
             unsigned char *result = picking(xx, yy);
-            if (result[0] != 255 || result[1] != 255 || result[2] != 255) {
+            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
                 printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
                 printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
                        currPosY[result[0]][result[1]][result[2]],
