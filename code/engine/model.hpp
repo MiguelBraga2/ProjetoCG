@@ -44,11 +44,12 @@ private:
     float emissive[4];
     float shininess;
     GLuint texId;
+    string textureFile;
 
 public:
     Model();
     void readModel(string fileName);
-    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports);
+    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge);
     string getLabel();
     void setLabel(string label);
     tuple<float, float, float> getRgb();
@@ -66,7 +67,7 @@ public:
     string getTextureFile();
     void setTextureFile(string textureFile);
 private:
-    void loadImage(string textFile);
+    void loadImage(string textFile, bool mipmap);
 };
 
 

@@ -48,6 +48,10 @@ vector<string> keys; // To make mapping from number to label easier
 
 bool vboActive = true;
 
+// TEXTURES
+
+bool mipmap = false;
+bool change = true;
 
 // MINECRAFT
 bool isMinecraftActive = false;
@@ -192,7 +196,9 @@ void renderScene() {
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
-        globalGroup->drawGroup(vboActive, position, &teleports);
+        globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change);
+
+        if (change == true) change = false;
 
         renderText();
         drawAxis();
@@ -216,9 +222,16 @@ void menu(int id)
     switch(id)
     {
         case 1:
+            if (mipmap == true){
+                mipmap = false;
+                change = true;
+            }
             break;
         case 2:
-            break;
+            if (mipmap == false){
+                mipmap = true;
+                change = true;
+            }
         case 3:
             camera->changeMode(0); // Explorer
             break;
@@ -279,7 +292,7 @@ void menu(int id)
  * - travelling to planet locations
  */
 void createMenu(void){
-    int submenu2, submenu3, submenu4;
+    int submenu2, submenu3, submenu4, submenu5;
 
     submenu2 = glutCreateMenu(menu);
     glutAddMenuEntry("GL_FILL", 11);
@@ -301,6 +314,10 @@ void createMenu(void){
     glutAddMenuEntry("FPS mode", 4);
     glutAddMenuEntry("Mouse mode", 5);
 
+    submenu5 = glutCreateMenu(menu);
+    glutAddMenuEntry("No Mipmap", 1);
+    glutAddMenuEntry("Mipmap", 2);
+
     glutCreateMenu(menu);
     glutAddSubMenu("Travel To", submenu3);
     glutAddSubMenu("Change polygon mode", submenu2);
@@ -310,6 +327,7 @@ void createMenu(void){
     glutAddMenuEntry("Add axes", 10);
     glutAddMenuEntry("Show camera info", 9);
     glutAddMenuEntry("Toggle vbo mode", 8);
+    glutAddSubMenu("Textures", submenu5);
 
     glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }

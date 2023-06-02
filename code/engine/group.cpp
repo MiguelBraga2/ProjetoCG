@@ -27,7 +27,7 @@ Group::Group() {
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
+void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     // Apply the transformations
@@ -36,7 +36,7 @@ void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, fl
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        this->models[i].drawModel(vboActive, matrix, teleports);
+        this->models[i].drawModel(vboActive, matrix, teleports, mipmap, change);
     }
 
     float matrixCopy[16];
@@ -45,7 +45,7 @@ void Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, fl
     }
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        this->subgroups[i].drawGroup(vboActive, matrix, teleports);
+        this->subgroups[i].drawGroup(vboActive, matrix, teleports, mipmap, change);
         for(int j = 0; j < 16; j++) {
             matrix[j] = matrixCopy[j];
         }

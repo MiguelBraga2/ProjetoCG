@@ -38,7 +38,7 @@ Model::Model() {
 
 }
 
-void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports) {
+void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
     if (this->label.compare("undefined") != 0) {
         Point p1(matrix[3], matrix[7], matrix[11]);
         float res[4];
@@ -47,6 +47,10 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
+
+    if (change)// ReLoad the texture
+        this->loadImage(this->getTextureFile(), mipmap);
+
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
     glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
@@ -196,10 +200,11 @@ void Model::setRgb(tuple<float, float, float> rgb) {
 }
 
 void Model::setTextureFile(string textureFile) {
-    loadImage(textureFile);
+    loadImage(textureFile,false);
+    this->textureFile = textureFile;
 }
 
-void Model::loadImage(string textFile) {
+void Model::loadImage(string textFile, bool mipmap) {
     unsigned int t,tw,th;
     unsigned char *texData;
 
@@ -221,12 +226,24 @@ void Model::loadImage(string textFile) {
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
 
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    if (mipmap){
+        glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    }
+    else{
+        glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-    //glGenerateMipmap(GL_TEXTURE_2D);
+
+    if (mipmap)
+        glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+string Model::getTextureFile() {
+    return this->textureFile;
 }
 
 
