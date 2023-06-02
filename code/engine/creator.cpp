@@ -95,8 +95,13 @@ Creator::Creator(Camera* camera) {
 
     glGenBuffers(5, buffers);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_2D);
+    string path = "../Textures/";
+    loadTexture(path + "grass_block_side.png");
+
     if (option == 1){
         std::cout << "Qual o tamanho do plano? " << std::endl;
         int side;
@@ -190,11 +195,14 @@ Creator::Creator(Camera* camera) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
     glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
-    glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(float), normalColors.data(), GL_STATIC_DRAW);
+    //glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    //glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(float), normalColors.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), textureCoords.data(), GL_STATIC_DRAW);
 }
 
 Creator::~Creator() {
@@ -277,6 +285,33 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             -0.5f + x, -0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, 0.5f + z,
             -0.5f + x, 0.5f + y, -0.5f + z
+    };
+
+    float textCoords[] = {
+            0, 0, // FRONT
+            1, 0,
+            1, 1,
+            0, 1,
+            1, 0, // BACK
+            1, 1,
+            0, 1,
+            0, 0,
+            0,1, // TOP
+            1,1,
+            0,0,
+            1,0,
+            0,1, // BOTTOM
+            1,1,
+            1,0,
+            0,0,
+            1,0, // RIGHT
+            1,1,
+            0,1,
+            0,0,
+            0,0, // LEFT
+            1,0,
+            1,1,
+            0,1
     };
 
     float normals[] = {
@@ -404,6 +439,10 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
 
     for(float n: normals){
         this->normals.push_back(n);
+    }
+
+    for(float t: textCoords){
+        this->textureCoords.push_back(t);
     }
 
     cubesPositions.push_back(x);
@@ -615,7 +654,7 @@ void Creator::removeCube(unsigned int index) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
     glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newColors), newColors);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
     glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 }
 
@@ -637,14 +676,19 @@ void Creator::render(int height, int width){
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
-    glColorPointer(3, GL_FLOAT, 0, 0);
+    //glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    //glColorPointer(3, GL_FLOAT, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
     glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
     glNormalPointer(GL_FLOAT, 0, 0);
+
+    glBindTexture(GL_TEXTURE_2D, texId);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
@@ -660,6 +704,11 @@ unsigned char* Creator::picking(int x, int y) {
 
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
+
+    glEnableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_2D);
 
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -683,6 +732,13 @@ unsigned char* Creator::picking(int x, int y) {
 
     //glutSwapBuffers();
     //sleep(10);
+
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_2D);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
 
     return res;
 }
@@ -726,4 +782,33 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
                 printf("Nothing selected\n");
         }
     }
+}
+
+void Creator::loadTexture(string path) {
+    unsigned int t,tw,th;
+    unsigned char *texData;
+
+    ilInit();
+    ilEnable(IL_ORIGIN_SET);
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+    ilGenImages(1,&t);
+    ilBindImage(t);
+    ilLoadImage((ILstring)path.c_str());
+    tw = ilGetInteger(IL_IMAGE_WIDTH);
+    th = ilGetInteger(IL_IMAGE_HEIGHT);
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+    texData = ilGetData();
+
+    glGenTextures(1,&this->texId);
+
+    glBindTexture(GL_TEXTURE_2D,texId);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
