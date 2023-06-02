@@ -55,6 +55,7 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     float M[16],P[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,M);
     glGetFloatv(GL_PROJECTION_MATRIX,P);
+
     glPushMatrix();
     glLoadMatrixf(P);
     glMultMatrixf(M);
@@ -63,6 +64,7 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     glPopMatrix();
 
     if (this->v->test(A)) {
+
         glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
         glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
         glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
@@ -85,6 +87,9 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
 
         glBindTexture(GL_TEXTURE_2D,0);
+    }
+    else {
+        cout << "Não desenhou" << endl;
     }
 }
 
