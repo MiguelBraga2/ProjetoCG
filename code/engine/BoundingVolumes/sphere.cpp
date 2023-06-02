@@ -1,4 +1,6 @@
 #include "sphere.hpp"
+#include "plane.hpp"
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -22,7 +24,8 @@ void Sphere::setCenter(Point center) {
 }
 
 bool Sphere::test(float *matrix) {
-
+    bool ret = true;
     
-    return true;
+        
+    return ret;
 }
