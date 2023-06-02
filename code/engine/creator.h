@@ -51,7 +51,10 @@ private:
 
     Camera* globalCamera;
     Light l;
-    GLuint texId;
+    GLuint texIds[100];
+    int textInd=0;
+    std::vector<std::tuple<GLuint, int>> blockTextures;
+    GLuint currentTexture;
 public:
     Creator(Camera* camera);
     ~Creator();
