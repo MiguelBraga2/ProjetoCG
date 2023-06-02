@@ -5,7 +5,7 @@ PROJECT(engine)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} engine.cpp camera.cpp group.cpp ../libraries/tinyxml2.cpp  ../shared/point.cpp ../shared/IO.cpp ../shared/matrixOp.cpp ../shared/triangle.cpp Transformations/transformation.cpp Transformations/rotation.cpp
+add_executable(${PROJECT_NAME} engine.cpp BoundingVolumes/volume.cpp BoundingVolumes/AABB.cpp BoundingVolumes/sphere.cpp camera.cpp group.cpp ../libraries/tinyxml2.cpp  ../shared/point.cpp ../shared/IO.cpp ../shared/matrixOp.cpp ../shared/triangle.cpp Transformations/transformation.cpp Transformations/rotation.cpp
 Transformations/scale.cpp Transformations/translation.cpp model.cpp creator.cpp Lights/Light.cpp Lights/LightDirectional.cpp Lights/LightPoint.cpp Lights/LightSpot.cpp)
 
 find_package(OpenGL REQUIRED)

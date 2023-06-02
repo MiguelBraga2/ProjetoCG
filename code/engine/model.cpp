@@ -1,6 +1,7 @@
 #include "model.hpp"
 #include "../shared/IO.hpp" // reader function
 #include "../shared/matrixOp.hpp"
+#include "BoundingVolumes/volume.hpp"
 #include <map>
 #include <cmath>
 #include <IL/il.h>
@@ -51,29 +52,40 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     if (change)// ReLoad the texture
         this->loadImage(this->getTextureFile(), mipmap);
 
+    float M[16],P[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,M);
+    glGetFloatv(GL_PROJECTION_MATRIX,P);
+    glPushMatrix();
+    glLoadMatrixf(P);
+    glMultMatrixf(M);
+    float A[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, A);
+    glPopMatrix();
 
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
-    glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
-    glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
+    if (this->v->test(A)) {
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
+        glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
+        glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
 
-    glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
-    glVertexPointer(3,GL_FLOAT,0,0);
+        glBindBuffer(GL_ARRAY_BUFFER,this->vertices);
+        glVertexPointer(3,GL_FLOAT,0,0);
 
-    glBindBuffer(GL_ARRAY_BUFFER,this->normals);
-    glNormalPointer(GL_FLOAT,0,0);
-        
-    if (texId != 0){
-        glBindTexture(GL_TEXTURE_2D,texId);
-        glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
-        glTexCoordPointer(2,GL_FLOAT,0,0);
+        glBindBuffer(GL_ARRAY_BUFFER,this->normals);
+        glNormalPointer(GL_FLOAT,0,0);
+                
+        if (texId != 0){
+            glBindTexture(GL_TEXTURE_2D,texId);
+            glBindBuffer(GL_ARRAY_BUFFER,this->texCoord);
+            glTexCoordPointer(2,GL_FLOAT,0,0);
+        }
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
+        glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
+
+        glBindTexture(GL_TEXTURE_2D,0);
     }
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexes);
-    glDrawElements(GL_TRIANGLES,this->indexCount,GL_UNSIGNED_INT,0);
-
-    glBindTexture(GL_TEXTURE_2D,0);
 }
 
 /**
@@ -84,7 +96,8 @@ void Model::readModel(string fileName) {
     vector<float> textCoordsVector;
     vector<float> normalsVector;
     vector<unsigned int> indexesVector;
-    vector<float> verticesVector = reader(fileName, &indexesVector, &normalsVector, &textCoordsVector);
+
+    vector<float> verticesVector = reader(fileName, &indexesVector, &normalsVector, &textCoordsVector, &this->v);
 
     glGenBuffers(1, &(this->vertices));
     glBindBuffer(GL_ARRAY_BUFFER, this->vertices);

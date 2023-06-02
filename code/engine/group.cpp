@@ -207,7 +207,6 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
                     string fileName = textureFile->Attribute("file");
                     m.setTextureFile("../Textures/" + fileName);
                 }
-
                 m.readModel(model->Attribute("file"));
                 
                 if (model->Attribute("label")){

@@ -22,7 +22,7 @@
 
 #endif
 #include "../shared/point.hpp"
-
+#include "BoundingVolumes/volume.hpp"
 
 using namespace std;
 
@@ -34,6 +34,7 @@ private:
     GLuint normals;
     GLuint texCoord;
     int indexCount;
+    Volume *v;
     // Material colors
     float diffuse[4];
     float ambient[4];
