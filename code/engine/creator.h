@@ -25,7 +25,7 @@ private:
 
     int minecraftMode = 0; // 0 - Construir, 1 - Destruir
 
-    GLuint buffers[4];
+    GLuint buffers[5];
 
     std::map<std::tuple<float, float, float>, unsigned int> mapPointIndex;
 
@@ -36,6 +36,7 @@ private:
 
     std::vector<float> cubesPositions;
     std::vector<float> cubesColors;
+    std::vector<float> normals;
 
     float nextPosX[255][255][255];
     float nextPosY[255][255][255];

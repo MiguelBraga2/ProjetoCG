@@ -5,7 +5,7 @@ PROJECT(generator)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} generator.cpp ../engine/BoundingVolumes/AABB.cpp ../engine/BoundingVolumes/sphere.cpp ../engine/BoundingVolumes/volume.cpp ../shared/point.cpp ../shared/matrixOp.cpp ../shared/IO.cpp plane.cpp box.cpp cone.cpp cylinder.cpp torus.cpp sphere.cpp ring.cpp patch.cpp)
+add_executable(${PROJECT_NAME} generator.cpp ../engine/BoundingVolumes/AABB.cpp ../engine/BoundingVolumes/plane.cpp ../engine/BoundingVolumes/sphere.cpp ../engine/BoundingVolumes/volume.cpp ../shared/point.cpp ../shared/matrixOp.cpp ../shared/IO.cpp plane.cpp box.cpp cone.cpp cylinder.cpp torus.cpp sphere.cpp ring.cpp patch.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
