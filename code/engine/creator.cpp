@@ -566,6 +566,9 @@ void Creator::addCube(int x, int y, int z) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
+    glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newNormals), newNormals);
+
     vertexCount += 6 * 4;
     numIndex += 36;
 
