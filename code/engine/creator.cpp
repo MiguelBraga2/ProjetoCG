@@ -1,4 +1,5 @@
 #include "creator.h"
+#include "Lights/LightPoint.h"
 
 #include <IL/il.h>
 #include <iostream>
@@ -175,6 +176,8 @@ Creator::Creator(Camera* camera) {
             indexes.push_back(0);
         }
     }
+
+    l = LightPoint(0,1000,0);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -551,12 +554,16 @@ void Creator::removeCube(unsigned int index) {
 }
 
 void Creator::render(int height, int width){
-    glClearColor(1, 1, 1, 0.0f);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glClearColor(0, 0, 0, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     globalCamera->placeCamera();
+
+    l.doAction(0);
 
     //glColor3f(1,0,0);
     // put drawing instructions here
@@ -582,8 +589,8 @@ unsigned char* Creator::picking(int x, int y) {
     unsigned char* res = (unsigned char*)malloc(4);
     GLint viewport[4];
 
-    //glDisable(GL_LIGHTING);
-    //glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
 
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -630,7 +637,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         }
         else if (button == GLUT_LEFT_BUTTON){
             unsigned char *result = picking(xx, yy);
-            if (result[0] != 255 || result[1] != 255 || result[2] != 255) {
+            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
                 printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
                 printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
                        currPosY[result[0]][result[1]][result[2]],

@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "camera.hpp"
+#include "Lights/Light.h"
 
 #endif
 
@@ -47,6 +48,7 @@ private:
     int vertexCount = 0, indexCount = 0, numIndex = 0, cubeIndex = 0;
 
     Camera* globalCamera;
+    Light l;
 public:
     Creator(Camera* camera);
     ~Creator();
