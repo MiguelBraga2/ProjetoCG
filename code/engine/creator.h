@@ -37,6 +37,7 @@ private:
     std::vector<float> cubesPositions;
     std::vector<float> cubesColors;
     std::vector<float> normals;
+    std::vector<float> textureCoords;
 
     float nextPosX[255][255][255];
     float nextPosY[255][255][255];
@@ -50,6 +51,10 @@ private:
 
     Camera* globalCamera;
     Light l;
+    GLuint texIds[100];
+    int textInd=0;
+    std::vector<std::tuple<GLuint, int>> blockTextures;
+    GLuint currentTexture;
 public:
     Creator(Camera* camera);
     ~Creator();
@@ -65,6 +70,7 @@ public:
 private:
     void incrementColors();
     void renderText(int height, int width);
+    void loadTexture(string path);
 };
 
 
