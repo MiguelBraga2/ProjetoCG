@@ -29,9 +29,6 @@ using namespace std;
 class Model {
 private:
     string label;
-    tuple<float, float, float> rgb;
-    vector<float> verticesVector;
-    vector<unsigned int> indexesVector;
     GLuint vertices;
     GLuint indexes;
     GLuint normals;
@@ -52,8 +49,6 @@ public:
     void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge);
     string getLabel();
     void setLabel(string label);
-    tuple<float, float, float> getRgb();
-    void setRgb(tuple<float, float, float> rgb);
     Point getDiffuse();
     void setDiffuse(Point diffuse);
     Point getAmbient();

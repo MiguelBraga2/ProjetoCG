@@ -201,33 +201,21 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
             for (XMLElement* model = models->FirstChildElement("model"); model != NULL; model = model->NextSiblingElement("model")) {
 
                 Model m;
+                
+                XMLElement* textureFile = model->FirstChildElement("texture");
+                if (textureFile) {
+                    string fileName = textureFile->Attribute("file");
+                    m.setTextureFile("../Textures/" + fileName);
+                }
+
                 m.readModel(model->Attribute("file"));
-                // Being deprecated
-                float red = 1, green = 1, blue = 1;
-                if (model->Attribute("red")){
-                    red = stof(model->Attribute("red"));
-                }
-                if (model->Attribute("green")){
-                    green = stof(model->Attribute("green"));
-                }
-                if (model->Attribute("blue")){
-                    blue = stof(model->Attribute("blue"));
-                }
-                tuple <float, float, float> tup = make_tuple(red, green, blue);
-                m.setRgb(tup);
-                //
+                
                 if (model->Attribute("label")){
                     m.setLabel(model->Attribute("label"));
                     keys->push_back(model->Attribute("label"));
                 }
                 else {
                     m.setLabel("undefined");
-                }
-
-                XMLElement* textureFile = model->FirstChildElement("texture");
-                if (textureFile) {
-                    string fileName = textureFile->Attribute("file");
-                    m.setTextureFile("../Textures/" + fileName);
                 }
 
                 XMLElement* color = model->FirstChildElement("color");
