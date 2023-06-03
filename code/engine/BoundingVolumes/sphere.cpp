@@ -39,9 +39,9 @@ Volume* Sphere::clone() {
 
 bool Sphere::test(float *matrix, Camera *camera) {
     
-    Point vecD(camera->getLookAtPosition().getX() - camera->getPosition().getX(), camera->getLookAtPosition().getY() - camera->getPosition().getY(), camera->getLookAtPosition().getZ() - camera->getPosition().getZ());
+    Point vecD(camera->getLookAtPosition().getX() - camera->getPosition().getX(), camera->getLookAtPosition().getY() - camera->getPosition().getY(), camera->getLookAtPosition().getZ() - camera->getPosition().getZ());    
     vecD.normalize();
-    Point centerNP(camera->getPosition().getX() + camera->getNear() * vecD.getX(), camera->getPosition().getY()+ camera->getNear() * vecD.getY(), camera->getPosition().getY() + camera->getNear() * vecD.getZ());
+    Point centerNP(camera->getPosition().getX() + camera->getNear() * vecD.getX(), camera->getPosition().getY()+ camera->getNear() * vecD.getY(), camera->getPosition().getZ() + camera->getNear() * vecD.getZ());
     float d = centerNP.getX() * vecD.getX() + centerNP.getY() * vecD.getY() + centerNP.getZ() * vecD.getZ();
     Plane np(vecD.getX(), vecD.getY(), vecD.getZ() , -d);
 
@@ -68,6 +68,8 @@ bool Sphere::test(float *matrix, Camera *camera) {
     Point right = Point::crossProduct(vecD, Point(camera->getUpVector().getX(), camera->getUpVector().getY(), camera->getUpVector().getZ()));
     right.normalize();
 
+    Point realUp = Point::crossProduct(right, vecD);
+    realUp.normalize();
 
     /*  
         ftl = fc + (up * Hfar/2) - (right * Wfar/2)
@@ -82,37 +84,37 @@ bool Sphere::test(float *matrix, Camera *camera) {
 	    nbr = nc - (up * Hnear/2) + (right * Wnear/2)
     
     */
-    Point ftl(centerFP.getX() + (camera->getUpVector().getX() * hFar/2)  - (right.getX() * wFar/2),
-              centerFP.getY() + (camera->getUpVector().getY() * hFar/2)  - (right.getY() * wFar/2),
-              centerFP.getZ() + (camera->getUpVector().getZ() * hFar/2)  - (right.getZ() * wFar/2));
+    Point ftl(centerFP.getX() + (realUp.getX() * hFar/2)  - (right.getX() * wFar/2),
+              centerFP.getY() + (realUp.getY() * hFar/2)  - (right.getY() * wFar/2),
+              centerFP.getZ() + (realUp.getZ() * hFar/2)  - (right.getZ() * wFar/2));
 
-    Point ftr(centerFP.getX() + (camera->getUpVector().getX() * hFar/2)  + (right.getX() * wFar/2),
-              centerFP.getY() + (camera->getUpVector().getY() * hFar/2)  + (right.getY() * wFar/2),
-              centerFP.getZ() + (camera->getUpVector().getZ() * hFar/2)  + (right.getZ() * wFar/2));
+    Point ftr(centerFP.getX() + (realUp.getX() * hFar/2)  + (right.getX() * wFar/2),
+              centerFP.getY() + (realUp.getY() * hFar/2)  + (right.getY() * wFar/2),
+              centerFP.getZ() + (realUp.getZ() * hFar/2)  + (right.getZ() * wFar/2));
    
-    Point fbl(centerFP.getX() - (camera->getUpVector().getX() * hFar/2)  - (right.getX() * wFar/2),
-              centerFP.getY() - (camera->getUpVector().getY() * hFar/2)  - (right.getY() * wFar/2),
-              centerFP.getZ() - (camera->getUpVector().getZ() * hFar/2)  - (right.getZ() * wFar/2));
+    Point fbl(centerFP.getX() - (realUp.getX() * hFar/2)  - (right.getX() * wFar/2),
+              centerFP.getY() - (realUp.getY() * hFar/2)  - (right.getY() * wFar/2),
+              centerFP.getZ() - (realUp.getZ() * hFar/2)  - (right.getZ() * wFar/2));
    
-    Point fbr(centerFP.getX() - (camera->getUpVector().getX() * hFar/2)  + (right.getX() * wFar/2),
-              centerFP.getY() - (camera->getUpVector().getY() * hFar/2)  + (right.getY() * wFar/2),
-              centerFP.getZ() - (camera->getUpVector().getZ() * hFar/2)  + (right.getZ() * wFar/2));
+    Point fbr(centerFP.getX() - (realUp.getX() * hFar/2)  + (right.getX() * wFar/2),
+              centerFP.getY() - (realUp.getY() * hFar/2)  + (right.getY() * wFar/2),
+              centerFP.getZ() - (realUp.getZ() * hFar/2)  + (right.getZ() * wFar/2));
    
-    Point ntl(centerNP.getX() + (camera->getUpVector().getX() * hNear/2) - (right.getX() * wNear/2),
-              centerNP.getY() + (camera->getUpVector().getY() * hNear/2) - (right.getY() * wNear/2),
-              centerNP.getZ() + (camera->getUpVector().getZ() * hNear/2) - (right.getZ() * wNear/2));
+    Point ntl(centerNP.getX() + (realUp.getX() * hNear/2) - (right.getX() * wNear/2),
+              centerNP.getY() + (realUp.getY() * hNear/2) - (right.getY() * wNear/2),
+              centerNP.getZ() + (realUp.getZ() * hNear/2) - (right.getZ() * wNear/2));
 
-    Point ntr(centerNP.getX() + (camera->getUpVector().getX() * hNear/2) + (right.getX() * wNear/2),
-              centerNP.getY() + (camera->getUpVector().getY() * hNear/2) + (right.getY() * wNear/2),
-              centerNP.getZ() + (camera->getUpVector().getZ() * hNear/2) + (right.getZ() * wNear/2));
+    Point ntr(centerNP.getX() + (realUp.getX() * hNear/2) + (right.getX() * wNear/2),
+              centerNP.getY() + (realUp.getY() * hNear/2) + (right.getY() * wNear/2),
+              centerNP.getZ() + (realUp.getZ() * hNear/2) + (right.getZ() * wNear/2));
 
-    Point nbl(centerNP.getX() - (camera->getUpVector().getX() * hNear/2) - (right.getX() * wNear/2),
-              centerNP.getY() - (camera->getUpVector().getY() * hNear/2) - (right.getY() * wNear/2),
-              centerNP.getZ() - (camera->getUpVector().getZ() * hNear/2) - (right.getZ() * wNear/2));
+    Point nbl(centerNP.getX() - (realUp.getX() * hNear/2) - (right.getX() * wNear/2),
+              centerNP.getY() - (realUp.getY() * hNear/2) - (right.getY() * wNear/2),
+              centerNP.getZ() - (realUp.getZ() * hNear/2) - (right.getZ() * wNear/2));
 
-    Point nbr(centerNP.getX() - (camera->getUpVector().getX() * hNear/2) + (right.getX() * wNear/2),
-              centerNP.getY() - (camera->getUpVector().getY() * hNear/2) + (right.getY() * wNear/2),
-              centerNP.getZ() - (camera->getUpVector().getZ() * hNear/2) + (right.getZ() * wNear/2));
+    Point nbr(centerNP.getX() - (realUp.getX() * hNear/2) + (right.getX() * wNear/2),
+              centerNP.getY() - (realUp.getY() * hNear/2) + (right.getY() * wNear/2),
+              centerNP.getZ() - (realUp.getZ() * hNear/2) + (right.getZ() * wNear/2));
 
     // Top
     Point v1(ftl.getX() - ntl.getX(), ftl.getY() - ntl.getY(), ftl.getZ()- ntl.getZ());
