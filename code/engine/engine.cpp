@@ -407,10 +407,10 @@ void keyboard_events(unsigned char key, int x, int y) {
             float white[4] = {1.0, 1.0, 1.0, 1.0};
             float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
             glEnable(GL_LIGHT0);
-            //glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
-            //glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-            //glLightfv(GL_LIGHT0, GL_SPECULAR, black);
-            //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
+            glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+            glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
             polygonMode = GL_FILL;
             camera->changeMode(1);
             minecraftCreator = new Creator(camera);
