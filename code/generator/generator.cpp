@@ -167,14 +167,14 @@ int main(int argc, char** argv) {
                                                           stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &normals, &textCoord,
                                                           &argv[10]);
 
-                     Point corners[8] = { Point(-radius, -radius, radius), 
-                                     Point(-radius, -radius, -radius), 
-                                     Point(radius, -radius, radius), 
-                                     Point(radius, -radius, -radius), 
-                                     Point(-radius, radius, radius),
-                                     Point(-radius, radius, -radius), 
-                                     Point(radius, radius, radius), 
-                                     Point(radius, radius, -radius) };
+                    Point corners[8] = { Point(-radius, -radius, radius),
+                                         Point(-radius, -radius, -radius),
+                                         Point(radius, -radius, radius),
+                                         Point(radius, -radius, -radius),
+                                         Point(-radius, radius, radius),
+                                         Point(-radius, radius, -radius),
+                                         Point(radius, radius, radius),
+                                         Point(radius, radius, -radius) };
 
                     writer(argv[9], vertices, indexes, normals, textCoord, corners);
                 }
@@ -187,11 +187,17 @@ int main(int argc, char** argv) {
             if (argc == 5){
                 vector<unsigned int> indexes;
                 vector<float> normals;
-                vector<Point> controlPoints = readPatch(argv[2], &indexes);
+                Point approxCenter = Point(0,0,0);
+                vector<Point> controlPoints = readPatch(argv[2], &indexes, &approxCenter);
                 vector<unsigned int> figureIndexes;
                 vector<float> textCoord;
-                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &textCoord);
-                writer(argv[4], vertices, figureIndexes, normals, textCoord, 0, Point(0,0,0));
+                float radiusSphere = 0;
+
+                vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &textCoord, &radiusSphere, approxCenter);
+                std::cout << "Centro: " << approxCenter.toString() << endl;
+                std::cout << "Raio: " << radiusSphere << endl;
+
+                writer(argv[4], vertices, figureIndexes, normals, textCoord, radiusSphere, approxCenter);
             }
             else {
                 cout << "Patch: número de argumentos inválido." << endl;

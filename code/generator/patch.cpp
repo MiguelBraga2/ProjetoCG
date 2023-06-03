@@ -50,7 +50,7 @@ Point getNormal(float u, float v, Point *p) {
 }
 
 
-vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoord) {
+vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoord, float* radiusSphere, Point approxCenter) {
     vector<float> points;
     int index = 0;
     size_t pSize = patchesIndexes.size();
@@ -93,7 +93,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
         multiplyPointMatrixMatrix(a, m, b);
 
         float textInc = 1.0f/(float)tesselation;
-
+        float distToCenter;
         for (int i = 0; i < tesselation; i++) {
             float u = delta * (float) i;
             float nextU = delta * (float) (i+1);
@@ -110,17 +110,36 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             multiplyPointVectorVector(nc, vecV, &f2);
 
             points.push_back(f1.getX());points.push_back(f1.getY());points.push_back(f1.getZ());
+
+            distToCenter = f1.distanceTo(approxCenter);
+            if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
+
             Point normal1 = getNormal(u, 0, b);
-            normals->push_back(normal1.getX());
-            normals->push_back(normal1.getY());
-            normals->push_back(normal1.getZ());
+            if (normal1.getX() != normal1.getX()){
+                normals->push_back((*normals)[normals->size()]-3);
+                normals->push_back((*normals)[normals->size()]-2);
+                normals->push_back((*normals)[normals->size()]-1);
+            }else{
+                normals->push_back(normal1.getX());
+                normals->push_back(normal1.getY());
+                normals->push_back(normal1.getZ());
+            }
+
             textCoord->push_back(0);
             textCoord->push_back(1-i*textInc);
             points.push_back(f2.getX());points.push_back(f2.getY());points.push_back(f2.getZ());
+            distToCenter = f2.distanceTo(approxCenter);
+            if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
             Point normal2 = getNormal(nextU, 0, b);
-            normals->push_back(normal2.getX());
-            normals->push_back(normal2.getY());
-            normals->push_back(normal2.getZ());
+            if (normal2.getX() != normal2.getX()){
+                normals->push_back((*normals)[normals->size()]-3);
+                normals->push_back((*normals)[normals->size()]-2);
+                normals->push_back((*normals)[normals->size()]-1);
+            }else{
+                normals->push_back(normal2.getX());
+                normals->push_back(normal2.getY());
+                normals->push_back(normal2.getZ());
+            }
             textCoord->push_back(0);
             textCoord->push_back(1-(i+1)*textInc);
 
@@ -133,18 +152,34 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 multiplyPointVectorVector(nc, vecV, &f4);
 
                 points.push_back(f3.getX());points.push_back(f3.getY());points.push_back(f3.getZ());
+                distToCenter = f3.distanceTo(approxCenter);
+                if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal3 = getNormal(u, v, b);
-                normals->push_back(normal3.getX());
-                normals->push_back(normal3.getY());
-                normals->push_back(normal3.getZ());
+                if (normal3.getX() != normal3.getX()){
+                    normals->push_back((*normals)[normals->size()]-3);
+                    normals->push_back((*normals)[normals->size()]-2);
+                    normals->push_back((*normals)[normals->size()]-1);
+                }else{
+                    normals->push_back(normal3.getX());
+                    normals->push_back(normal3.getY());
+                    normals->push_back(normal3.getZ());
+                }
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-i*textInc);
 
                 points.push_back(f4.getX());points.push_back(f4.getY());points.push_back(f4.getZ());
+                distToCenter = f4.distanceTo(approxCenter);
+                if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal4 = getNormal(nextU, v, b);
-                normals->push_back(normal4.getX());
-                normals->push_back(normal4.getY());
-                normals->push_back(normal4.getZ());
+                if (normal4.getX() != normal4.getX()){
+                    normals->push_back((*normals)[normals->size()]-3);
+                    normals->push_back((*normals)[normals->size()]-2);
+                    normals->push_back((*normals)[normals->size()]-1);
+                }else{
+                    normals->push_back(normal4.getX());
+                    normals->push_back(normal4.getY());
+                    normals->push_back(normal4.getZ());
+                }
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-(i+1)*textInc);
 
@@ -166,7 +201,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
     return points;
 }
 
-vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes){
+vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes, Point* approxCenter){
     ifstream file("../patches/" + fileName);
     vector<Point> controlPoints;
     int format = 0; // 0 - normal (with Indexes) 1 - Rhino (without indexes and y->z)
@@ -208,15 +243,25 @@ vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes){
                 if (format == 1){
                     Point p(stof(match.str(1)), stof(match.str(3)), stof(match.str(2)));
                     controlPoints.push_back(p);
+                    approxCenter->setX(approxCenter->getX()+p.getX());
+                    approxCenter->setY(approxCenter->getY()+p.getY());
+                    approxCenter->setZ(approxCenter->getZ()+p.getZ());
                 }
                 else if (format == 0){
                     Point p(stof(match.str(1)), stof(match.str(2)), stof(match.str(3)));
                     controlPoints.push_back(p);
+                    approxCenter->setX(approxCenter->getX()+p.getX());
+                    approxCenter->setY(approxCenter->getY()+p.getY());
+                    approxCenter->setZ(approxCenter->getZ()+p.getZ());
                 }
 
             }
         }
     }
+    approxCenter->setX(approxCenter->getX()/controlPoints.size());
+    approxCenter->setY(approxCenter->getY()/controlPoints.size());
+    approxCenter->setZ(approxCenter->getZ()/controlPoints.size());
+    std::cout << approxCenter->toString() << endl;
     file.close();
 
     return controlPoints;

@@ -87,3 +87,8 @@ string Point::toString()
 {
     return to_string(this->x) + " " + to_string(this->y) + " " + to_string(this->z);
 }
+
+float Point::distanceTo(Point other) {
+    Point vect = Point(this->getX()-other.getX(), this->getY()-other.getY(), this->getZ()-other.getZ());
+    return vect.getSize();
+}

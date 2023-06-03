@@ -25,6 +25,7 @@ public:
     Point scale(float factor);
     void sum(Point p);
     string toString();
+    float distanceTo(Point other);
 };
 
 #endif
