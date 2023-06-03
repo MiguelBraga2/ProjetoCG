@@ -1,5 +1,6 @@
 #include "creator.h"
 #include "Lights/LightPoint.h"
+#include "Lights/LightDirectional.h"
 
 #include <IL/il.h>
 #include <iostream>
@@ -73,6 +74,52 @@ void Creator::changeBlockColor(){
     std::cout << get<0>(colorsVec[indColors]) << std::endl;
 }
 
+void Creator::changeBlockTexture(){
+    textInd = (textInd+1)%numTextures;
+    switch(textInd){
+        case 0: // Grass
+            currentTextureTop = 2;
+            currentTextureSides = 1;
+            break;
+        case 1: // Birch Log
+            currentTextureTop = 4;
+            currentTextureSides = 3;
+            break;
+        case 2: // Birch Planks
+            currentTextureTop = 5;
+            currentTextureSides = 5;
+            break;
+        case 3: // Bricks
+            currentTextureTop = 6;
+            currentTextureSides = 6;
+            break;
+        case 4: // Coarse dirt
+            currentTextureTop = 7;
+            currentTextureSides = 7;
+            break;
+        case 5: // Diamond block
+            currentTextureTop = 8;
+            currentTextureSides = 8;
+            break;
+        case 6: // Oak Log
+            currentTextureTop = 10;
+            currentTextureSides = 9;
+            break;
+        case 7: // Redstone lamp
+            currentTextureTop = 12;
+            currentTextureSides = 12;
+            break;
+        case 8: // Redstone lamp on
+            currentTextureTop = 13;
+            currentTextureSides = 13;
+            break;
+        case 9: // Sand
+            currentTextureTop = 14;
+            currentTextureSides = 14;
+            break;
+    }
+}
+
 float getHeight(int i, int j) {
     return imageData[i * tw + j];
 }
@@ -104,9 +151,36 @@ Creator::Creator(Camera* camera) {
     string path = "../Textures/minecraft_textures/";
     loadTexture(path + "grass_block_side.png");
     loadTexture(path + "Moss_block.jpg");
+    loadTexture(path + "Birch_log.jpg");
+    loadTexture(path + "Birch_log_top.jpg");
+    loadTexture(path + "Birch_planks.jpg");
+    loadTexture(path + "Bricks_top.jpg");
+    loadTexture(path + "Coarse_dirt.jpg");
+    loadTexture(path + "Diamond_block.jpg");
+    loadTexture(path + "Oak_log.jpg");
+    loadTexture(path + "Oak_log_top.jpg");
+    loadTexture(path + "Oak_planks.jpg");
+    loadTexture(path + "redstone_lamp.jpg");
+    loadTexture(path + "redstone_lamp_on.jpg");
+    loadTexture(path + "Sand_top.jpg");
+    //loadTexture(path + "Tn.jpg");
+    numTextures = 10;
 
-    currentTexture = this->texIds[0]; // Grass
-    this->blockTextures.push_back(make_tuple(currentTexture, 0));
+    textureNames.push_back("GRASS");
+    textureNames.push_back("BIRCH LOG");
+    textureNames.push_back("BIRCH PLANKS");
+    textureNames.push_back("BRICKS");
+    textureNames.push_back("COARSE DIRT");
+    textureNames.push_back("DIAMOND BLOCK");
+    textureNames.push_back("OAK LOG");
+    textureNames.push_back("REDSTONE LAMP OFF");
+    textureNames.push_back("REDSTONE LAMP ON");
+    textureNames.push_back("SAND");
+
+    currentTextureSides = this->texIds[0]; // Grass
+    currentTextureTop = this->texIds[1]; // Grass
+
+    textInd = 0;
 
     if (option == 1){
         std::cout << "Qual o tamanho do plano? " << std::endl;
@@ -193,7 +267,7 @@ Creator::Creator(Camera* camera) {
         }
     }
 
-    l = LightPoint(10,10,10);
+    l = LightDirectional(0,1,0);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -243,8 +317,8 @@ void Creator::renderText(int height, int width) {
     glRasterPos2d(0.0f*(float)width, 0*(float)height); // text position in pixels
 
     glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
-
-    for (const char* c = "COLOR"; *c != '\0'; c++) {
+    const char* c = textureNames[textInd].c_str();
+    for (; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
 
@@ -296,9 +370,9 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             -0.5f + x, 0.5f + y, -0.5f + z
     };
 
-    this->blockTextures.push_back(make_tuple(this->texIds[0], 8));
-    this->blockTextures.push_back(make_tuple(this->texIds[1], 8));
-    this->blockTextures.push_back(make_tuple(this->texIds[0], 8));
+    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+    this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
+    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
 
     float textCoords[] = {
             0, 0, // FRONT
@@ -499,6 +573,10 @@ void Creator::addCube(int x, int y, int z) {
             -0.5f + x, 0.5f + y, -0.5f + z
     };
 
+    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+    this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
+    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+
     float newTextCoords[] = {
             0, 0, // FRONT
             1, 0,
@@ -509,13 +587,13 @@ void Creator::addCube(int x, int y, int z) {
             0, 1,
             0, 0,
             0,1, // TOP
-            1,1,
             0,0,
             1,0,
-            0,1, // BOTTOM
             1,1,
+            0,0, // BOTTOM
             1,0,
-            0,0,
+            1,1,
+            0,1,
             1,0, // RIGHT
             1,1,
             0,1,
@@ -743,7 +821,7 @@ void Creator::render(int height, int width){
     //glColorPointer(3, GL_FLOAT, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-    glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
+    //glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
     glNormalPointer(GL_FLOAT, 0, 0);
@@ -751,16 +829,15 @@ void Creator::render(int height, int width){
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    //glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
     int index=0;
     for(std::tuple<GLuint, int> tuple: this->blockTextures){
         GLuint texId = std::get<0>(tuple);
-        int numberVert = std::get<1>(tuple);
-        glActiveTexture(GL_TEXTURE0);
+        int numberInd = std::get<1>(tuple);
         glBindTexture(GL_TEXTURE_2D, texId);
-        glDrawArrays(GL_TRIANGLES, index, numberVert);
-        index+=numberVert;
+        glDrawElements(GL_TRIANGLES, numberInd, GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(index));
+        index+=numberInd*4;
     }
 
     renderText(height, width);
