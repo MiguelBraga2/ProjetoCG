@@ -48,7 +48,7 @@ Model::Model() {
 
 }
 
-void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera) {
+int Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera) {
     if (this->label.compare("undefined") != 0) {
         Point p1(matrix[3], matrix[7], matrix[11]);
         float res[4];
@@ -82,6 +82,7 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     glGetFloatv(GL_MODELVIEW_MATRIX, A);
     glPopMatrix();
 
+    int ret = 0;
     if (this->v->test(A, camera)) {
         glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
         glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -99,11 +100,12 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 
         glBindTexture(GL_TEXTURE_2D, 0);
+        ret = this->indexCount / 3;
     }
 
     //delete this->v;
     this->v = aux;
-
+    return ret;
 }
 
 /**
