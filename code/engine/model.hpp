@@ -48,7 +48,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
-    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge, Camera *camera);
+    int drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge, Camera *camera);
     string getLabel();
     void setLabel(string label);
     Point getDiffuse();

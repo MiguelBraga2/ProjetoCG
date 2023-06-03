@@ -129,7 +129,7 @@ void renderText() {
 /**
  * Function called for fps calculation
 */
-void showFPS() {
+void showFPS(int nt) {
     frames++;
     int time = glutGet(GLUT_ELAPSED_TIME);
     int fps;
@@ -138,9 +138,9 @@ void showFPS() {
         fps = frames * 1000.0 / (time - timebase);
         timebase = time;
         frames = 0;
-        char s[15];
-        sprintf(s, "FPS: %d", fps);
-        glutSetWindowTitle(s);
+        char s[10000];
+        sprintf(s, "FPS: %d  Triangles: %d", fps, nt);
+            glutSetWindowTitle(s);
     }
 }
 
@@ -204,21 +204,21 @@ void renderScene() {
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
-        globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change, camera);
+        int nt = globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change, camera);
 
         if (change == true) change = false;
 
         // Auxiliary functions
         renderText();
         drawAxis();
-        showFPS();
+        showFPS(nt);
          
         // End of frame
         glutSwapBuffers();
     }
     else{
         minecraftCreator->render(height, width);
-        showFPS();
+        showFPS(0);
     }
 }
 

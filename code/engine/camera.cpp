@@ -67,11 +67,11 @@ void Camera::spherical2Cartesian() {
  */
 void Camera::incrementAlfa(){
     if (this->mode == 1){
-        this->alfa -= 0.1*this->increment;
+        this->alfa -= this->increment;
         this->calculateDirection();
     }
     else if (this->mode == 0){
-        this->alfa += 0.1*this->increment;
+        this->alfa += this->increment;
         this->spherical2Cartesian();
     }
 }
@@ -83,11 +83,11 @@ void Camera::incrementAlfa(){
  */
 void Camera::decrementAlfa(){
     if (this->mode == 1){
-        this->alfa += 0.1*this->increment;
+        this->alfa += this->increment;
         this->calculateDirection();
     }
     else if (this->mode == 0){
-        this->alfa -= 0.1*this->increment;
+        this->alfa -= this->increment;
         this->spherical2Cartesian();
     }
 }
