@@ -38,13 +38,6 @@ Volume* AABB::clone() {
 
 bool AABB::test(float *matrix, Camera *camera) {
     bool ret = false;
-    Point cs[8];
-    for (int i = 0; i < 8; i++) {
-        float v[4] = { this->corners[i].getX(), this->corners[i].getY(), this->corners[i].getZ(), 1 };
-        float res[4] = { 0, 0, 0, 0 };
-        multiplyMatrixVector(matrix, v, res);
-        cs[i].setPoint(res[0], res[1], res[2]);
-    }
 
     // Left plane
     float a = matrix[INDEX(4, 1)] + matrix[INDEX(1, 1)];
@@ -55,7 +48,7 @@ bool AABB::test(float *matrix, Camera *camera) {
     Plane lp(a/l, b/l, c/l, d/l);
 
     for (int i = 0; i < 8 && !ret; i++) {
-        ret = lp.inRightSide(cs[i]);
+        ret = lp.inRightSide(this->corners[i]);
     }
 
     if (!ret) return false;
@@ -70,7 +63,7 @@ bool AABB::test(float *matrix, Camera *camera) {
     Plane rp(a/l, b/l, c/l, d/l);
 
     for (int i = 0; i < 8 && !ret; i++) {
-        ret = rp.inRightSide(cs[i]);
+        ret = rp.inRightSide(this->corners[i]);
     }
 
     if (!ret) return false;
@@ -85,7 +78,7 @@ bool AABB::test(float *matrix, Camera *camera) {
     Plane tp(a/l, b/l, c/l, d/l);
 
     for (int i = 0; i < 8 && !ret; i++) {
-        ret = tp.inRightSide(cs[i]);
+        ret = tp.inRightSide(this->corners[i]);
     }
 
     if (!ret) return false;
@@ -100,7 +93,7 @@ bool AABB::test(float *matrix, Camera *camera) {
     Plane bp(a/l, b/l, c/l, d/l);
 
     for (int i = 0; i < 8 && !ret; i++) {
-        ret = bp.inRightSide(cs[i]);
+        ret = bp.inRightSide(this->corners[i]);
     }
 
     if (!ret) return false;
@@ -114,9 +107,9 @@ bool AABB::test(float *matrix, Camera *camera) {
     l = sqrt(a * a + b * b + c * c);
     Plane fp(a/l, b/l, c/l, d/l);
 
-        for (int i = 0; i < 8 && !ret; i++) {
-            ret = fp.inRightSide(cs[i]);
-        }
+    for (int i = 0; i < 8 && !ret; i++) {
+        ret = fp.inRightSide(this->corners[i]);
+    }
 
     if (!ret) return false;
     else ret = false;
@@ -130,7 +123,7 @@ bool AABB::test(float *matrix, Camera *camera) {
     Plane np(a/l, b/l, c/l, d/l);
 
     for (int i = 0; i < 8 && !ret; i++) {
-        ret = np.inRightSide(cs[i]);
+        ret = np.inRightSide(this->corners[i]);
     }
 
     return ret;
