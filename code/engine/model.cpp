@@ -1,7 +1,10 @@
 #include "model.hpp"
 #include "../shared/IO.hpp" // reader function
 #include "../shared/matrixOp.hpp"
+#include "../shared/point.hpp"
 #include "BoundingVolumes/volume.hpp"
+#include "BoundingVolumes/sphere.hpp"
+#include "camera.hpp"
 #include <map>
 #include <cmath>
 #include <IL/il.h>
@@ -45,7 +48,7 @@ Model::Model() {
 
 }
 
-void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
+void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera) {
     if (this->label.compare("undefined") != 0) {
         Point p1(matrix[3], matrix[7], matrix[11]);
         float res[4];
@@ -54,6 +57,9 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
         float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
+
+    Volume *aux = this->v->clone();
+    this->setBVParamsIfSphere(matrix);
 
     if (change)// ReLoad the texture
         this->loadImage(this->getTextureFile(), mipmap);
@@ -76,7 +82,7 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
     glGetFloatv(GL_MODELVIEW_MATRIX, A);
     glPopMatrix();
 
-    if (this->v->test(A)) {
+    if (this->v->test(A, camera)) {
         glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -94,9 +100,10 @@ void Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, fl
 
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    else {
-        cout << "Não desenhou" << endl;
-    }
+
+    //delete this->v;
+    this->v = aux;
+
 }
 
 /**
@@ -190,6 +197,20 @@ void Model::setShininess(float shininess) {
 void Model::setTextureFile(string textureFile) {
     loadImage(textureFile,false);
     this->textureFile = textureFile;
+}
+
+void Model::setBVParamsIfSphere(float *matrix) {
+    Sphere* sv = dynamic_cast<Sphere*>(this->v);
+    if (sv) {
+        float res[4];
+        float p[4] = { sv->getCenter().getX(),sv->getCenter().getY(),sv->getCenter().getZ(),1};
+        multiplyMatrixVector(matrix, p, res);
+        Point p1(res[0], res[1], res[2]);
+        sv->setCenter(p1);
+
+        float scaleX = std::sqrt(matrix[0] * matrix[0] + matrix[1] * matrix[1] + matrix[2] * matrix[2]);
+        sv->setRadius(sv->getRadius() * scaleX);
+    }
 }
 
 void Model::loadImage(string textFile, bool mipmap) {

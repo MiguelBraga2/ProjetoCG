@@ -11,7 +11,7 @@ private:
     Point position;
     Point lookAtPosition;
     Point upVector;
-    float fov, nearV, farV;
+    float fov, nearV, farV, ratio;
     float increment;
     int mode; // 0 - Explorer mode, 1 - FPS mode, 2 - Mouse mode
     float alfa, beta, cameraRadius;
@@ -53,6 +53,8 @@ public:
     float getFov();
     float getNear();
     float getFar();
+    float getRatio();
+    void setRatio(float ratio);
     void setLookAtPosition(Point lookAtPosition);
     void setCameraRadius(float cameraRadius);
     void spherical2Cartesian();

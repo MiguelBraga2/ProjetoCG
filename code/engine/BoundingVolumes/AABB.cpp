@@ -31,8 +31,12 @@ Point* AABB::getCorners() {
     return this->corners;
 }
 
+Volume* AABB::clone() {
+    return new AABB(this->corners);
+}
 
-bool AABB::test(float *matrix) {
+
+bool AABB::test(float *matrix, Camera *camera) {
     bool ret = false;
     Point cs[8];
     for (int i = 0; i < 8; i++) {

@@ -314,6 +314,14 @@ float Camera::getFar() {
     return farV;
 }
 
+float Camera::getRatio() {
+    return this->ratio;
+}
+    
+void Camera::setRatio(float ratio) {
+    this->ratio = ratio;
+}
+
 void Camera::updateMouseAngles(int button, int state, int xx, int yy){
     if (mode == 2){
         if (state == GLUT_DOWN)  {

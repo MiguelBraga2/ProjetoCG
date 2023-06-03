@@ -7,6 +7,7 @@ class Plane {
 public:
     Plane(float a, float b, float c, float d);
     bool inRightSide(Point p);
+    float distanceToPoint(Point p);
 
 private:
     float a;

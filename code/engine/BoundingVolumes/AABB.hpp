@@ -9,8 +9,9 @@ public:
     AABB(Point* corners);
     AABB();
     void setCorners(Point* corners);
-    bool test(float *matrix);
+    bool test(float *matrix, Camera *camera);
     Point* getCorners();
+    Volume* clone();
 
 private:
     Point corners[8];
