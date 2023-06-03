@@ -22,6 +22,7 @@ private:
     int indColors = 0;
 
     std::vector<std::tuple<float, float, float>> colorsVec;
+    std::vector<int> textureVec;
 
     int minecraftMode = 0; // 0 - Construir, 1 - Destruir
 
@@ -53,8 +54,11 @@ private:
     Light l;
     GLuint texIds[100];
     int textInd=0;
+    std::vector<string> textureNames;
+    int numTextures;
     std::vector<std::tuple<GLuint, int>> blockTextures;
-    GLuint currentTexture;
+    GLuint currentTextureTop;
+    GLuint currentTextureSides;
 public:
     Creator(Camera* camera);
     ~Creator();
@@ -65,12 +69,15 @@ public:
     void processMouseButtons(int button, int state, int xx, int yy);
     unsigned char* picking(int x, int y);
     void changeBlockColor();
+    void changeBlockTexture();
     void importScene(string filename);
     void exportScene(string filename);
 private:
     void incrementColors();
     void renderText(int height, int width);
     void loadTexture(string path);
+
+
 };
 
 
