@@ -162,19 +162,23 @@ int main(int argc, char** argv) {
                     vector<float> normals;
                     vector<float> textCoord;
                     float radius = stof(argv[2]);
-
+                    float minAngle = stof(argv[7]);
+                    float maxAngle = stof(argv[8]);
                     vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]),
                                                           stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &normals, &textCoord,
                                                           &argv[10]);
 
-                    Point corners[8] = { Point(-radius, -radius, radius),
-                                         Point(-radius, -radius, -radius),
-                                         Point(radius, -radius, radius),
-                                         Point(radius, -radius, -radius),
-                                         Point(-radius, radius, radius),
-                                         Point(-radius, radius, -radius),
-                                         Point(radius, radius, radius),
-                                         Point(radius, radius, -radius) };
+                    float maxHeight = tan(M_PI*maxAngle/180)*radius;
+                    float minHeight = tan(M_PI*(-minAngle)/180)*radius;
+
+                    Point corners[8] = { Point(-radius, -minHeight, radius),
+                                         Point(-radius, -minHeight, -radius),
+                                         Point(radius, -minHeight, radius),
+                                         Point(radius, -minHeight, -radius),
+                                         Point(-radius, maxHeight, radius),
+                                         Point(-radius, maxHeight, -radius),
+                                         Point(radius, maxHeight, radius),
+                                         Point(radius, maxHeight, -radius) };
 
                     writer(argv[9], vertices, indexes, normals, textCoord, corners);
                 }
