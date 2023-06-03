@@ -23,6 +23,7 @@
 #endif
 #include "../shared/point.hpp"
 #include "BoundingVolumes/volume.hpp"
+#include "camera.hpp"
 
 using namespace std;
 
@@ -47,7 +48,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
-    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge);
+    void drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge, Camera *camera);
     string getLabel();
     void setLabel(string label);
     Point getDiffuse();
@@ -62,6 +63,7 @@ public:
     void setShininess(float shininess);
     string getTextureFile();
     void setTextureFile(string textureFile);
+    void setBVParamsIfSphere(float *matrix);
 private:
     void loadImage(string textFile, bool mipmap);
 };

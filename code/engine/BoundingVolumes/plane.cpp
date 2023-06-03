@@ -11,3 +11,8 @@ Plane::Plane(float a, float b, float c, float d) {
 bool Plane::inRightSide(Point p) {
     return (a * p.getX() + b * p.getY() + c * p.getZ() + d) > 0;
 }
+
+float Plane::distanceToPoint(Point p) {
+    return (a * p.getX() + b * p.getY() + c * p.getZ() + d);
+}
+

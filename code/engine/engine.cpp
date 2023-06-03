@@ -72,7 +72,7 @@ void changeSize(int w, int h) {
 		h = 1;
 
 	// compute window's aspect ratio 
-	float ratio = (float) w * 1.0f / (float) h;
+	camera->setRatio((float) w * 1.0f / (float) h);
 
 	// Set the projection matrix as current
 	glMatrixMode(GL_PROJECTION);
@@ -83,7 +83,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(camera->getFov() ,ratio, camera->getNear() , camera->getFar());
+	gluPerspective(camera->getFov() ,camera->getRatio(), camera->getNear() , camera->getFar());
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -204,7 +204,7 @@ void renderScene() {
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
-        globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change);
+        globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change, camera);
 
         if (change == true) change = false;
 

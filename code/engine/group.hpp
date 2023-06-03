@@ -20,6 +20,7 @@
 #include "../libraries/tinyxml2.h"
 #include "Transformations/transformation.hpp"
 #include "model.hpp"
+#include "camera.hpp"
 
 using namespace tinyxml2;
 
@@ -35,7 +36,7 @@ private:
 public:
     Group();
     map<string, tuple<Point, float>> initializeTps(vector<Transformation*> *appliedTransforms);
-    void drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change);
+    void drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera);
     void readXML(XMLElement* group, vector<string>* keys);
     void freeGroup();
 
