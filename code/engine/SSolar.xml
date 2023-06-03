@@ -11,8 +11,8 @@
 	</lights>
     <group>
         <models> <!-- Asteroides -->
-           <!-- <model file="cintura_de_asteroides.3d"></model>--> <!-- generator ring 4300 3300 1000 1 2 -10 10 cintura_de_asteroides.3d sphere 10 10 -->
-		    <!-- <model file="cintura_de_kuiper.3d"></model>--> <!-- generator ring 50000 30000 20000 20 30 -1 1 cintura_de_kuiper.3d sphere 10 10 -->
+           <model file="cintura_de_asteroides.3d"></model> <!-- generator ring 4300 3300 1000 1 2 -10 10 cintura_de_asteroides.3d sphere 10 10 -->
+		    <model file="cintura_de_kuiper.3d"></model> <!-- generator ring 50000 30000 20000 20 30 -1 1 cintura_de_kuiper.3d sphere 10 10 -->
         </models>
         <group> <!-- Cometa -->
             <transform>
@@ -20,13 +20,13 @@
             </transform>
             <group>
                 <transform>
-                    <translate time="1500" align="true" show="false">
-                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="15"/>
+                    <translate time="1500" align="true" show="true">
+                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="60"/>
                     </translate>
                     <scale x="10" y="10" z="10"/>
                 </transform>
                 <models>
-                    <model label="Cometa" file="comet_10.3d" red="0.72" green="0.74" blue="0.77"/> <!-- generator patch 10 comet.patch comet_10.3d -->
+                    <model label="Cometa" file="comet_10.3d" red="0.72" green="0.74" blue="0.77"/>
                 </models>
             </group>
         </group>
@@ -231,7 +231,7 @@
 						<texture file = "saturno.jpg"/>
 					</model>
 					<model file="torus_1.2_2_100_0.3d"> 
-						<texture file = "ring_saturno.png"/> 
+						<texture file = "saturnmap.jpg"/> 
 				    </model>
                 </models>
             </group>
