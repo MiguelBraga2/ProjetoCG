@@ -220,12 +220,12 @@ Creator::Creator(Camera* camera) {
         int h = (int) th - 1, w = (int) tw - 1;
 
         int side = h;
-        int cubeHeight = 3;
+        int cubeHeight = 1;
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 //drawCube(i, getHeight(i, j) / 2, j, -1, -1, -1);
-                int height = (int)getHeight(i,j)/2;
+                int height = (int)getHeight(i,j)/8;
                 float colorRed=-1, colorGreen=-1, colorBlue=-1;
 
                 for(int k=height-cubeHeight; k < height+1; k++) {
@@ -267,7 +267,7 @@ Creator::Creator(Camera* camera) {
         }
     }
 
-    l = LightDirectional(0,1,0);
+    l = LightPoint(0,-100,0);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -410,14 +410,14 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             0,0,-1,
             0,0,-1,
             0,0,-1,
-            0,0,1,
-            0,0,1,
-            0,0,1,
-            0,0,1,
-            0,0,-1,
-            0,0,-1,
-            0,0,-1,
-            0,0,-1,
+            0,1,0,
+            0,1,0,
+            0,1,0,
+            0,1,0,
+            0,-1,0,
+            0,-1,0,
+            0,-1,0,
+            0,-1,0,
             1,0,0,
             1,0,0,
             1,0,0,
@@ -613,14 +613,14 @@ void Creator::addCube(int x, int y, int z) {
             0,0,-1,
             0,0,-1,
             0,0,-1,
-            0,0,1,
-            0,0,1,
-            0,0,1,
-            0,0,1,
-            0,0,-1,
-            0,0,-1,
-            0,0,-1,
-            0,0,-1,
+            0,1,0,
+            0,1,0,
+            0,1,0,
+            0,1,0,
+            0,-1,0,
+            0,-1,0,
+            0,-1,0,
+            0,-1,0,
             1,0,0,
             1,0,0,
             1,0,0,
@@ -800,7 +800,7 @@ void Creator::removeCube(unsigned int index) {
 }
 
 void Creator::render(int height, int width){
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
     glClearColor(0, 0, 0, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -808,6 +808,7 @@ void Creator::render(int height, int width){
     glLoadIdentity();
 
     globalCamera->placeCamera();
+    cout << globalCamera->toString() << endl;
 
     l.doAction(0);
 
@@ -904,9 +905,17 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
                 printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
                        nextPosY[result[0]][result[1]][result[2]],
                        nextPosZ[result[0]][result[1]][result[2]]);
-                addCube(nextPosX[result[0]][result[1]][result[2]],
-                        nextPosY[result[0]][result[1]][result[2]],
-                        nextPosZ[result[0]][result[1]][result[2]]);
+                float blockX = nextPosX[result[0]][result[1]][result[2]];
+                float blockY = nextPosY[result[0]][result[1]][result[2]];
+                float blockZ = nextPosZ[result[0]][result[1]][result[2]];
+                Point cam = this->globalCamera->getPosition();
+                Point vect = Point(cam.getX()-blockX, cam.getY()-blockY, cam.getZ()-blockZ);
+                if (vect.getSize() <= 8){
+                    addCube(nextPosX[result[0]][result[1]][result[2]],
+                            nextPosY[result[0]][result[1]][result[2]],
+                            nextPosZ[result[0]][result[1]][result[2]]);
+                }
+
             } else
                 printf("Nothing selected\n");
         }
@@ -921,13 +930,21 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
                         currPosX[result[0]][result[1]][result[2]],
                         currPosY[result[0]][result[1]][result[2]],
                         currPosZ[result[0]][result[1]][result[2]])];
-                removeCube(index);
-                cubesPositions[index*3] = 1000000;
-                cubesPositions[index*3+1] = 1000000;
-                cubesPositions[index*3+2] = 1000000;
-                cubesColors[index*3] = -1;
-                cubesColors[index*3+1] = -1;
-                cubesColors[index*3+1] = -1;
+                float blockX = currPosX[result[0]][result[1]][result[2]];
+                float blockY = currPosY[result[0]][result[1]][result[2]];
+                float blockZ = currPosZ[result[0]][result[1]][result[2]];
+                Point cam = this->globalCamera->getPosition();
+                Point vect = Point(cam.getX()-blockX, cam.getY()-blockY, cam.getZ()-blockZ);
+                if (vect.getSize() <= 8){
+                    removeCube(index);
+                    cubesPositions[index*3] = 1000000;
+                    cubesPositions[index*3+1] = 1000000;
+                    cubesPositions[index*3+2] = 1000000;
+                    cubesColors[index*3] = -1;
+                    cubesColors[index*3+1] = -1;
+                    cubesColors[index*3+1] = -1;
+                }
+
             } else
                 printf("Nothing selected\n");
         }
