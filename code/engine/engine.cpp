@@ -30,6 +30,7 @@ using namespace std;
 
 int width, height;
 Camera* camera;
+int lastxx, lastyy;
 Group* globalGroup; // Outer collection of transformations, models and subgroups
 
 // For FPS count
@@ -362,7 +363,9 @@ void processMouseButtons(int button, int state, int xx, int yy) {
  * @param yy vertical position of the mouse
  */
 void processMouseMotion(int xx, int yy) {
-    camera->processMouseMotion(xx, yy);
+    camera->processMouseMotion(xx, yy, lastxx, lastyy);
+    lastxx = xx;
+    lastyy = yy;
 }
 
 /**
@@ -587,6 +590,7 @@ int main(int argc, char **argv) {
         // put here the registration of the keyboard callbacks
         glutSpecialFunc(processSpecialKeys);
         glutKeyboardFunc(keyboard_events);
+        glutPassiveMotionFunc(processMouseMotion);
         glutMouseFunc(processMouseButtons);
         glutMotionFunc(processMouseMotion);
 

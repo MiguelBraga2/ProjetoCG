@@ -45,7 +45,7 @@ public:
     void changeMode(int mode); // -1 goes to the next
     void placeCamera();
     void updateMouseAngles(int button, int state, int xx, int yy);
-    void processMouseMotion(int xx, int yy);
+    void processMouseMotion(int xx, int yy, int lastxx, int lastyy);
     const unsigned char* toString();
     Point getPosition();
     Point getLookAtPosition();

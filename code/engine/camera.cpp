@@ -350,8 +350,21 @@ void Camera::updateMouseAngles(int button, int state, int xx, int yy){
     }
 }
 
-void Camera::processMouseMotion(int xx, int yy) {
-    if (mode == 2){
+void Camera::processMouseMotion(int xx, int yy, int lastxx, int lastyy) {
+    if (mode == 1){
+        int deltaX = xx - lastxx;
+        int deltaY = yy - lastyy;
+
+        alfa = alfa - (float)deltaX/500.0f;
+        beta = beta - (float)deltaY/500.0f;
+
+        if (beta > 85.0)
+            beta = 85.0;
+        else if (beta < -85.0)
+            beta = -85.0;
+        this->calculateDirection();
+    }
+    else if (mode == 2){
         int deltaX, deltaY;
         int alphaAux, betaAux;
         int rAux;
