@@ -25,7 +25,7 @@ void AABB::setCorners(Point* corners) {
     for(int i = 0; i < 8; i++) {
         this->corners[i].setPoint(corners[i].getX(), corners[i].getY(), corners[i].getZ());
     }
-}
+}   
 
 Point* AABB::getCorners() {
     return this->corners;
