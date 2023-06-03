@@ -3,16 +3,15 @@
 
 #include "volume.hpp"
 #include "../../shared/point.hpp"
+#include "plane.hpp"
 
 class AABB : public Volume {
 public:
     AABB(Point* corners);
     AABB();
     void setCorners(Point* corners);
-    bool test(float *matrix, Camera *camera);
+    bool test(Plane *planes, float *actual_matrix);
     Point* getCorners();
-    Volume* clone();
-
 private:
     Point corners[8];
 };

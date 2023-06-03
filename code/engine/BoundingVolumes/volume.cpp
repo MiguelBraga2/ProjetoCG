@@ -5,11 +5,6 @@ Volume::Volume() {
 
 }
 
-bool Volume::test(float *matrix, Camera *camera) {
+bool Volume::test(Plane *planes, float* actual_matrix) {
     return true; 
-}
-
-Volume* Volume::clone() {
-    Volume *v = nullptr;
-    return v;
 }

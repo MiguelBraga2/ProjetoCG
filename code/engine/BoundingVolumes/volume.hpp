@@ -2,12 +2,12 @@
 #define ENGINE_VOLUME_H
 
 #include "../camera.hpp"
+#include "plane.hpp"
 
 class Volume {
 public:
     Volume();
-    virtual bool test(float *matrix, Camera *camera);
-    virtual Volume* clone();
+    virtual bool test(Plane *planes, float* actual_matrix);
 };
 
 

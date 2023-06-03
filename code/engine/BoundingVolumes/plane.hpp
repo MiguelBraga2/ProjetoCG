@@ -5,7 +5,9 @@
 
 class Plane {
 public:
+    Plane();
     Plane(float a, float b, float c, float d);
+    void setCoefficients(float a, float b, float c, float d);
     bool inRightSide(Point p);
     float distanceToPoint(Point p);
 

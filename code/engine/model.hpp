@@ -24,6 +24,7 @@
 #include "../shared/point.hpp"
 #include "BoundingVolumes/volume.hpp"
 #include "camera.hpp"
+#include "BoundingVolumes/plane.hpp"
 
 using namespace std;
 
@@ -48,7 +49,7 @@ private:
 public:
     Model();
     void readModel(string fileName);
-    int drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool changge, Camera *camera);
+    int drawModel(bool vboActive, Plane *planes, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change);
     string getLabel();
     void setLabel(string label);
     Point getDiffuse();

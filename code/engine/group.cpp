@@ -15,6 +15,7 @@
 #include "../libraries/tinyxml2.h"
 #include "../shared/IO.hpp"
 #include "group.hpp"
+#include "BoundingVolumes/plane.hpp"
 #include <tuple>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -27,7 +28,7 @@ Group::Group() {
 /**
  * Draws all the models in a group, after being applied all the transformations
  */
-int Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera) {
+int Group::drawGroup(bool vboActive, Plane *planes, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
     glPushMatrix(); // Save the current matrix (because when we leave this group we want to "clean" this group's transformations)
 
     int nt = 0;
@@ -37,7 +38,7 @@ int Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, flo
     }
 
     for (int i = 0; i < this->models.size(); i++) {
-        nt += this->models[i].drawModel(vboActive, matrix, teleports, mipmap, change, camera);
+        nt += this->models[i].drawModel(vboActive, planes, matrix, teleports, mipmap, change);
     }
 
     float matrixCopy[16];
@@ -46,7 +47,7 @@ int Group::drawGroup(bool vboActive, float *matrix, map<string, tuple<Point, flo
     }
     // Recursively draw each subgroup with the transformations of this group enabled
     for (int i = 0; i < this->subgroups.size(); i++) {
-        nt += this->subgroups[i].drawGroup(vboActive, matrix, teleports, mipmap, change, camera);
+        nt += this->subgroups[i].drawGroup(vboActive, planes, matrix, teleports, mipmap, change);
         for(int j = 0; j < 16; j++) {
             matrix[j] = matrixCopy[j];
         }

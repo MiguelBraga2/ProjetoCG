@@ -31,100 +31,18 @@ Point* AABB::getCorners() {
     return this->corners;
 }
 
-Volume* AABB::clone() {
-    return new AABB(this->corners);
-}
-
-
-bool AABB::test(float *matrix, Camera *camera) {
+bool AABB::test(Plane *planes, float* actual_matrix) {
     bool ret = false;
 
-    // Left plane
-    float a = matrix[INDEX(4, 1)] + matrix[INDEX(1, 1)];
-    float b = matrix[INDEX(4, 2)] + matrix[INDEX(1, 2)];
-    float c = matrix[INDEX(4, 3)] + matrix[INDEX(1, 3)];
-    float d = matrix[INDEX(4, 4)] + matrix[INDEX(1, 4)];
-    float l = sqrt(a * a + b * b + c * c);
-    Plane lp(a/l, b/l, c/l, d/l);
+    for(int i=0; i<6 && !ret; i++) {
 
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = lp.inRightSide(this->corners[i]);
+        for(int j=0; j<8 && !ret; j++) {
+            ret = planes[i].inRightSide(this->corners[j]);
+        }
+
+        if (!ret) return false;
+        else ret = false;
     }
 
-    if (!ret) return false;
-    else ret = false;
-
-    // Right plane
-    a = matrix[INDEX(4, 1)] - matrix[INDEX(1, 1)];
-    b = matrix[INDEX(4, 2)] - matrix[INDEX(1, 2)];
-    c = matrix[INDEX(4, 3)] - matrix[INDEX(1, 3)];
-    d = matrix[INDEX(4, 4)] - matrix[INDEX(1, 4)];
-    l = sqrt(a * a + b * b + c * c);
-    Plane rp(a/l, b/l, c/l, d/l);
-
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = rp.inRightSide(this->corners[i]);
-    }
-
-    if (!ret) return false;
-    else ret = false;
-
-    // Top plane
-    a = matrix[INDEX(4, 1)] - matrix[INDEX(2, 1)];
-    b = matrix[INDEX(4, 2)] - matrix[INDEX(2, 2)];
-    c = matrix[INDEX(4, 3)] - matrix[INDEX(2, 3)];
-    d = matrix[INDEX(4, 4)] - matrix[INDEX(2, 4)];
-    l = sqrt(a * a + b * b + c * c);
-    Plane tp(a/l, b/l, c/l, d/l);
-
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = tp.inRightSide(this->corners[i]);
-    }
-
-    if (!ret) return false;
-    else ret = false;
-
-    // Bottom plane
-    a = matrix[INDEX(4, 1)] + matrix[INDEX(2, 1)];
-    b = matrix[INDEX(4, 2)] + matrix[INDEX(2, 2)];
-    c = matrix[INDEX(4, 3)] + matrix[INDEX(2, 3)];
-    d = matrix[INDEX(4, 4)] + matrix[INDEX(2, 4)];
-    l = sqrt(a * a + b * b + c * c);
-    Plane bp(a/l, b/l, c/l, d/l);
-
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = bp.inRightSide(this->corners[i]);
-    }
-
-    if (!ret) return false;
-    else ret = false;
-
-    // Far plane
-    a = matrix[INDEX(4, 1)] - matrix[INDEX(3, 1)];
-    b = matrix[INDEX(4, 2)] - matrix[INDEX(3, 2)];
-    c = matrix[INDEX(4, 3)] - matrix[INDEX(3, 3)];
-    d = matrix[INDEX(4, 4)] - matrix[INDEX(3, 4)];
-    l = sqrt(a * a + b * b + c * c);
-    Plane fp(a/l, b/l, c/l, d/l);
-
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = fp.inRightSide(this->corners[i]);
-    }
-
-    if (!ret) return false;
-    else ret = false;
-
-    // Near plane
-    a = matrix[INDEX(4, 1)] + matrix[INDEX(3, 1)];
-    b = matrix[INDEX(4, 2)] + matrix[INDEX(3, 2)];
-    c = matrix[INDEX(4, 3)] + matrix[INDEX(3, 3)];
-    d = matrix[INDEX(4, 4)] + matrix[INDEX(3, 4)];
-    l = sqrt(a * a + b * b + c * c);
-    Plane np(a/l, b/l, c/l, d/l);
-
-    for (int i = 0; i < 8 && !ret; i++) {
-        ret = np.inRightSide(this->corners[i]);
-    }
-
-    return ret;
+    return true;
 }

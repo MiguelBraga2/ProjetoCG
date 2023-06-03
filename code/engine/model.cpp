@@ -5,6 +5,7 @@
 #include "BoundingVolumes/volume.hpp"
 #include "BoundingVolumes/sphere.hpp"
 #include "camera.hpp"
+#include "BoundingVolumes/plane.hpp"
 #include <map>
 #include <cmath>
 #include <IL/il.h>
@@ -48,7 +49,7 @@ Model::Model() {
 
 }
 
-int Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change, Camera *camera) {
+int Model::drawModel(bool vboActive, Plane *planes, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
     if (this->label.compare("undefined") != 0) {
         Point p1(matrix[3], matrix[7], matrix[11]);
         float res[4];
@@ -57,9 +58,6 @@ int Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, flo
         float radius = sqrt((res[0]-matrix[3])*(res[0]-matrix[3]) + (res[1]-matrix[7])*(res[1]-matrix[7]) + (res[2]-matrix[11])*(res[2]-matrix[11]));
         (*teleports)[this->label] = make_tuple(p1, radius);
     }
-
-    Volume *aux = this->v->clone();
-    this->setBVParamsIfSphere(matrix);
 
     if (change)// ReLoad the texture
         this->loadImage(this->getTextureFile(), mipmap);
@@ -70,20 +68,8 @@ int Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, flo
     glMaterialfv(GL_FRONT, GL_EMISSION, this->emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
 
-    float M[16],P[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,M);
-    glGetFloatv(GL_PROJECTION_MATRIX,P);
-
-    glPushMatrix();
-    glLoadMatrixf(P);
-    glMultMatrixf(M);
-
-    float A[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, A);
-    glPopMatrix();
-
     int ret = 0;
-    if (this->v->test(A, camera)) {
+    if (this->v->test(planes, matrix)) {
         glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -103,8 +89,6 @@ int Model::drawModel(bool vboActive, float *matrix, map<string, tuple<Point, flo
         ret = this->indexCount / 3;
     }
 
-    //delete this->v;
-    this->v = aux;
     return ret;
 }
 

@@ -25,6 +25,9 @@
 #include "Lights/LightPoint.h"
 #include "Lights/LightDirectional.h"
 #include "Lights/LightSpot.h"
+#include "BoundingVolumes/plane.hpp"
+
+#define INDEX(row, col) ((col) * 4 + (row) - 5)
 
 using namespace std;
 
@@ -145,6 +148,61 @@ void showFPS(int nt) {
     }
 }
 
+Plane* getPlanes(float *matrix) {
+    Plane *planes = new Plane[6];
+
+    // Left plane
+    float a = matrix[INDEX(4, 1)] + matrix[INDEX(1, 1)];
+    float b = matrix[INDEX(4, 2)] + matrix[INDEX(1, 2)];
+    float c = matrix[INDEX(4, 3)] + matrix[INDEX(1, 3)];
+    float d = matrix[INDEX(4, 4)] + matrix[INDEX(1, 4)];
+    float l = sqrt(a * a + b * b + c * c);
+    planes[0].setCoefficients(a/l, b/l, c/l, d/l);
+
+    // Right plane
+    a = matrix[INDEX(4, 1)] - matrix[INDEX(1, 1)];
+    b = matrix[INDEX(4, 2)] - matrix[INDEX(1, 2)];
+    c = matrix[INDEX(4, 3)] - matrix[INDEX(1, 3)];
+    d = matrix[INDEX(4, 4)] - matrix[INDEX(1, 4)];
+    l = sqrt(a * a + b * b + c * c);
+    planes[1].setCoefficients(a/l, b/l, c/l, d/l);
+
+    // Top plane
+    a = matrix[INDEX(4, 1)] - matrix[INDEX(2, 1)];
+    b = matrix[INDEX(4, 2)] - matrix[INDEX(2, 2)];
+    c = matrix[INDEX(4, 3)] - matrix[INDEX(2, 3)];
+    d = matrix[INDEX(4, 4)] - matrix[INDEX(2, 4)];
+    l = sqrt(a * a + b * b + c * c);
+    planes[2].setCoefficients(a/l, b/l, c/l, d/l);
+
+    // Bottom plane
+    a = matrix[INDEX(4, 1)] + matrix[INDEX(2, 1)];
+    b = matrix[INDEX(4, 2)] + matrix[INDEX(2, 2)];
+    c = matrix[INDEX(4, 3)] + matrix[INDEX(2, 3)];
+    d = matrix[INDEX(4, 4)] + matrix[INDEX(2, 4)];
+    l = sqrt(a * a + b * b + c * c);
+    planes[3].setCoefficients(a/l, b/l, c/l, d/l);
+
+    // Far plane
+    a = matrix[INDEX(4, 1)] - matrix[INDEX(3, 1)];
+    b = matrix[INDEX(4, 2)] - matrix[INDEX(3, 2)];
+    c = matrix[INDEX(4, 3)] - matrix[INDEX(3, 3)];
+    d = matrix[INDEX(4, 4)] - matrix[INDEX(3, 4)];
+    l = sqrt(a * a + b * b + c * c);
+    planes[4].setCoefficients(a/l, b/l, c/l, d/l);
+
+    // Near plane
+    a = matrix[INDEX(4, 1)] + matrix[INDEX(3, 1)];
+    b = matrix[INDEX(4, 2)] + matrix[INDEX(3, 2)];
+    c = matrix[INDEX(4, 3)] + matrix[INDEX(3, 3)];
+    d = matrix[INDEX(4, 4)] + matrix[INDEX(3, 4)];
+    l = sqrt(a * a + b * b + c * c);
+    planes[5].setCoefficients(a/l, b/l, c/l, d/l);
+
+    return planes;
+}
+
+
 
 /**
  * Function called to show the axis
@@ -205,7 +263,22 @@ void renderScene() {
                                0, 0, 1, 0,
                                0, 0, 0, 1,
         };
-        int nt = globalGroup->drawGroup(vboActive, position, &teleports, mipmap, change, camera);
+
+        float M[16],P[16];
+        glGetFloatv(GL_MODELVIEW_MATRIX,M);
+        glGetFloatv(GL_PROJECTION_MATRIX,P);
+        glPushMatrix();
+        glLoadMatrixf(P);
+        glMultMatrixf(M);
+        float A[16];
+        glGetFloatv(GL_MODELVIEW_MATRIX, A);
+        glPopMatrix();
+
+        Plane *planes = getPlanes(A);
+
+        int nt = globalGroup->drawGroup(vboActive, planes, position, &teleports, mipmap, change);
+
+        delete[] planes;
 
         if (change == true) change = false;
 
