@@ -43,7 +43,6 @@ bool AABB::test(Plane *planes, float* actual_matrix) {
     }
 
     for(int i=0; i<6; i++) {
-
         for(int j=0; j<8 && !ret; j++) {
             ret = planes[i].inRightSide(cs[j]);
         }

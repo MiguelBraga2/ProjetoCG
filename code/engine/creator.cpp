@@ -29,7 +29,9 @@ void Creator::importScene(string filename) {
     }
     else {
         string line;
+        int mode = 0;
         while (getline(file, line, '\n')) {
+
             // [vf] \d+ \d+ \d+
             vector<string> strings;
             stringstream ss(line);
@@ -37,17 +39,26 @@ void Creator::importScene(string filename) {
             while (ss >> word) {
                 strings.push_back(word);
             }
+            if (mode == 0){
+                if (strings.size() == 1 && strings[0].compare("v") == 0){
+                    mode = 1;
+                }
+                else
+                    this->blockTextures.push_back(make_tuple(stoi(strings[0]), stoi(strings[1])));
+            }
+            else if (mode == 1){
+                float xCoord = stof(strings[0]);
+                float yCoord = stof(strings[1]);
+                float zCoord = stof(strings[2]);
 
-            float xCoord = stof(strings[0]);
-            float yCoord = stof(strings[1]);
-            float zCoord = stof(strings[2]);
+                float redComp = 0;
+                float greenComp = 0;
+                float blueComp = 0;
 
-            float redComp = stof(strings[3]);
-            float greenComp = stof(strings[4]);
-            float blueComp = stof(strings[5]);
+                drawCube(xCoord, yCoord, zCoord, redComp, greenComp, blueComp, false);
+                vertexCount += 6 * 4; //
+            }
 
-            drawCube(xCoord, yCoord, zCoord, redComp, greenComp, blueComp);
-            vertexCount += 6 * 4; //
         }
     }
 }
@@ -65,12 +76,17 @@ void Creator::exportScene(std::string filename) {
     }
     else
     {
+        for(std::tuple<GLuint, int> tuple: this->blockTextures){
+            GLuint ind = std::get<0>(tuple);
+            int numberInd = std::get<1>(tuple);
+            file << ind << " " << numberInd << endl;
+        }
+        file << "v" << endl;
         // Each block is described in the file
         for(int i=0; i<cubesPositions.size(); i+=3){
             // IF the block has not been removed
             if (cubesPositions[i] != 1000000 && cubesPositions[i+1] != 1000000 && cubesPositions[i+2] != 1000000){
-                file << cubesPositions[i] << " " << cubesPositions[i + 1] << " " << cubesPositions[i + 2] << " " <<
-                     cubesColors[i] << " " << cubesColors[i + 1] << " " << cubesColors[i + 2] << endl;
+                file << cubesPositions[i] << " " << cubesPositions[i + 1] << " " << cubesPositions[i + 2] << endl;
             }
 
         }
@@ -93,44 +109,56 @@ void Creator::changeBlockTexture(){
     textInd = (textInd+1)%numTextures;
     switch(textInd){
         case 0: // Grass
-            currentTextureTop = 2;
-            currentTextureSides = 1;
+            currentTextureTop = 1;
+            currentTextureSides = 0;
             break;
         case 1: // Birch Log
-            currentTextureTop = 4;
-            currentTextureSides = 3;
+            currentTextureTop = 3;
+            currentTextureSides = 2;
             break;
         case 2: // Birch Planks
+            currentTextureTop = 4;
+            currentTextureSides = 4;
+            break;
+        case 3: // Bricks
             currentTextureTop = 5;
             currentTextureSides = 5;
             break;
-        case 3: // Bricks
+        case 4: // Coarse dirt
             currentTextureTop = 6;
             currentTextureSides = 6;
             break;
-        case 4: // Coarse dirt
+        case 5: // Diamond block
             currentTextureTop = 7;
             currentTextureSides = 7;
             break;
-        case 5: // Diamond block
-            currentTextureTop = 8;
+        case 6: // Oak Log
+            currentTextureTop = 9;
             currentTextureSides = 8;
             break;
-        case 6: // Oak Log
-            currentTextureTop = 10;
-            currentTextureSides = 9;
-            break;
         case 7: // Redstone lamp
+            currentTextureTop = 11;
+            currentTextureSides = 11;
+            break;
+        case 8: // Redstone lamp on
             currentTextureTop = 12;
             currentTextureSides = 12;
             break;
-        case 8: // Redstone lamp on
+        case 9: // Sand
             currentTextureTop = 13;
             currentTextureSides = 13;
             break;
-        case 9: // Sand
+        case 10: // Leaves
             currentTextureTop = 14;
             currentTextureSides = 14;
+            break;
+        case 11: // Cobblestone
+            currentTextureTop = 15;
+            currentTextureSides = 15;
+            break;
+        case 12:
+            currentTextureTop = 16;
+            currentTextureSides = 16;
             break;
     }
 }
@@ -195,7 +223,10 @@ Creator::Creator(Camera* camera) {
     loadTexture(path + "redstone_lamp.jpg");
     loadTexture(path + "redstone_lamp_on.jpg");
     loadTexture(path + "Sand_top.jpg");
-    numTextures = 10;
+    loadTexture(path + "Azalea_leaves.jpg");
+    loadTexture(path + "Cobblestone.jpg");
+    loadTexture(path + "EmeraldOre.jpg");
+    numTextures = 13;
 
     textureNames.push_back("GRASS");
     textureNames.push_back("BIRCH LOG");
@@ -207,9 +238,12 @@ Creator::Creator(Camera* camera) {
     textureNames.push_back("REDSTONE LAMP OFF");
     textureNames.push_back("REDSTONE LAMP ON");
     textureNames.push_back("SAND");
+    textureNames.push_back("LEAVES");
+    textureNames.push_back("COBBLESTONE");
+    textureNames.push_back("EMERALD_ORE");
 
-    currentTextureSides = this->texIds[0]; // Grass
-    currentTextureTop = this->texIds[1]; // Grass
+    currentTextureSides = 0; // Grass
+    currentTextureTop = 1; // Grass
 
     textInd = 0;
 
@@ -219,7 +253,7 @@ Creator::Creator(Camera* camera) {
         std::cin >> side;
         for (int i = 0; i < side; i++) {
             for (int j = 0; j < side; j++) {
-                drawCube(i, 0, j, 0, 1, 0);
+                drawCube(i, 0, j, 0, 1, 0, true);
             }
         }
 
@@ -265,7 +299,7 @@ Creator::Creator(Camera* camera) {
                         colorBlue = 0;
                         colorGreen = 0;
                     }
-                    drawCube(i - w / 2, k, j - h / 2, colorRed, colorGreen, colorBlue);
+                    drawCube(i - w / 2, k, j - h / 2, colorRed, colorGreen, colorBlue, true);
                 }
             }
         }
@@ -278,6 +312,10 @@ Creator::Creator(Camera* camera) {
         std::cin >> filename;
 
         this->importScene(filename);
+        currentTextureSides = 0; // Grass
+        currentTextureTop = 1; // Grass
+
+        textInd = 0;
     }
 
     int maxPlacedBlocks = 10000;
@@ -358,7 +396,7 @@ void Creator::renderText(int height, int width) {
     glLoadIdentity();
     glRasterPos2d(0.0f*(float)width, 0*(float)height); // text position in pixels - bottom left corner
 
-    glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
+    glColor3f(1,1,1);
     const char* c = textureNames[textInd].c_str(); // Display the selected texture
     for (; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
@@ -396,7 +434,7 @@ void Creator::incrementColors() {
  * @param cGreen green component of the cube (not used anymore)
  * @param cBlue blue component of the cube (not used anymore)
  */
-void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue) {
+void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue, bool addTexture) {
     float newVertices[] = {
             -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
             0.5f + x, -0.5f + y, 0.5f + z,
@@ -424,10 +462,13 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             -0.5f + x, 0.5f + y, -0.5f + z
     };
 
-    // Possible otimization: reorder faces  reducing the calls to glDraw
-    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
-    this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
-    this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+    if (addTexture){
+        // Possible otimization: reorder faces  reducing the calls to glDraw
+        this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+        this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
+        this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+    }
+
 
     float textCoords[] = {
             0, 0, // FRONT
@@ -639,6 +680,7 @@ void Creator::addCube(int x, int y, int z) {
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
     this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
+    std::cout << currentTextureSides << "," << currentTextureTop << endl;
 
     float newTextCoords[] = {
             0, 0, // FRONT
@@ -904,12 +946,15 @@ void Creator::render(int height, int width){
 
     // Draw each segment of the arrays with the correct texture
     int index=0;
+    int aux;
     for(std::tuple<GLuint, int> tuple: this->blockTextures){
-        GLuint texId = std::get<0>(tuple);
+
+        GLuint ind = std::get<0>(tuple);
         int numberInd = std::get<1>(tuple);
-        glBindTexture(GL_TEXTURE_2D, texId);
+        glBindTexture(GL_TEXTURE_2D, this->texIds[ind]);
         glDrawElements(GL_TRIANGLES, numberInd, GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(index));
         index+=numberInd*4;
+        aux = ind;
     }
 
     renderText(height, width);

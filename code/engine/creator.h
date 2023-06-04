@@ -63,7 +63,7 @@ private:
 public:
     Creator(Camera* camera);
     ~Creator();
-    void drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue);
+    void drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue, bool addTexture);
     void addCube(int x, int y, int z);
     void removeCube(unsigned int index);
     void render(int height, int width);

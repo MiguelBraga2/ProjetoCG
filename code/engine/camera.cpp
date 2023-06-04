@@ -355,8 +355,8 @@ void Camera::processMouseMotion(int xx, int yy, int lastxx, int lastyy) {
         int deltaX = xx - lastxx;
         int deltaY = yy - lastyy;
 
-        alfa = alfa - (float)deltaX/500.0f;
-        beta = beta - (float)deltaY/500.0f;
+        alfa = alfa - (float)deltaX/200.0f;
+        beta = beta - (float)deltaY/200.0f;
 
         if (beta > 85.0)
             beta = 85.0;

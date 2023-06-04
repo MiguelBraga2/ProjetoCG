@@ -161,7 +161,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
 
             // Normals in those points
             Point normal1 = getNormal(u, 0, b);
-            if ((normal1.getX() != normal1.getX()) && normals->size()>0){
+            /*if ((normal1.getX() != normal1.getX()) && normals->size()>0){
                 //normals->push_back((*normals)[normals->size()]-3);
                 //normals->push_back((*normals)[normals->size()]-2);
                 //normals->push_back((*normals)[normals->size()]-1);
@@ -172,11 +172,11 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 normals->push_back(0);
                 normals->push_back(1);
                 normals->push_back(0);
-            } else{
+            } else{*/
                 normals->push_back(normal1.getX());
                 normals->push_back(normal1.getY());
                 normals->push_back(normal1.getZ());
-            }
+            //}
 
             textCoord->push_back(0);
             textCoord->push_back(1-i*textInc);
@@ -184,18 +184,18 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             distToCenter = f2.distanceTo(approxCenter);
             if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
             Point normal2 = getNormal(nextU, 0, b);
-            if (normal2.getX() != normal2.getX()){
+            /*if (normal2.getX() != normal2.getX()){
                 //normals->push_back((*normals)[normals->size()]-3);
                 //normals->push_back((*normals)[normals->size()]-2);
                 //normals->push_back((*normals)[normals->size()]-1);
                 normals->push_back(0);
                 normals->push_back(-1);
                 normals->push_back(0);
-            }else{
+            }else{*/
                 normals->push_back(normal2.getX());
                 normals->push_back(normal2.getY());
                 normals->push_back(normal2.getZ());
-            }
+            //}
             textCoord->push_back(0);
             textCoord->push_back(1-(i+1)*textInc);
 
@@ -213,18 +213,18 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 distToCenter = f3.distanceTo(approxCenter);
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal3 = getNormal(u, v, b);
-                if (normal3.getX() != normal3.getX()){
+                /*if (normal3.getX() != normal3.getX()){
                     //normals->push_back((*normals)[normals->size()]-3);
                     //normals->push_back((*normals)[normals->size()]-2);
                     //normals->push_back((*normals)[normals->size()]-1);
                     normals->push_back(0);
                     normals->push_back(-1);
                     normals->push_back(0);
-                }else{
+                }else{*/
                     normals->push_back(normal3.getX());
                     normals->push_back(normal3.getY());
                     normals->push_back(normal3.getZ());
-                }
+                //}
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-i*textInc);
 
@@ -232,18 +232,18 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 distToCenter = f4.distanceTo(approxCenter);
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal4 = getNormal(nextU, v, b);
-                if (normal4.getX() != normal4.getX()){
+                /*if (normal4.getX() != normal4.getX()){
                     //normals->push_back((*normals)[normals->size()]-3);
                     //normals->push_back((*normals)[normals->size()]-2);
                     //normals->push_back((*normals)[normals->size()]-1);
                     normals->push_back(0);
                     normals->push_back(-1);
                     normals->push_back(0);
-                }else{
+                }else{*/
                     normals->push_back(normal4.getX());
                     normals->push_back(normal4.getY());
                     normals->push_back(normal4.getZ());
-                }
+                //}
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-(i+1)*textInc);
 
