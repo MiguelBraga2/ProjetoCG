@@ -16,7 +16,6 @@
 
 using namespace std;
 
-
 int main(int argc, char** argv) {
     if (argc > 1) {
         if (strcmp(argv[1], "sphere") == 0) {
@@ -28,6 +27,7 @@ int main(int argc, char** argv) {
                 int index = 0;
                 Point p1(0,0,0);
                 vector<float> vertices = generateSphere(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), p1, &index, &indexes, &normals, &texCoords);
+                // The radius and the center of the bounding volume are already calculated
                 writer(argv[5], vertices, indexes, normals, texCoords, stof(argv[2]), p1);
             }
             else {
@@ -43,7 +43,8 @@ int main(int argc, char** argv) {
                 float height = stof(argv[3]);
 
                 vector<float> vertices = generateCone(radius, height, stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &textCoords);
-                Point corners[8] = { Point(-radius, -height/2, radius), 
+                // Create a box that fits the entire cone
+                Point corners[8] = { Point(-radius, -height/2, radius),
                                      Point(-radius, -height/2, -radius), 
                                      Point(radius, -height/2, radius), 
                                      Point(radius, -height/2, -radius), 
@@ -68,7 +69,8 @@ int main(int argc, char** argv) {
                 Point start(0,0,0);
                 int index = 0;
                 vector<float> vertices = generateBox(stof(argv[2]), stoi(argv[3]), start, &indexes, &index, &normals, &textCoord);
-                Point corners[8] = { Point(-coord, -coord, coord), 
+                // The bounding volume is the given box
+                Point corners[8] = { Point(-coord, -coord, coord),
                                      Point(-coord, -coord, -coord), 
                                      Point(coord, -coord, coord), 
                                      Point(coord, -coord, -coord), 
@@ -93,7 +95,8 @@ int main(int argc, char** argv) {
                 int index = 0;
 
                 vector<float> vertices = generatePlane(length, stoi(argv[3]), Point(1, 0, 1), Point(-length / 2, 0, -length / 2), false, &indexes, &index, &normals, &textCoord);
-                Point corners[8] = { Point(-coord, -0.01, coord), 
+                // The bounding volume is a box with a minimal height to fit the plane
+                Point corners[8] = { Point(-coord, -0.01, coord),
                                      Point(-coord, -0.01, -coord), 
                                      Point(coord, -0.01, coord), 
                                      Point(coord, -0.01, -coord), 
@@ -116,7 +119,10 @@ int main(int argc, char** argv) {
                 float height = stof(argv[3]);
 
                 vector<float> vertices = generateCylinder(radius, height, stoi(argv[4]), &indexes, &normals, &texCoords);
-                Point corners[8] = { Point(-radius, -height/2, radius), 
+                // The box to fit the cylinder
+                // Spanning from -height/2 to height/2
+                // And from -radius to radius in both x and z
+                Point corners[8] = { Point(-radius, -height/2, radius),
                                      Point(-radius, -height/2, -radius), 
                                      Point(radius, -height/2, radius), 
                                      Point(radius, -height/2, -radius), 
@@ -136,16 +142,20 @@ int main(int argc, char** argv) {
                 vector<float> normals;
                 vector<float> texCoords;
                 float radius = stof(argv[3]);
-                vector<float> vertices = generateTorus(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &texCoords);
-                
-                Point corners[8] = { Point(-radius, -radius, radius), 
-                                     Point(-radius, -radius, -radius), 
-                                     Point(radius, -radius, radius), 
-                                     Point(radius, -radius, -radius), 
-                                     Point(-radius, radius, radius),
-                                     Point(-radius, radius, -radius), 
-                                     Point(radius, radius, radius), 
-                                     Point(radius, radius, -radius) };
+                float inner = stof(argv[2]);
+                float outer = stof(argv[3]);
+                vector<float> vertices = generateTorus(inner, outer, stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &texCoords);
+
+                float height = (outer-inner)/2;
+                // The box has height equal to the radius of the spherical section of the torus
+                Point corners[8] = { Point(-radius, -height, radius),
+                                     Point(-radius, -height, -radius),
+                                     Point(radius, -height, radius),
+                                     Point(radius, -height, -radius),
+                                     Point(-radius, height, radius),
+                                     Point(-radius, height, -radius),
+                                     Point(radius, height, radius),
+                                     Point(radius, height, -radius) };
 
                 writer(argv[6], vertices, indexes, normals, texCoords, corners);
             }
@@ -167,7 +177,7 @@ int main(int argc, char** argv) {
                     vector<float> vertices = generateRing(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stof(argv[5]),
                                                           stof(argv[6]), stof(argv[7]), stof(argv[8]), &indexes, &normals, &textCoord,
                                                           &argv[10]);
-
+                    // Calculate the height (positive and negative) of the ring to minimize space occupied
                     float maxHeight = tan(M_PI*maxAngle/180)*radius;
                     float minHeight = tan(M_PI*(-minAngle)/180)*radius;
 
@@ -192,15 +202,14 @@ int main(int argc, char** argv) {
                 vector<unsigned int> indexes;
                 vector<float> normals;
                 Point approxCenter = Point(0,0,0);
+                // Get an approximation for the center of the figure as the mean of all the control points
                 vector<Point> controlPoints = readPatch(argv[2], &indexes, &approxCenter);
                 vector<unsigned int> figureIndexes;
                 vector<float> textCoord;
                 float radiusSphere = 0;
 
                 vector<float> vertices = generatePatches(controlPoints, indexes, stoi(argv[3]), &figureIndexes, &normals, &textCoord, &radiusSphere, approxCenter);
-                std::cout << "Centro: " << approxCenter.toString() << endl;
-                std::cout << "Raio: " << radiusSphere << endl;
-
+                // The radius of the BS (Bounding Sphere) is the max distance from center to a point in the figure
                 writer(argv[4], vertices, figureIndexes, normals, textCoord, radiusSphere, approxCenter);
             }
             else {

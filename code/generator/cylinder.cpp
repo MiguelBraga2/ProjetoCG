@@ -17,7 +17,6 @@ std::vector<float> generateCylinder(float radius, float height, int slices,std::
     int index = 0;
 
     for (int i = 0; i < slices; i++) {
-
         /* Base */
         vertices.push_back(0);
         vertices.push_back(-aux);
@@ -25,7 +24,7 @@ std::vector<float> generateCylinder(float radius, float height, int slices,std::
         normals->push_back(0);
         normals->push_back(-1);
         normals->push_back(0);
-        texCoords->push_back(0.8125f);
+        texCoords->push_back(0.8125f); // Special texture format -> See report
         texCoords->push_back(0.1875f);
 
         vertices.push_back(radius * (float) sin(i * sliceStep));
