@@ -2,8 +2,12 @@
 #include <fstream>
 #include "patch.hpp"
 #include "../shared/matrixOp.hpp"
+#include "../shared/point.hpp"
 #include <string>
 #include <sstream>
+#include <cmath>
+#include <map>
+#include <unordered_map>
 
 /**
  * Get the values of the vector from the function (f³, f², f, 1)
@@ -108,6 +112,11 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
         pSize = controlPoints.size();
     }
 
+    // Map to store the (u,v) pairs and the index of normal in the normals array of the points with the normal "nan" 
+    unordered_map<Point, vector<tuple<float, float, int>>, Point::HashFunction> pointsMap[pSize/16];
+    // Map to store the normals of the vertice with the (u,v) pair
+    map<pair<float, float>, Point> patchNormals[pSize/16];
+    
     // Iterate over the patches
     for(int k=0; k< pSize; k+=16){
         Point p[16];
@@ -177,9 +186,14 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 normals->push_back(normal1.getY());
                 normals->push_back(normal1.getZ());
             //}
+            patchNormals[k/16][make_pair(u, 0)] = normal1;
+            if (isnan(normal1.getX()) && isnan(normal1.getY()) && isnan(normal1.getZ())) {
+                pointsMap[k/16][f1].push_back(make_tuple(u, 0, normals->size()-3));
+            }
 
             textCoord->push_back(0);
             textCoord->push_back(1-i*textInc);
+
             points.push_back(f2.getX());points.push_back(f2.getY());points.push_back(f2.getZ());
             distToCenter = f2.distanceTo(approxCenter);
             if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
@@ -196,6 +210,11 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 normals->push_back(normal2.getY());
                 normals->push_back(normal2.getZ());
             //}
+            patchNormals[k/16][make_pair(nextU, 0)] = normal2;
+            if (isnan(normal2.getX()) && isnan(normal2.getY()) && isnan(normal2.getZ())) {
+                pointsMap[k/16][f2].push_back(make_tuple(nextU, 0, normals->size()-3));
+            }
+
             textCoord->push_back(0);
             textCoord->push_back(1-(i+1)*textInc);
 
@@ -212,6 +231,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 points.push_back(f3.getX());points.push_back(f3.getY());points.push_back(f3.getZ());
                 distToCenter = f3.distanceTo(approxCenter);
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
+                
                 Point normal3 = getNormal(u, v, b);
                 /*if (normal3.getX() != normal3.getX()){
                     //normals->push_back((*normals)[normals->size()]-3);
@@ -225,12 +245,17 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                     normals->push_back(normal3.getY());
                     normals->push_back(normal3.getZ());
                 //}
+                patchNormals[k/16][make_pair(u, v)] = normal3;
+                if (isnan(normal3.getX()) && isnan(normal3.getY()) && isnan(normal3.getZ())) {
+                    pointsMap[k/16][f3].push_back(make_tuple(u, v, normals->size()-3));
+                }
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-i*textInc);
 
                 points.push_back(f4.getX());points.push_back(f4.getY());points.push_back(f4.getZ());
                 distToCenter = f4.distanceTo(approxCenter);
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
+                
                 Point normal4 = getNormal(nextU, v, b);
                 /*if (normal4.getX() != normal4.getX()){
                     //normals->push_back((*normals)[normals->size()]-3);
@@ -244,6 +269,10 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                     normals->push_back(normal4.getY());
                     normals->push_back(normal4.getZ());
                 //}
+                patchNormals[k/16][make_pair(nextU, v)] = normal4;
+                if (isnan(normal4.getX()) && isnan(normal4.getY()) && isnan(normal4.getZ())) {
+                    pointsMap[k/16][f4].push_back(make_tuple(nextU, v, normals->size()-3));
+                }
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-(i+1)*textInc);
 
@@ -259,6 +288,89 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             }
 
             index += 2;
+        }
+    }
+
+    // Auxiliary map to calculate the interpolated normals
+    unordered_map<Point, tuple<Point, int, vector<int>>, Point::HashFunction> normalsMap;
+
+    for(int k=0; k<pSize/16; k++) {
+        
+        for (auto& pair : pointsMap[k]) {
+            Point p = get<0>(pair);
+            vector<tuple<float, float, int>> tuples = get<1>(pair);
+
+            bool same_u = false;
+
+            if (get<0>(tuples[0]) == get<0>(tuples[1])) {
+                same_u = true;
+            }
+
+
+            for (int i = 0; i < tuples.size(); i++) {
+                tuple<float, float, int> tp = tuples[i];
+                float u = get<0>(tp);
+                float v = get<1>(tp);
+                int index = get<2>(tp);
+
+
+                if (same_u) {
+                    if (normalsMap.find(p) == normalsMap.end()) {
+                        Point normal(0,0,0);
+                        normalsMap[p] = make_tuple(normal, 0, vector<int>());
+                    }
+                    if (u==1) {
+                        delta = -delta;
+                    }
+
+                    tuple<Point, int, vector<int>> n = normalsMap[p];
+                    Point newNormal(get<0>(n).getX() + patchNormals[k][make_pair(u+delta,v)].getX(), get<0>(n).getY() + patchNormals[k][make_pair(u+delta,v)].getY(), get<0>(n).getZ() + patchNormals[k][make_pair(u+delta,v)].getZ());
+                    int proxCount = get<1>(n) + 1;
+                    vector<int> indexes = get<2>(n);
+                    indexes.push_back(index);
+                    normalsMap[p] = make_tuple( newNormal, proxCount , indexes);
+
+                    if (u==1) {
+                        delta = -delta;
+                    }
+
+                } else {
+                    if (normalsMap.find(p) == normalsMap.end()) {
+                        Point normal(0,0,0);
+                        normalsMap[p] = make_tuple(normal, 0, vector<int>());
+                    }
+
+                    if (v==1) {
+                        delta = -delta;
+                    }
+
+                    tuple<Point, int, vector<int>> n = normalsMap[p];
+                    Point newNormal(get<0>(n).getX() + patchNormals[k][make_pair(u,v+delta)].getX(), get<0>(n).getY() + patchNormals[k][make_pair(u,v+delta)].getY(), get<0>(n).getZ() + patchNormals[k][make_pair(u,v+delta)].getZ());
+                    int proxCount = get<1>(n) + 1;
+                    vector<int> indexes = get<2>(n);
+                    indexes.push_back(index);
+                    normalsMap[p] = make_tuple( newNormal, proxCount , indexes);
+
+                    if (v==1) {
+                        delta = -delta;
+                    }
+
+                }
+            }
+        }
+    }
+
+    for (auto& pair : normalsMap) {
+        tuple<Point, int, vector<int>> normal = pair.second;        
+        Point p = get<0>(normal);
+        int divide = get<1>(normal);
+        p.setPoint(p.getX()/ divide, p.getY() / divide, p.getZ() / divide);
+        vector<int> indexes = get<2>(normal);
+
+        for (int i = 0; i < indexes.size(); i++) {
+            (*normals)[indexes[i]] = p.getX();
+            (*normals)[indexes[i] + 1] = p.getY();
+            (*normals)[indexes[i] + 2] = p.getZ();
         }
     }
 

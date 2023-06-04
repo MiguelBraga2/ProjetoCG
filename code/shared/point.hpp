@@ -26,6 +26,12 @@ public:
     void sum(Point p);
     string toString();
     float distanceTo(Point other);
+    bool operator==(const Point& other) const;
+    struct HashFunction;
+};
+
+struct Point::HashFunction {
+    std::size_t operator()(const Point& point) const;
 };
 
 #endif
