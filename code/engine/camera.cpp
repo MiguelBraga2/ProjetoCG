@@ -358,10 +358,10 @@ void Camera::processMouseMotion(int xx, int yy, int lastxx, int lastyy) {
         alfa = alfa - (float)deltaX/200.0f;
         beta = beta - (float)deltaY/200.0f;
 
-        if (beta > 85.0)
-            beta = 85.0;
-        else if (beta < -85.0)
-            beta = -85.0;
+        if (beta > M_PI/2-0.2f)
+            beta = M_PI/2-0.2f;
+        else if (beta < -M_PI/2+0.2f)
+            beta = -M_PI/2+0.2f;
         this->calculateDirection();
     }
     else if (mode == 2){
