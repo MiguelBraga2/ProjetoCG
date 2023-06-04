@@ -33,11 +33,19 @@ Point* AABB::getCorners() {
 
 bool AABB::test(Plane *planes, float* actual_matrix) {
     bool ret = false;
+    Point cs[8];
 
-    for(int i=0; i<6 && !ret; i++) {
+    for(int i = 0; i < 8; i++) {
+        float v[4] = {this->corners[i].getX(), this->corners[i].getY(), this->corners[i].getZ(), 1.0f};
+        float res[4];
+        multiplyMatrixVector(actual_matrix, v, res);
+        cs[i].setPoint(res[0], res[1], res[2]);
+    }
+
+    for(int i=0; i<6; i++) {
 
         for(int j=0; j<8 && !ret; j++) {
-            ret = planes[i].inRightSide(this->corners[j]);
+            ret = planes[i].inRightSide(cs[j]);
         }
 
         if (!ret) return false;
