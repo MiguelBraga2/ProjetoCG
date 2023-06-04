@@ -3,13 +3,6 @@
 #include "../../shared/matrixOp.hpp"
 #include <cmath>
 
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-#include <GL/glew.h>
-#include <GL/glut.h>
-#endif
-
 #define INDEX(row, col) ((col) * 4 + (row) - 5)
 
 AABB::AABB(Point* corners) {
