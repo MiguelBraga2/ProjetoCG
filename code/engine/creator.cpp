@@ -680,7 +680,6 @@ void Creator::addCube(int x, int y, int z) {
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
     this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
-    std::cout << currentTextureSides << "," << currentTextureTop << endl;
 
     float newTextCoords[] = {
             0, 0, // FRONT
@@ -850,9 +849,6 @@ void Creator::addCube(int x, int y, int z) {
  * @param index The index of the cube
  */
 void Creator::removeCube(unsigned int index) {
-    this->blockTextures.erase(this->blockTextures.begin()+index*3);
-    this->blockTextures.erase(this->blockTextures.begin()+index*3+1);
-    this->blockTextures.erase(this->blockTextures.begin()+index*3+2);
     GLfloat newVertices[] = {0,0,0,0,0,0,0,0,0,0,0,0, // Front
                              0,0,0,0,0,0,0,0,0,0,0,0, // Back
                              0,0,0,0,0,0,0,0,0,0,0,0, // Top
@@ -1038,10 +1034,10 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         if (button == GLUT_RIGHT_BUTTON) { // Place block
             unsigned char *result = picking(xx, yy);
             if (result[0] != 0 || result[1] != 0 || result[2] != 0) { // If color picked is not black (background)
-                //printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                //printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
-                //        nextPosY[result[0]][result[1]][result[2]],
-                //        nextPosZ[result[0]][result[1]][result[2]]);
+                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
+                        nextPosY[result[0]][result[1]][result[2]],
+                        nextPosZ[result[0]][result[1]][result[2]]);
                 float blockX = nextPosX[result[0]][result[1]][result[2]];
                 float blockY = nextPosY[result[0]][result[1]][result[2]];
                 float blockZ = nextPosZ[result[0]][result[1]][result[2]];
@@ -1059,10 +1055,10 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         else if (button == GLUT_LEFT_BUTTON){
             unsigned char *result = picking(xx, yy);
             if (result[0] != 0 || result[1] != 0 || result[2] != 0) { // If color picked is not black (background)
-                //printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                //printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
-                //       currPosY[result[0]][result[1]][result[2]],
-                //       currPosZ[result[0]][result[1]][result[2]]);
+                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
+                       currPosY[result[0]][result[1]][result[2]],
+                       currPosZ[result[0]][result[1]][result[2]]);
                 int index = mapPointIndex[std::make_tuple(
                         currPosX[result[0]][result[1]][result[2]],
                         currPosY[result[0]][result[1]][result[2]],
@@ -1072,6 +1068,7 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
                 float blockZ = currPosZ[result[0]][result[1]][result[2]];
                 Point cam = this->globalCamera->getPosition();
                 Point vect = Point(cam.getX()-blockX, cam.getY()-blockY, cam.getZ()-blockZ);
+                cout << index << endl;
                 if (vect.getSize() <= 8){ // Reach position
                     removeCube(index);
                     // Mark this block unused
