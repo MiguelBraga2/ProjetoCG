@@ -110,6 +110,7 @@ vector<string> mySplit(const string& s) {
 vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoords, Volume **volume) {
     ifstream file("../../figures/" + fileName);
     vector<float> vertices;
+    vector<unsigned int> aux;
 
     if (!file) {
         cout << "Não é possível abrir o ficheiro " << fileName << endl;
@@ -176,19 +177,49 @@ vector<float> reader(const string& fileName, vector<unsigned int>* indexes, vect
             }
             else if (strings[0] == "f") {
                 // FORMAT: f i1 i2 i3
+                // FORMAT: f i1/i2/i3 i1/i2/i3 i1/i2/i3
                 smatch match;
 
                 for(int i=1; i<=3; i++) {
-                    if (regex_search(strings[i], match, r)) {
+                    if (regex_match(strings[i], match, r)) {
                         indexes->push_back(stoi(match.str(0)));
                     }
-                    else if (regex_search(strings[i], match, r1)) {
-                        indexes->push_back(stoi(match.str(1)) - 1);
+                    else if (regex_match(strings[i], match, r1)) {
+                        aux.push_back(stoi(match.str(1)) - 1);
+                        aux.push_back(stoi(match.str(2)) - 1);
+                        aux.push_back(stoi(match.str(3)) - 1);
                     }
                 }
             }
         }
 
+        if (aux.size() != 0) {
+            vector<float> verticesAux;
+            vector<float> normalsAux;
+            vector<float> textCoordAux;
+            int j = 0;
+            for(int i=0; i<aux.size(); i+=3) {
+                verticesAux.push_back(vertices[aux[i]*3]);
+                verticesAux.push_back(vertices[aux[i]*3 + 1]);
+                verticesAux.push_back(vertices[aux[i]*3 + 2]);
+                textCoordAux.push_back((*textCoords)[aux[i+1]*2]);
+                textCoordAux.push_back((*textCoords)[aux[i+1]*2 + 1]);
+                normalsAux.push_back((*normals)[aux[i+2]*3]);
+                normalsAux.push_back((*normals)[aux[i+2]*3 + 1]);
+                normalsAux.push_back((*normals)[aux[i+2]*3 + 2]);
+                indexes->push_back(j);
+                j++;
+            }
+            vertices.clear();
+            normals->clear();
+            textCoords->clear();
+            vertices.resize(verticesAux.size());
+            normals->resize(normalsAux.size());
+            textCoords->resize(textCoordAux.size());
+            copy(verticesAux.begin(), verticesAux.end(), vertices.begin());  
+            copy(normalsAux.begin(), normalsAux.end(), normals->begin());
+            copy(textCoordAux.begin(), textCoordAux.end(), textCoords->begin());
+        }
     }
     return vertices;
 }
