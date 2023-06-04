@@ -92,3 +92,18 @@ float Point::distanceTo(Point other) {
     Point vect = Point(this->getX()-other.getX(), this->getY()-other.getY(), this->getZ()-other.getZ());
     return vect.getSize();
 }
+
+
+
+bool Point::operator==(const Point& other) const {
+    return (x == other.x) && (y == other.y) && (z == other.z);
+}   
+
+
+std::size_t Point::HashFunction::operator()(const Point& point) const {
+    // Combinação de hashes das coordenadas x, y e z
+    std::size_t h1 = std::hash<float>{}(point.x);
+    std::size_t h2 = std::hash<float>{}(point.y);
+    std::size_t h3 = std::hash<float>{}(point.z);
+    return h1 ^ (h2 << 1) ^ (h3 << 2);
+}
