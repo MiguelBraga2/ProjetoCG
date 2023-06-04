@@ -18,6 +18,11 @@ vector<float> generateSphere(float radius, int slices, int stacks, Point start, 
     float deltaX = 1.0f / slices;
     float deltaY = 1.0f / stacks;
 
+    // Spherical coordinates for vertices and for normals
+    // Textures:
+    // X is mapped to slices
+    // Y is mapped to stacks
+
     for (int i = 0; i < slices; i++) {
         vertices.push_back(start.getX());
         vertices.push_back(start.getY()-radius);

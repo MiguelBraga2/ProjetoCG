@@ -6,6 +6,21 @@
 #include "box.hpp"
 #include <string>
 
+/**
+ * Generates n random objects inside a ring
+ * @param outerRadius
+ * @param innerRadius
+ * @param n
+ * @param minScale
+ * @param maxScale
+ * @param minAngle
+ * @param maxAngle
+ * @param indexes
+ * @param normals
+ * @param textCoord
+ * @param args
+ * @return
+ */
 vector<float> generateRing (float outerRadius, float innerRadius, int n, float minScale, float maxScale, float minAngle, float maxAngle, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoord, char** args){
     vector<float> vertices;
     vector<float> aux;
@@ -23,6 +38,7 @@ vector<float> generateRing (float outerRadius, float innerRadius, int n, float m
 
         Point start(distance * cos(verticalAngle) * sin(angle), distance * sin(verticalAngle), distance * cos(verticalAngle) * cos(angle));
 
+        // Only possible to generate spheres or boxes
         if (strcmp(args[0], "sphere") == 0) {
             aux = generateSphere(scaleF, stoi(args[1]), stoi(args[2]), start, &index, indexes, normals, textCoord);
         } else if (strcmp(args[0], "box") == 0) {

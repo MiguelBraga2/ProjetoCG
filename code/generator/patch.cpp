@@ -5,7 +5,11 @@
 #include <string>
 #include <sstream>
 
-
+/**
+ * Get the values of the vector from the function (f³, f², f, 1)
+ * @param f value to calculate
+ * @param v vector to fill
+ */
 void getVectorF(float f, float *v) {
     v[0] = f * f * f;
     v[1] = f * f;
@@ -13,6 +17,11 @@ void getVectorF(float f, float *v) {
     v[3] = 1;
 }
 
+/**
+ * Get the values of the vector from the derivative function (3f³, 2f, 1, 0)
+ * @param f value to calculate
+ * @param v vector to fill
+ */
 void getVectorFDeriv(float f, float *v) {
     v[0] = 3 * f * f;
     v[1] = 2 * f;
@@ -20,16 +29,30 @@ void getVectorFDeriv(float f, float *v) {
     v[3] = 0;
 }
 
+/**
+ * Calculate the derivative relative to u coord
+ * @param u u value
+ * @param v v value
+ * @param p point matrix with all the points in the patch (already multiplied by M)
+ * @param res result to be returned
+ */
 void getDerivU(float u, float v, Point *p, Point *res) {
     float vecV[4], vecUDeriv[4];
     getVectorF(v, vecV);
 
     Point pn[4];
     getVectorFDeriv(u, vecUDeriv);
-    multiplyVectorPointMatrix(vecUDeriv, p, pn);
-    multiplyPointVectorVector(pn, vecV, res);
+    multiplyVectorPointMatrix(vecUDeriv, p, pn); // uDeriv x P
+    multiplyPointVectorVector(pn, vecV, res); // resAbove x vecV
 }
 
+/**
+ * Calculate the derivative of relative to v coord
+ * @param u u value
+ * @param v v value
+ * @param p point matrix with all the points in the patch (already multiplied by M)
+ * @param res result to be returned
+ */
 void getDerivV(float u, float v, Point *p, Point *res) {
     float vecU[4], vecVDeriv[4];
     getVectorF(u, vecU);
@@ -40,18 +63,34 @@ void getDerivV(float u, float v, Point *p, Point *res) {
     multiplyPointVectorVector(pn, vecVDeriv, res);
 }
 
+/**
+ * Calculate the normal to a surface in (u,v)
+ * @param u u value
+ * @param v v value
+ * @param p point matrix (already multiplied by M)
+ * @return the normal
+ */
 Point getNormal(float u, float v, Point *p) {
     Point derivU, derivV;
     getDerivU(u, v, p, &derivU);
-    std::cout << "U: " << derivU.toString() << endl;
     getDerivV(u, v, p, &derivV);
-    std::cout << "V: " << derivV.toString() << endl;
-    Point r = Point::crossProduct(derivU, derivV);
-    r.normalize();
+    Point r = Point::crossProduct(derivU, derivV); // Normal as the crossProduct of the tangent vectors in both directions
+    r.normalize(); // Must normalize always
     return r;
 }
 
-
+/**
+ * Generate the points of the patch
+ * @param controlPoints
+ * @param patchesIndexes
+ * @param tesselation
+ * @param indexes
+ * @param normals
+ * @param textCoord
+ * @param radiusSphere
+ * @param approxCenter
+ * @return
+ */
 vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> patchesIndexes, int tesselation, vector<unsigned int>* indexes, vector<float>* normals, vector<float>* textCoord, float* radiusSphere, Point approxCenter) {
     vector<float> points;
     int index = 0;
@@ -59,6 +98,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
     float delta = 1.0f / (float) tesselation;
     float vecU[4], vecNU[4], vecV[4];
 
+    // Catmull-Rom Matrix
     float m[16] = {-1, 3, -3, 1,
                    3, -6, 3, 0,
                    -3, 3, 0, 0,
@@ -68,8 +108,10 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
         pSize = controlPoints.size();
     }
 
+    // Iterate over the patches
     for(int k=0; k< pSize; k+=16){
         Point p[16];
+        // Get the patches control Points
         if (patchesIndexes.size() > 0) {
             p[0] = controlPoints[patchesIndexes[k]]; p[1] = controlPoints[patchesIndexes[k + 4]];
             p[2] = controlPoints[patchesIndexes[k + 8]]; p[3] = controlPoints[patchesIndexes[k + 12]];
@@ -92,7 +134,7 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
         }
         Point a[16]; Point b[16]; // a = M * P, b = a * Mt
         multiplyMatrixPointMatrix(m, p, a);
-        multiplyPointMatrixMatrix(a, m, b);
+        multiplyPointMatrixMatrix(a, m, b); // b is the multiplication M x P x M^T
 
         float textInc = 1.0f/(float)tesselation;
         float distToCenter;
@@ -102,20 +144,22 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
 
             getVectorF(u, vecU);
             getVectorF(nextU, vecNU);
-            Point c[4], nc[4]; // C = U * b
-            multiplyVectorPointMatrix(vecU, b, c);
-            multiplyVectorPointMatrix(vecNU, b, nc);
+            Point c[4], nc[4]; // C = u x M x P x M^T
+            multiplyVectorPointMatrix(vecU, b, c); // Multiply by U (c)
+            multiplyVectorPointMatrix(vecNU, b, nc);  // Multiply by U(nextC)
 
             getVectorF(0, vecV);
-            Point f1, f2;
-            multiplyPointVectorVector(c, vecV, &f1);
-            multiplyPointVectorVector(nc, vecV, &f2);
+            Point f1, f2; // Points starting the one column of the patch
+            // Final calculation : P = u x M x P x M^T x V
+            multiplyPointVectorVector(c, vecV, &f1); // Multiply by V (c)
+            multiplyPointVectorVector(nc, vecV, &f2); // Multiply by V(nextC) - the point next
 
             points.push_back(f1.getX());points.push_back(f1.getY());points.push_back(f1.getZ());
 
             distToCenter = f1.distanceTo(approxCenter);
             if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
 
+            // Normals in those points
             Point normal1 = getNormal(u, 0, b);
             if ((normal1.getX() != normal1.getX()) && normals->size()>0){
                 //normals->push_back((*normals)[normals->size()]-3);
@@ -155,11 +199,13 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             textCoord->push_back(0);
             textCoord->push_back(1-(i+1)*textInc);
 
+            // Iterate over this column (u is fixed) (v is variable)
             for(int j = 1; j <= tesselation; j++) {
                 float v = delta * (float) j;
 
                 getVectorF(v, vecV);
                 Point f3, f4;
+                // Calculate the points again (V vector changed)
                 multiplyPointVectorVector(c, vecV, &f3);
                 multiplyPointVectorVector(nc, vecV, &f4);
 
@@ -219,6 +265,13 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
     return points;
 }
 
+/**
+ * read the control points and the patches (indexes)
+ * @param fileName
+ * @param indexes
+ * @param approxCenter
+ * @return
+ */
 vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes, Point* approxCenter){
     ifstream file("../patches/" + fileName);
     vector<Point> controlPoints;
@@ -276,6 +329,7 @@ vector<Point> readPatch(const string& fileName, vector<unsigned int>* indexes, P
             }
         }
     }
+    // Calculate the center as the mean of all the control points
     approxCenter->setX(approxCenter->getX()/controlPoints.size());
     approxCenter->setY(approxCenter->getY()/controlPoints.size());
     approxCenter->setZ(approxCenter->getZ()/controlPoints.size());
