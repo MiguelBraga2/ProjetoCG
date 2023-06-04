@@ -30,7 +30,7 @@ vector<float> generateSphere(float radius, int slices, int stacks, Point start, 
         normals->push_back(0);
         normals->push_back(-1);
         normals->push_back(0);
-        textCoords->push_back(i * deltaX);
+        textCoords->push_back((i+0.5) * deltaX);
         textCoords->push_back(0);
 
         vertices.push_back(start.getX() + radius * (float) cos(-M_PI / 2 + stackStep) * (float) sin((float) i * sliceStep));
@@ -93,7 +93,7 @@ vector<float> generateSphere(float radius, int slices, int stacks, Point start, 
         normals->push_back(0);
         normals->push_back(1);
         normals->push_back(0);
-        textCoords->push_back(i * deltaX);
+        textCoords->push_back((i+0.5) * deltaX);
         textCoords->push_back(1);
 
         indexes->push_back(*index);
