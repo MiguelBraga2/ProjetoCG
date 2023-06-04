@@ -20,8 +20,8 @@
             </transform>
             <group>
                 <transform>
-                    <translate time="1500" align="true" show="true">
-                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="60"/>
+                    <translate time="1500" align="true" show="false">
+                        <pointSet type="ellipse" num_points="16" a="24000" b="18000" angleX="0" angleY="0" angleZ="35"/>
                     </translate>
                     <scale x="10" y="10" z="10"/>
                 </transform>
@@ -231,7 +231,7 @@
 						<texture file = "saturno.jpg"/>
 					</model>
 					<model file="torus_1.2_2_100_0.3d"> 
-						<texture file = "saturnmap.jpg"/> 
+						<texture file = "saturnringcolor.jpg"/> 
 				    </model>
                 </models>
             </group>
