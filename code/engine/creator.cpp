@@ -287,10 +287,10 @@ Creator::Creator(Camera* camera) {
         int side = h;
         int cubeHeight = 1;
 
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for (int i = 0+50; i < h-50; i++) {
+            for (int j = 0+50; j < w-50; j++) {
                 //drawCube(i, getHeight(i, j) / 2, j, -1, -1, -1);
-                int height = (int)getHeight(i,j)/8;
+                int height = (int)getHeight(i,j)/2;
                 float colorRed=-1, colorGreen=-1, colorBlue=-1;
 
                 for(int k=height-cubeHeight; k < height+1; k++) {
@@ -850,6 +850,9 @@ void Creator::addCube(int x, int y, int z) {
  * @param index The index of the cube
  */
 void Creator::removeCube(unsigned int index) {
+    this->blockTextures.erase(this->blockTextures.begin()+index*3);
+    this->blockTextures.erase(this->blockTextures.begin()+index*3+1);
+    this->blockTextures.erase(this->blockTextures.begin()+index*3+2);
     GLfloat newVertices[] = {0,0,0,0,0,0,0,0,0,0,0,0, // Front
                              0,0,0,0,0,0,0,0,0,0,0,0, // Back
                              0,0,0,0,0,0,0,0,0,0,0,0, // Top
