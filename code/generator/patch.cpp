@@ -170,9 +170,22 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
 
             // Normals in those points
             Point normal1 = getNormal(u, 0, b);
-            normals->push_back(normal1.getX());
-            normals->push_back(normal1.getY());
-            normals->push_back(normal1.getZ());
+            /*if ((normal1.getX() != normal1.getX()) && normals->size()>0){
+                //normals->push_back((*normals)[normals->size()]-3);
+                //normals->push_back((*normals)[normals->size()]-2);
+                //normals->push_back((*normals)[normals->size()]-1);
+                normals->push_back(0);
+                normals->push_back(-1);
+                normals->push_back(0);
+            } else if (normal1.getX() != normal1.getX()) {
+                normals->push_back(0);
+                normals->push_back(1);
+                normals->push_back(0);
+            } else{*/
+                normals->push_back(normal1.getX());
+                normals->push_back(normal1.getY());
+                normals->push_back(normal1.getZ());
+            //}
             patchNormals[k/16][make_pair(u, 0)] = normal1;
             if (isnan(normal1.getX()) && isnan(normal1.getY()) && isnan(normal1.getZ())) {
                 pointsMap[k/16][f1].push_back(make_tuple(u, 0, normals->size()-3));
@@ -185,9 +198,18 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             distToCenter = f2.distanceTo(approxCenter);
             if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
             Point normal2 = getNormal(nextU, 0, b);
-            normals->push_back(normal2.getX());
-            normals->push_back(normal2.getY());
-            normals->push_back(normal2.getZ());
+            /*if (normal2.getX() != normal2.getX()){
+                //normals->push_back((*normals)[normals->size()]-3);
+                //normals->push_back((*normals)[normals->size()]-2);
+                //normals->push_back((*normals)[normals->size()]-1);
+                normals->push_back(0);
+                normals->push_back(-1);
+                normals->push_back(0);
+            }else{*/
+                normals->push_back(normal2.getX());
+                normals->push_back(normal2.getY());
+                normals->push_back(normal2.getZ());
+            //}
             patchNormals[k/16][make_pair(nextU, 0)] = normal2;
             if (isnan(normal2.getX()) && isnan(normal2.getY()) && isnan(normal2.getZ())) {
                 pointsMap[k/16][f2].push_back(make_tuple(nextU, 0, normals->size()-3));
@@ -211,14 +233,22 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 
                 Point normal3 = getNormal(u, v, b);
-                normals->push_back(normal3.getX());
-                normals->push_back(normal3.getY());
-                normals->push_back(normal3.getZ());
+                /*if (normal3.getX() != normal3.getX()){
+                    //normals->push_back((*normals)[normals->size()]-3);
+                    //normals->push_back((*normals)[normals->size()]-2);
+                    //normals->push_back((*normals)[normals->size()]-1);
+                    normals->push_back(0);
+                    normals->push_back(-1);
+                    normals->push_back(0);
+                }else{*/
+                    normals->push_back(normal3.getX());
+                    normals->push_back(normal3.getY());
+                    normals->push_back(normal3.getZ());
+                //}
                 patchNormals[k/16][make_pair(u, v)] = normal3;
                 if (isnan(normal3.getX()) && isnan(normal3.getY()) && isnan(normal3.getZ())) {
                     pointsMap[k/16][f3].push_back(make_tuple(u, v, normals->size()-3));
                 }
-                
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-i*textInc);
 
@@ -227,14 +257,22 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 
                 Point normal4 = getNormal(nextU, v, b);
-                normals->push_back(normal4.getX());
-                normals->push_back(normal4.getY());
-                normals->push_back(normal4.getZ());
+                /*if (normal4.getX() != normal4.getX()){
+                    //normals->push_back((*normals)[normals->size()]-3);
+                    //normals->push_back((*normals)[normals->size()]-2);
+                    //normals->push_back((*normals)[normals->size()]-1);
+                    normals->push_back(0);
+                    normals->push_back(-1);
+                    normals->push_back(0);
+                }else{*/
+                    normals->push_back(normal4.getX());
+                    normals->push_back(normal4.getY());
+                    normals->push_back(normal4.getZ());
+                //}
                 patchNormals[k/16][make_pair(nextU, v)] = normal4;
                 if (isnan(normal4.getX()) && isnan(normal4.getY()) && isnan(normal4.getZ())) {
                     pointsMap[k/16][f4].push_back(make_tuple(nextU, v, normals->size()-3));
                 }
-
                 textCoord->push_back(j*textInc);
                 textCoord->push_back(1-(i+1)*textInc);
 

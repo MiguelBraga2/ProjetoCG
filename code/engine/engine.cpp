@@ -487,6 +487,7 @@ void keyboard_events(unsigned char key, int x, int y) {
             glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
             polygonMode = GL_FILL;
             camera->changeMode(1);
+            camera->setPosition(Point(0,5,0));
             minecraftCreator = new Creator(camera);
         }
     }
