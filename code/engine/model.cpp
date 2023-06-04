@@ -49,7 +49,7 @@ Model::Model() {
     this->emissive[3] = 1;
 
     this->shininess = 0;
-
+    this->v = nullptr;
 }
 
 /**
@@ -84,7 +84,7 @@ int Model::drawModel(bool vboActive, Plane *planes, float *matrix, map<string, t
     glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
 
     int ret = 0;
-    if (this->v->test(planes, matrix)) { // Test VFC
+    if (this->v == nullptr || this->v->test(planes, matrix)) { // Test VFC
         glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
