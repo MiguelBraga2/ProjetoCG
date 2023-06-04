@@ -12,7 +12,17 @@
 #include "translation.hpp"
 #include "../../shared/matrixOp.hpp"
 
-
+/**
+ * Initial setup of translation object
+ * @param x
+ * @param y
+ * @param z
+ * @param duration
+ * @param align
+ * @param tesselation
+ * @param show
+ * @param controlPoints
+ */
 Translation::Translation(float x, float y, float z, float duration, bool align, int tesselation, bool show, vector<Point> controlPoints) : Transformation(x, y, z), duration(duration), align(align), tesselation(tesselation), show(show) {
     for(Point p: controlPoints){
         this->controlPoints.push_back(p);
@@ -21,6 +31,16 @@ Translation::Translation(float x, float y, float z, float duration, bool align, 
     startCounter = 0;
 }
 
+/**
+ * Get the point in the catmull-rom curve where we want to translate
+ * @param t
+ * @param p0
+ * @param p1
+ * @param p2
+ * @param p3
+ * @param pos
+ * @param deriv
+ */
 void Translation::getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float *pos, float *deriv) {
 
     // catmull-rom matrix
@@ -51,7 +71,7 @@ void Translation::getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Poin
 }
 
 
-// given  global t, returns the point in the curve
+// given global t, returns the point in the curve
 void Translation::getGlobalCatmullRomPoint(float gt, float *pos, float *deriv) {
 
     float point_count = this->controlPoints.size();
@@ -69,12 +89,16 @@ void Translation::getGlobalCatmullRomPoint(float gt, float *pos, float *deriv) {
     getCatmullRomPoint(t, this->controlPoints[indices[0]], this->controlPoints[indices[1]], this->controlPoints[indices[2]], this->controlPoints[indices[3]], pos, deriv);
 }
 
+/**
+ * Render the catmull rom curve
+ */
 void Translation::renderCatmullRomCurve() {
 
     float pos[3];
     float deriv[3];
     float inc = 1.0f / this->tesselation;
 
+    // Get all the point and create a line_loop
     glBegin(GL_LINE_LOOP);
     for (float gt = 0; gt < 1; gt += inc) {
         getGlobalCatmullRomPoint(gt, pos, deriv);
@@ -84,6 +108,10 @@ void Translation::renderCatmullRomCurve() {
 
 }
 
+/**
+ * get the time of the translation
+ * @return time of the translation
+ */
 float Translation::getTranslationT(){
     if (startCounter == 0) {
         startCounter = glutGet(GLUT_ELAPSED_TIME); // Time since the beginning of the program
@@ -102,6 +130,11 @@ float Translation::getTranslationT(){
     return t;
 }
 
+/**
+ * Apply the transformation to a matrix
+ * Multiplies matrices
+ * @param matrix the current matrix
+ */
 void Translation::applyTransformation(float *matrix){
     if (this->duration == 0){
         glTranslatef(this->getX(), this->getY(), this->getZ());

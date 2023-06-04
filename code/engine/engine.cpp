@@ -18,8 +18,6 @@
 #include "../libraries/tinyxml2.h"
 #include "camera.hpp"
 #include "group.hpp"
-#include "Transformations/translation.hpp"
-#include "Transformations/rotation.hpp"
 #include "creator.h"
 #include "Lights/Light.h"
 #include "Lights/LightPoint.h"
@@ -593,6 +591,7 @@ int readXML(char* filePath, vector<string>* keys){
           
             camera = new Camera(cameraPosition, cameraLookAt, cameraUpVector, fov, nearV, farV);
         }
+        // Lights
         tinyxml2::XMLElement* lightsElem = world->FirstChildElement("lights");
         if (lightsElem) {
             for (XMLElement* light = lightsElem->FirstChildElement(); light != NULL; light = light->NextSiblingElement()) {
@@ -635,6 +634,7 @@ int readXML(char* filePath, vector<string>* keys){
             }
         }
         globalGroup = new Group();
+        // Read the group
         globalGroup->readXML(world->FirstChildElement("group"), keys);
     }
 

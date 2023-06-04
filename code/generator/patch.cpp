@@ -43,7 +43,9 @@ void getDerivV(float u, float v, Point *p, Point *res) {
 Point getNormal(float u, float v, Point *p) {
     Point derivU, derivV;
     getDerivU(u, v, p, &derivU);
+    std::cout << "U: " << derivU.toString() << endl;
     getDerivV(u, v, p, &derivV);
+    std::cout << "V: " << derivV.toString() << endl;
     Point r = Point::crossProduct(derivU, derivV);
     r.normalize();
     return r;
@@ -116,9 +118,12 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
 
             Point normal1 = getNormal(u, 0, b);
             if ((normal1.getX() != normal1.getX()) && normals->size()>0){
-                normals->push_back((*normals)[normals->size()]-3);
-                normals->push_back((*normals)[normals->size()]-2);
-                normals->push_back((*normals)[normals->size()]-1);
+                //normals->push_back((*normals)[normals->size()]-3);
+                //normals->push_back((*normals)[normals->size()]-2);
+                //normals->push_back((*normals)[normals->size()]-1);
+                normals->push_back(0);
+                normals->push_back(-1);
+                normals->push_back(0);
             } else if (normal1.getX() != normal1.getX()) {
                 normals->push_back(0);
                 normals->push_back(1);
@@ -136,9 +141,12 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
             if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
             Point normal2 = getNormal(nextU, 0, b);
             if (normal2.getX() != normal2.getX()){
-                normals->push_back((*normals)[normals->size()]-3);
-                normals->push_back((*normals)[normals->size()]-2);
-                normals->push_back((*normals)[normals->size()]-1);
+                //normals->push_back((*normals)[normals->size()]-3);
+                //normals->push_back((*normals)[normals->size()]-2);
+                //normals->push_back((*normals)[normals->size()]-1);
+                normals->push_back(0);
+                normals->push_back(-1);
+                normals->push_back(0);
             }else{
                 normals->push_back(normal2.getX());
                 normals->push_back(normal2.getY());
@@ -160,9 +168,12 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal3 = getNormal(u, v, b);
                 if (normal3.getX() != normal3.getX()){
-                    normals->push_back((*normals)[normals->size()]-3);
-                    normals->push_back((*normals)[normals->size()]-2);
-                    normals->push_back((*normals)[normals->size()]-1);
+                    //normals->push_back((*normals)[normals->size()]-3);
+                    //normals->push_back((*normals)[normals->size()]-2);
+                    //normals->push_back((*normals)[normals->size()]-1);
+                    normals->push_back(0);
+                    normals->push_back(-1);
+                    normals->push_back(0);
                 }else{
                     normals->push_back(normal3.getX());
                     normals->push_back(normal3.getY());
@@ -176,9 +187,12 @@ vector<float> generatePatches(vector<Point> controlPoints, vector<unsigned int> 
                 if (distToCenter > *radiusSphere) *radiusSphere = distToCenter;
                 Point normal4 = getNormal(nextU, v, b);
                 if (normal4.getX() != normal4.getX()){
-                    normals->push_back((*normals)[normals->size()]-3);
-                    normals->push_back((*normals)[normals->size()]-2);
-                    normals->push_back((*normals)[normals->size()]-1);
+                    //normals->push_back((*normals)[normals->size()]-3);
+                    //normals->push_back((*normals)[normals->size()]-2);
+                    //normals->push_back((*normals)[normals->size()]-1);
+                    normals->push_back(0);
+                    normals->push_back(-1);
+                    normals->push_back(0);
                 }else{
                     normals->push_back(normal4.getX());
                     normals->push_back(normal4.getY());

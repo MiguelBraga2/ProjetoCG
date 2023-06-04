@@ -10,9 +10,25 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+/**
+ * Sets all the parameters
+ * @param x
+ * @param y
+ * @param z
+ * @param angle
+ * @param startCounter
+ * @param duration360
+ */
 Rotation::Rotation(float x, float y, float z, float angle, double startCounter, float duration360) : Transformation(x, y, z), angle(angle), startCounter(startCounter), duration360(duration360) {
 }
 
+/**
+ * Calculates the angle of the rotation
+ * Two possibilities:
+ * - by time
+ * - fixed
+ * @return the angle
+ */
 double Rotation::getRotationAngle(){
     double rAngle;
     if (duration360 != 0) {
@@ -34,6 +50,11 @@ double Rotation::getRotationAngle(){
     return rAngle;
 }
 
+/**
+ * Apply the transformation to a matrix
+ * Multiplies matrices
+ * @param matrix the current matrix
+ */
 void Rotation::applyTransformation(float *matrix) {
     glRotatef(this->getRotationAngle(), this->getX(), this->getY(), this->getZ());
     float m2[16] = { this->getX()*this->getX() + 1 * (1- this->getX()*this->getX()) * (float) cos(this->getRotationAngle()), this->getX()*this->getY() * (1-(float)cos(this->getRotationAngle())) - this->getZ() * (float) sin(this->getRotationAngle()), this->getX()*this->getZ() * (1-(float)cos(this->getRotationAngle())) + this->getY() * (float) sin(this->getRotationAngle()), 0,
@@ -58,6 +79,11 @@ void Rotation::setAngle(float angle) {
     this->angle = angle;
 }
 
+/**
+ * Apply the transformation to a point
+ * @param base
+ * @param radius
+ */
 void Rotation::applyTransformationToPoint(Point* base, float* radius) {
     if (this->getX() == 0 && this->getY() == 0 && this->getZ() == 1){
         float baseX = base->getX(), baseY = base->getY();

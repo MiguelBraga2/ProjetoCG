@@ -18,18 +18,17 @@
 class Creator {
 private:
     int red = 0, green = 0, blue = 0;
-
     int indColors = 0;
 
-    std::vector<std::tuple<float, float, float>> colorsVec;
-    std::vector<int> textureVec;
+    std::vector<std::tuple<float, float, float>> colorsVec; // Vector with colors available to the user - Disabled
+    std::vector<int> textureVec; // Vector with textures available to the user
 
-    int minecraftMode = 0; // 0 - Construir, 1 - Destruir
+    GLuint buffers[5]; // VBos
 
-    GLuint buffers[5];
-
+    // Mapping from position to cube index
     std::map<std::tuple<float, float, float>, unsigned int> mapPointIndex;
 
+    // Vectors to store data initially
     std::vector<float> vertices;
     std::vector<unsigned int> indexes;
     std::vector<float> colors;
@@ -54,9 +53,11 @@ private:
     Light l;
     GLuint texIds[100];
     int textInd=0;
-    std::vector<string> textureNames;
-    int numTextures;
-    std::vector<std::tuple<GLuint, int>> blockTextures;
+    std::vector<string> textureNames; // Names of the textures (to be displayed on the screen)
+    int numTextures; // Number of textures loaded
+    std::vector<std::tuple<GLuint, int>> blockTextures; // Vector that tells the texture attributed to each portion of the arrays
+
+    // Current texture to be rendered
     GLuint currentTextureTop;
     GLuint currentTextureSides;
 public:
@@ -76,8 +77,6 @@ private:
     void incrementColors();
     void renderText(int height, int width);
     void loadTexture(string path);
-
-
 };
 
 

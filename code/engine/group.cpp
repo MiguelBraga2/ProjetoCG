@@ -271,6 +271,9 @@ void Group::readXML(XMLElement *group, vector<string>* keys) {
     }
 }
 
+/*
+ * Free the memory allocated
+ */
 void Group::freeGroup() {
     for (auto transform : this->transformations) {
         delete transform;

@@ -16,8 +16,11 @@ unsigned char* imageData;
 
 unsigned int t, tw, th;
 
-int blockTexturesIndex = 0;
-
+/**
+ * Imports a scene from a file in the filesystem
+ * The file contains the positions of the blocks
+ * @param filename The name of the file
+ */
 void Creator::importScene(string filename) {
     ifstream file("../../scenes/" + filename);
 
@@ -44,11 +47,16 @@ void Creator::importScene(string filename) {
             float blueComp = stof(strings[5]);
 
             drawCube(xCoord, yCoord, zCoord, redComp, greenComp, blueComp);
-            vertexCount += 6 * 4;
+            vertexCount += 6 * 4; //
         }
     }
 }
 
+/**
+ * Imports a scene to a file in the filesystem
+ * The file contains the positions of the blocks
+ * @param filename The name of the file
+ */
 void Creator::exportScene(std::string filename) {
     ofstream file("../../scenes/" + filename);
     if (!file)
@@ -57,8 +65,9 @@ void Creator::exportScene(std::string filename) {
     }
     else
     {
+        // Each block is described in the file
         for(int i=0; i<cubesPositions.size(); i+=3){
-            // Se o bloco não tiver sido removido
+            // IF the block has not been removed
             if (cubesPositions[i] != 1000000 && cubesPositions[i+1] != 1000000 && cubesPositions[i+2] != 1000000){
                 file << cubesPositions[i] << " " << cubesPositions[i + 1] << " " << cubesPositions[i + 2] << " " <<
                      cubesColors[i] << " " << cubesColors[i + 1] << " " << cubesColors[i + 2] << endl;
@@ -68,12 +77,18 @@ void Creator::exportScene(std::string filename) {
     }
 }
 
+/**
+ * Used to change the selected color: DEPRECATED
+ */
 void Creator::changeBlockColor(){
     indColors = (indColors+1)%colorsVec.size();
     std::cout << "Color: " << indColors << std::endl;
     std::cout << get<0>(colorsVec[indColors]) << std::endl;
 }
 
+/**
+ * Used to change the current texture in use
+ */
 void Creator::changeBlockTexture(){
     textInd = (textInd+1)%numTextures;
     switch(textInd){
@@ -120,10 +135,26 @@ void Creator::changeBlockTexture(){
     }
 }
 
+/**
+ * Get the height of a position in a height map
+ * @param i the x component of the image
+ * @param j the y component of the image
+ * @return the height in that position
+ */
 float getHeight(int i, int j) {
     return imageData[i * tw + j];
 }
 
+/**
+ * Creator initializing function
+ * Initializes:
+ * - vbos
+ * - textures
+ * - camera
+ * - lights
+ * - basic setup of worlds, according to choice of user
+ * @param camera the camera from the engine
+ */
 Creator::Creator(Camera* camera) {
     std::cout << "Como deseja inicializar o terreno?\n 1 - Plano\n 2 - Ficheiro de Imagem\n 3 - Importar terreno" << std::endl;
     int option;
@@ -142,10 +173,11 @@ Creator::Creator(Camera* camera) {
     colorsVec.push_back(std::make_tuple(0, 0.2, 0)); // DARK GREEN
     colorsVec.push_back(std::make_tuple(0.2, 0.07, 0)); // ZINNWALDITE BROWN
 
+    // 5 buffers - vertex, indexes, normals, colors (picking), textures
     glGenBuffers(5, buffers);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    //glEnableClientState(GL_COLOR_ARRAY);
+    //glEnableClientState(GL_COLOR_ARRAY); Replaced by textures
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_2D);
     string path = "../Textures/minecraft_textures/";
@@ -163,7 +195,6 @@ Creator::Creator(Camera* camera) {
     loadTexture(path + "redstone_lamp.jpg");
     loadTexture(path + "redstone_lamp_on.jpg");
     loadTexture(path + "Sand_top.jpg");
-    //loadTexture(path + "Tn.jpg");
     numTextures = 10;
 
     textureNames.push_back("GRASS");
@@ -251,13 +282,14 @@ Creator::Creator(Camera* camera) {
 
     int maxPlacedBlocks = 10000;
 
+    // We reserve some memory for blocks placed in the future by filling each vbo with 0s
     for (int i = 0; i < maxPlacedBlocks; i++) {
         for (int j = 0; j < 24; j++) {
             vertices.push_back(0);
             colors.push_back(0);
             normalColors.push_back(0);
             normals.push_back(0);
-            if (j % 3 == 0 || j % 3 == 1){
+            if (j % 3 == 0 || j % 3 == 1){ // 3:2
                 textureCoords.push_back(0);
             }
         }
@@ -278,7 +310,7 @@ Creator::Creator(Camera* camera) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
     glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
 
-    //glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+    //glBindBuffer(GL_ARRAY_BUFFER, buffers[3]); // Not used anymore
     //glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(float), normalColors.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
@@ -288,6 +320,10 @@ Creator::Creator(Camera* camera) {
     glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), textureCoords.data(), GL_STATIC_DRAW);
 }
 
+/**
+ * Destructor of creator mode
+ * Prompts the user to save progress
+ */
 Creator::~Creator() {
     std::cout << "Deseja guardar o resultado em ficheiro? S | N" << std::endl;
     char option;
@@ -302,7 +338,13 @@ Creator::~Creator() {
     }
 }
 
+/**
+ * Renders the selected texture to be placed
+ * @param height height of screen
+ * @param width width of screen
+ */
 void Creator::renderText(int height, int width) {
+    // Save the current matrix
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -314,10 +356,10 @@ void Creator::renderText(int height, int width) {
 
     glPushMatrix();
     glLoadIdentity();
-    glRasterPos2d(0.0f*(float)width, 0*(float)height); // text position in pixels
+    glRasterPos2d(0.0f*(float)width, 0*(float)height); // text position in pixels - bottom left corner
 
     glColor3f(std::get<0>(colorsVec[indColors]), std::get<1>(colorsVec[indColors]), std::get<2>(colorsVec[indColors]));
-    const char* c = textureNames[textInd].c_str();
+    const char* c = textureNames[textInd].c_str(); // Display the selected texture
     for (; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
@@ -330,6 +372,9 @@ void Creator::renderText(int height, int width) {
     glEnable(GL_DEPTH_TEST);
 }
 
+/**
+ * Used to update the color the block is colored in the background - not visible but essential to picking algorithm
+ */
 void Creator::incrementColors() {
     red += 1;
     if (red >= 255) {
@@ -342,6 +387,15 @@ void Creator::incrementColors() {
     }
 }
 
+/**
+ * Place a cube in the world
+ * @param x position x of the cube
+ * @param y position y of the cube
+ * @param z position z of the cube
+ * @param cRed red component of the cube (not used anymore)
+ * @param cGreen green component of the cube (not used anymore)
+ * @param cBlue blue component of the cube (not used anymore)
+ */
 void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlue) {
     float newVertices[] = {
             -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
@@ -370,6 +424,7 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
             -0.5f + x, 0.5f + y, -0.5f + z
     };
 
+    // Possible otimization: reorder faces  reducing the calls to glDraw
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
     this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
@@ -475,7 +530,7 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
         }
 
         int nextX = x, nextY = y, nextZ = z;
-
+        // Calculate next block
         switch(i/12){
             case 0: // FRONT
                 nextZ = z+1;
@@ -532,6 +587,7 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
         this->textureCoords.push_back(t);
     }
 
+    // Save position of the cube
     cubesPositions.push_back(x);
     cubesPositions.push_back(y);
     cubesPositions.push_back(z);
@@ -545,6 +601,12 @@ void Creator::drawCube(int x, int y, int z, float cRed, float cGreen, float cBlu
     incrementColors();
 }
 
+/**
+ * Place a block in the scene (after initial setup)
+ * @param x x position
+ * @param y y position
+ * @param z z position
+ */
 void Creator::addCube(int x, int y, int z) {
     float newVertices[] = {
             -0.5f + x, -0.5f + y, 0.5f + z, // FRONT
@@ -573,6 +635,7 @@ void Creator::addCube(int x, int y, int z) {
             -0.5f + x, 0.5f + y, -0.5f + z
     };
 
+    // Otimization possible
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
     this->blockTextures.push_back(make_tuple(currentTextureTop, 12));
     this->blockTextures.push_back(make_tuple(currentTextureSides, 12));
@@ -711,6 +774,7 @@ void Creator::addCube(int x, int y, int z) {
         incrementColors();
     }
 
+    // replace the values of the vbo in the next position (pre-alocated memory)
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glBufferSubData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(float), sizeof(newVertices), newVertices);
 
@@ -732,11 +796,17 @@ void Creator::addCube(int x, int y, int z) {
     vertexCount += 6 * 4;
     numIndex += 36;
 
+    // Save the index of the cube (mapped to the position of it)
     mapPointIndex[std::make_tuple(x, y, z)] = cubeIndex;
 
     cubeIndex++;
 }
 
+/**
+ * Removes a cube from the scene
+ * Basically sets all of the values in the vbo to 0
+ * @param index The index of the cube
+ */
 void Creator::removeCube(unsigned int index) {
     GLfloat newVertices[] = {0,0,0,0,0,0,0,0,0,0,0,0, // Front
                              0,0,0,0,0,0,0,0,0,0,0,0, // Back
@@ -799,22 +869,25 @@ void Creator::removeCube(unsigned int index) {
     //glBufferSubData(GL_ARRAY_BUFFER, index * 24 * 3 * sizeof(float), sizeof(newNormalColors), newNormalColors);
 }
 
+/**
+ * render function
+ * @param height height of the window
+ * @param width width of the window
+ */
 void Creator::render(int height, int width){
-    //glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-    glClearColor(0, 0, 0, 0.0f);
+    glClearColor(0, 0, 0, 0.0f); // If changes here, must change in the picking section
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     globalCamera->placeCamera();
-    cout << globalCamera->toString() << endl;
 
-    l.doAction(0);
+    l.doAction(0); // Place light in the scene
 
-    // glColor3f(1,0,0);
-    // put drawing instructions here
-    // glutSolidCube(1);
+    // Give semantic
+
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -822,7 +895,6 @@ void Creator::render(int height, int width){
     //glColorPointer(3, GL_FLOAT, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-    //glDrawElements(GL_TRIANGLES, indexes.size(), GL_UNSIGNED_INT, NULL);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[4]);
     glNormalPointer(GL_FLOAT, 0, 0);
@@ -830,8 +902,7 @@ void Creator::render(int height, int width){
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-    //glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-
+    // Draw each segment of the arrays with the correct texture
     int index=0;
     for(std::tuple<GLuint, int> tuple: this->blockTextures){
         GLuint texId = std::get<0>(tuple);
@@ -847,6 +918,14 @@ void Creator::render(int height, int width){
     glutSwapBuffers();
 }
 
+/**
+ * Used to pick the color of a given pixel in the screen
+ * Each different face is colored (internally) with a different color
+ * to be distinguished
+ * @param x x position of the mouse
+ * @param y y position of the mouse
+ * @return the color of the pixel
+ */
 unsigned char* Creator::picking(int x, int y) {
     unsigned char* res = (unsigned char*)malloc(4);
     GLint viewport[4];
@@ -868,6 +947,7 @@ unsigned char* Creator::picking(int x, int y) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
+    // Must use the color buffer and not the texture one
     glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
     glColorPointer(3, GL_FLOAT, 0, 0);
 
@@ -882,6 +962,7 @@ unsigned char* Creator::picking(int x, int y) {
     //glutSwapBuffers();
     //sleep(10);
 
+    // Activate everything
     glEnableClientState(GL_TEXTURE_2D);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -894,23 +975,31 @@ unsigned char* Creator::picking(int x, int y) {
     return res;
 }
 
+/**
+ * Deals with mouse clicks
+ * Left click -> tries to remove block selected
+ * Right click -> tries to place block in the correct direction
+ * @param button button press
+ * @param state state of button
+ * @param xx x position of mouse
+ * @param yy y position of mouse
+ */
 void Creator::processMouseButtons(int button, int state, int xx, int yy)
 {
-    printf("%d %d\n", xx, yy);
     if (state == GLUT_DOWN) {
-        if (button == GLUT_RIGHT_BUTTON) {
+        if (button == GLUT_RIGHT_BUTTON) { // Place block
             unsigned char *result = picking(xx, yy);
-            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
-                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
-                       nextPosY[result[0]][result[1]][result[2]],
-                       nextPosZ[result[0]][result[1]][result[2]]);
+            if (result[0] != 0 || result[1] != 0 || result[2] != 0) { // If color picked is not black (background)
+                //printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                //printf("Bloco deve ser colocado em %f %f %f\n", nextPosX[result[0]][result[1]][result[2]],
+                //        nextPosY[result[0]][result[1]][result[2]],
+                //        nextPosZ[result[0]][result[1]][result[2]]);
                 float blockX = nextPosX[result[0]][result[1]][result[2]];
                 float blockY = nextPosY[result[0]][result[1]][result[2]];
                 float blockZ = nextPosZ[result[0]][result[1]][result[2]];
                 Point cam = this->globalCamera->getPosition();
                 Point vect = Point(cam.getX()-blockX, cam.getY()-blockY, cam.getZ()-blockZ);
-                if (vect.getSize() <= 8){
+                if (vect.getSize() <= 8){ // Reach condition
                     addCube(nextPosX[result[0]][result[1]][result[2]],
                             nextPosY[result[0]][result[1]][result[2]],
                             nextPosZ[result[0]][result[1]][result[2]]);
@@ -921,11 +1010,11 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
         }
         else if (button == GLUT_LEFT_BUTTON){
             unsigned char *result = picking(xx, yy);
-            if (result[0] != 0 || result[1] != 0 || result[2] != 0) {
-                printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
-                printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
-                       currPosY[result[0]][result[1]][result[2]],
-                       currPosZ[result[0]][result[1]][result[2]]);
+            if (result[0] != 0 || result[1] != 0 || result[2] != 0) { // If color picked is not black (background)
+                //printf("Picked Color %u %u %u\n", result[0], result[1], result[2]);
+                //printf("Bloco deve ser removido em %f %f %f\n", currPosX[result[0]][result[1]][result[2]],
+                //       currPosY[result[0]][result[1]][result[2]],
+                //       currPosZ[result[0]][result[1]][result[2]]);
                 int index = mapPointIndex[std::make_tuple(
                         currPosX[result[0]][result[1]][result[2]],
                         currPosY[result[0]][result[1]][result[2]],
@@ -935,8 +1024,9 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
                 float blockZ = currPosZ[result[0]][result[1]][result[2]];
                 Point cam = this->globalCamera->getPosition();
                 Point vect = Point(cam.getX()-blockX, cam.getY()-blockY, cam.getZ()-blockZ);
-                if (vect.getSize() <= 8){
+                if (vect.getSize() <= 8){ // Reach position
                     removeCube(index);
+                    // Mark this block unused
                     cubesPositions[index*3] = 1000000;
                     cubesPositions[index*3+1] = 1000000;
                     cubesPositions[index*3+2] = 1000000;
@@ -951,6 +1041,10 @@ void Creator::processMouseButtons(int button, int state, int xx, int yy)
     }
 }
 
+/**
+ * Used to load a texture, giving it a texture id
+ * @param path the path of the texture file
+ */
 void Creator::loadTexture(string path) {
     unsigned int t,tw,th;
     unsigned char *texData;
@@ -972,6 +1066,7 @@ void Creator::loadTexture(string path) {
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
 
+    // Possibility to change the filters here
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 

@@ -12,6 +12,11 @@ Scale::Scale(float x, float y, float z) : Transformation(x,y,z) {
 
 }
 
+/**
+ * Apply the transformation to a matrix
+ * Multiplies matrices
+ * @param matrix the current matrix
+ */
 void Scale::applyTransformation(float *matrix){
     glScalef(this->getX(), this->getY(), this->getZ());
     float m2[16] = { this->getX(), 0, 0, 0,

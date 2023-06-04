@@ -23,6 +23,9 @@ float specular[4] = {};
 float emissive[4] = {};
 float shininess = 0;
 
+/**
+ * Sets the default materials for the object
+ */
 Model::Model() {
     this->texId = 0;
     this->diffuse[0] = 200.0f / 255.0f;
@@ -49,7 +52,18 @@ Model::Model() {
 
 }
 
+/**
+ * Renders the model
+ * @param vboActive true if we want to render it using vbos
+ * @param planes vfc planes
+ * @param matrix
+ * @param teleports map with the teleports
+ * @param mipmap if mipmap is true
+ * @param change if texture filters have changed -> we want to reload the texture
+ * @return
+ */
 int Model::drawModel(bool vboActive, Plane *planes, float *matrix, map<string, tuple<Point, float>> *teleports, bool mipmap, bool change) {
+    // Setup teleports
     if (this->label.compare("undefined") != 0) {
         Point p1(matrix[3], matrix[7], matrix[11]);
         float res[4];
@@ -62,6 +76,7 @@ int Model::drawModel(bool vboActive, Plane *planes, float *matrix, map<string, t
     if (change)// ReLoad the texture
         this->loadImage(this->getTextureFile(), mipmap);
 
+    // Setup materials
     glMaterialfv(GL_FRONT, GL_DIFFUSE, this->diffuse);
     glMaterialfv(GL_FRONT, GL_AMBIENT, this->ambient);
     glMaterialfv(GL_FRONT, GL_SPECULAR, this->specular);
@@ -69,13 +84,14 @@ int Model::drawModel(bool vboActive, Plane *planes, float *matrix, map<string, t
     glMaterialf(GL_FRONT, GL_SHININESS, this->shininess);
 
     int ret = 0;
-    if (this->v->test(planes, matrix)) {
+    if (this->v->test(planes, matrix)) { // Test VFC
         glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, this->normals);
         glNormalPointer(GL_FLOAT, 0, 0);
 
+        // If texture is active
         if (texId != 0) {
             glBindTexture(GL_TEXTURE_2D, texId);
             glBindBuffer(GL_ARRAY_BUFFER, this->texCoord);
@@ -124,17 +140,15 @@ void Model::readModel(string fileName) {
     this->indexCount = indexesVector.size();
 }
 
-string Model::getLabel() {
-    return label;
-}
-
+/**
+ * Set the label for a model
+ * @param label the label
+ */
 void Model::setLabel(string label) {
     this->label = label;
 }
 
-void setMaterial() {
-
-};
+// Set the multiple materials available to the object
 
 void Model::setDiffuse(Point diffuse) {
     this->diffuse[0] = diffuse.getX() / 255;
@@ -180,6 +194,7 @@ void Model::setShininess(float shininess) {
     this->shininess = shininess;
 }
 
+// Set the texture file (we may want to reload it after)
 void Model::setTextureFile(string textureFile) {
     loadImage(textureFile,false);
     this->textureFile = textureFile;
@@ -199,6 +214,11 @@ void Model::setBVParamsIfSphere(float *matrix) {
     }
 }
 
+/**
+ * Load image as a texture
+ * @param textFile
+ * @param mipmap
+ */
 void Model::loadImage(string textFile, bool mipmap) {
     unsigned int t,tw,th;
     unsigned char *texData;
@@ -221,6 +241,7 @@ void Model::loadImage(string textFile, bool mipmap) {
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
 
     glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+    // Multiple config filter params
     if (mipmap){
         glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     }
@@ -237,6 +258,7 @@ void Model::loadImage(string textFile, bool mipmap) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+// Get the path of the texture
 string Model::getTextureFile() {
     return this->textureFile;
 }
