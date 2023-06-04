@@ -43,14 +43,14 @@ int main(int argc, char** argv) {
                 float height = stof(argv[3]);
 
                 vector<float> vertices = generateCone(radius, height, stoi(argv[4]), stoi(argv[5]), &indexes, &normals, &textCoords);
-                Point corners[8] = { Point(-radius, -height/2, radius), 
-                                     Point(-radius, -height/2, -radius), 
-                                     Point(radius, -height/2, radius), 
-                                     Point(radius, -height/2, -radius), 
-                                     Point(-radius, height/2, radius),
-                                     Point(-radius, height/2, -radius), 
-                                     Point(radius, height/2, radius), 
-                                     Point(radius, height/2, -radius) };
+                Point corners[8] = { Point(-radius, -height, radius), 
+                                     Point(-radius, -height, -radius), 
+                                     Point(radius, -height, radius), 
+                                     Point(radius, -height, -radius), 
+                                     Point(-radius, 0, radius),
+                                     Point(-radius, 0, -radius), 
+                                     Point(radius, 0, radius), 
+                                     Point(radius, 0, -radius) };
                 writer(argv[6], vertices, indexes, normals, textCoords, corners);
             }
             else {
